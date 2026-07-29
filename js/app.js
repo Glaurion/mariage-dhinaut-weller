@@ -1,3 +1,21 @@
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+function scrollToPageTop() {
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function lockPageToTopDuringLoad() {
+  [0, 50, 150, 300, 600].forEach((delay) => {
+    window.setTimeout(scrollToPageTop, delay);
+  });
+}
+
+lockPageToTopDuringLoad();
+
 const introScreen = document.querySelector('#intro-screen');
 const openKingdomButton = document.querySelector('#open-kingdom');
 const revealElements = document.querySelectorAll('.reveal');
@@ -14,6 +32,23 @@ castleDoorSound.preload = 'auto';
 castleDoorSound.volume = 0.28;
 let castleDoorSoundTimer = null;
 let invitationWasShown = false;
+
+function resetInvitationPopup() {
+  invitationWasShown = false;
+  invitationPopup?.classList.remove('is-visible', 'is-breaking', 'is-open', 'is-letter-visible');
+  invitationPopup?.setAttribute('aria-hidden', 'true');
+  openInvitationButton?.removeAttribute('disabled');
+  document.body.classList.remove('invitation-modal-open');
+}
+
+window.addEventListener('pageshow', (event) => {
+  lockPageToTopDuringLoad();
+  resetInvitationPopup();
+
+  if (event.persisted && !document.querySelector('#intro-screen')) {
+    window.location.reload();
+  }
+});
 
 function playCastleDoorSound() {
   window.clearTimeout(castleDoorSoundTimer);
@@ -145,7 +180,7 @@ if ('IntersectionObserver' in window) {
       { threshold: 0.5 }
     );
 
-    invitationObserver.observe(invitationTrigger);
+    window.requestAnimationFrame(() => invitationObserver.observe(invitationTrigger));
   }
 } else {
   revealElements.forEach((element) => element.classList.add('is-visible'));

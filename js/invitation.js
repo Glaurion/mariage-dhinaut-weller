@@ -1,3 +1,22 @@
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+function scrollToPageTop() {
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function lockPageToTopDuringLoad() {
+  [0, 50, 150, 300, 600].forEach((delay) => {
+    window.setTimeout(scrollToPageTop, delay);
+  });
+}
+
+lockPageToTopDuringLoad();
+window.addEventListener('pageshow', lockPageToTopDuringLoad);
+
 const loadingState = document.querySelector('#invitation-loading');
 const errorState = document.querySelector('#invitation-error');
 const contentState = document.querySelector('#invitation-content');
