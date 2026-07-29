@@ -77,7 +77,7 @@ function createOpeningTextPanels() {
 function revealSite() {
   document.body.classList.remove('intro-active', 'gates-opening');
   document.body.classList.add('intro-complete');
-  window.setTimeout(() => introScreen?.remove(), reducedMotion ? 50 : 250);
+  window.setTimeout(() => introScreen?.remove(), 250);
 }
 
 function openKingdom() {
@@ -86,7 +86,7 @@ function openKingdom() {
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
-  window.setTimeout(revealSite, reducedMotion ? 100 : 4000);
+  window.setTimeout(revealSite, 4000);
 }
 
 function showInvitationPopup() {
