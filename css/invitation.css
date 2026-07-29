@@ -68,10 +68,9 @@
 }
 
 .wax-seal.large {
-  width: 92px;
-  height: 92px;
-  margin: 0 auto 2rem;
-  font-size: 1.08rem;
+  width: clamp(150px, 22vw, 190px);
+  height: auto;
+  margin: -1rem auto 2rem;
 }
 
 .sealed-letter h1 {
