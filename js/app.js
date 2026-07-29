@@ -9,72 +9,14 @@ const invitationCodeForm = document.querySelector('#invitation-code-form');
 const invitationCodeInput = document.querySelector('#invitation-code');
 const invitationCodeError = document.querySelector('#invitation-code-error');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const castleDoorSound = new Audio('assets/castle-door-opening.wav');
+castleDoorSound.preload = 'auto';
+castleDoorSound.volume = 0.78;
 let invitationWasShown = false;
 
 function playCastleDoorSound() {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
-
-  const audioContext = new AudioContext();
-  const startTime = audioContext.currentTime;
-  const duration = 2.1;
-  const masterGain = audioContext.createGain();
-  masterGain.gain.setValueAtTime(0.0001, startTime);
-  masterGain.gain.exponentialRampToValueAtTime(0.42, startTime + 0.08);
-  masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-  masterGain.connect(audioContext.destination);
-
-  const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * duration, audioContext.sampleRate);
-  const noiseData = noiseBuffer.getChannelData(0);
-  for (let index = 0; index < noiseData.length; index += 1) {
-    noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseData.length);
-  }
-
-  const noise = audioContext.createBufferSource();
-  const woodFilter = audioContext.createBiquadFilter();
-  const noiseGain = audioContext.createGain();
-  noise.buffer = noiseBuffer;
-  woodFilter.type = 'bandpass';
-  woodFilter.frequency.setValueAtTime(120, startTime);
-  woodFilter.frequency.exponentialRampToValueAtTime(55, startTime + duration);
-  woodFilter.Q.value = 1.4;
-  noiseGain.gain.setValueAtTime(0.32, startTime);
-  noiseGain.gain.linearRampToValueAtTime(0.08, startTime + duration);
-  noise.connect(woodFilter).connect(noiseGain).connect(masterGain);
-
-  const creak = audioContext.createOscillator();
-  const creakGain = audioContext.createGain();
-  const creakFilter = audioContext.createBiquadFilter();
-  creak.type = 'sawtooth';
-  creak.frequency.setValueAtTime(76, startTime);
-  creak.frequency.linearRampToValueAtTime(43, startTime + 0.7);
-  creak.frequency.linearRampToValueAtTime(68, startTime + 1.3);
-  creak.frequency.linearRampToValueAtTime(34, startTime + duration);
-  creakFilter.type = 'lowpass';
-  creakFilter.frequency.value = 480;
-  creakGain.gain.setValueAtTime(0.0001, startTime);
-  creakGain.gain.exponentialRampToValueAtTime(0.18, startTime + 0.12);
-  creakGain.gain.exponentialRampToValueAtTime(0.035, startTime + duration);
-  creak.connect(creakFilter).connect(creakGain).connect(masterGain);
-
-  [0, 0.72, 1.45].forEach((offset, index) => {
-    const impact = audioContext.createOscillator();
-    const impactGain = audioContext.createGain();
-    impact.type = 'sine';
-    impact.frequency.setValueAtTime(64 - index * 8, startTime + offset);
-    impact.frequency.exponentialRampToValueAtTime(28, startTime + offset + 0.28);
-    impactGain.gain.setValueAtTime(0.24 - index * 0.04, startTime + offset);
-    impactGain.gain.exponentialRampToValueAtTime(0.0001, startTime + offset + 0.32);
-    impact.connect(impactGain).connect(masterGain);
-    impact.start(startTime + offset);
-    impact.stop(startTime + offset + 0.34);
-  });
-
-  noise.start(startTime);
-  noise.stop(startTime + duration);
-  creak.start(startTime);
-  creak.stop(startTime + duration);
-  window.setTimeout(() => audioContext.close(), (duration + 0.4) * 1000);
+  castleDoorSound.currentTime = 0;
+  castleDoorSound.play().catch(() => {});
 }
 
 function createOpeningTextPanels() {
@@ -103,7 +45,7 @@ function openKingdom() {
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
-  window.setTimeout(revealSite, reducedMotion ? 100 : 2050);
+  window.setTimeout(revealSite, reducedMotion ? 100 : 4000);
 }
 
 function showInvitationPopup() {

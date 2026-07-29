@@ -159,7 +159,7 @@ svg {
   display: grid;
   place-items: center;
   overflow: hidden;
-  transition: transform 1.9s cubic-bezier(.76, 0, .24, 1), filter 1.5s ease;
+  transition: transform 3.8s cubic-bezier(.72, 0, .22, 1), filter 3s ease;
   box-shadow: inset 0 0 100px rgba(0,0,0,.75);
 }
 
@@ -285,9 +285,9 @@ body.intro-complete .site-content {
   animation: none;
   transform: translate(-50%, -50%);
   transition:
-    transform 1.9s cubic-bezier(.76, 0, .24, 1),
-    filter 1.5s ease,
-    opacity 1.7s ease;
+    transform 3.8s cubic-bezier(.72, 0, .22, 1),
+    filter 3s ease,
+    opacity 3.4s ease;
 }
 
 .hero-content-door-copy-left {
@@ -1061,8 +1061,11 @@ body.gates-opening .hero-content-door-copy-right {
   width: min(82vw, 720px);
   aspect-ratio: 1.62;
   transform-style: preserve-3d;
-  filter: drop-shadow(0 38px 38px rgba(0,0,0,.58));
-  transition: transform 1s cubic-bezier(.22, 1, .36, 1);
+  filter:
+    drop-shadow(0 42px 42px rgba(0,0,0,.62))
+    drop-shadow(0 0 30px rgba(166,112,46,.12));
+  animation: envelopeArrival 1s cubic-bezier(.16, 1, .3, 1) both;
+  transition: transform 1.5s cubic-bezier(.16, 1, .3, 1), filter 1.3s ease;
 }
 
 .envelope-back,
@@ -1070,26 +1073,57 @@ body.gates-opening .hero-content-door-copy-right {
 .envelope-flap {
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(99,68,38,.7);
+  border: 2px solid #5f3a1e;
+  outline: 1px solid rgba(197,150,73,.5);
+  outline-offset: -8px;
 }
 
 .envelope-back {
   z-index: 1;
   background:
-    linear-gradient(145deg, rgba(255,255,255,.08), transparent 38%),
-    repeating-linear-gradient(0deg, transparent 0 7px, rgba(73,43,20,.035) 7px 8px),
-    #c9a76e;
-  box-shadow: inset 0 0 55px rgba(76,42,17,.32);
+    radial-gradient(circle at 50% 15%, rgba(224,183,101,.18), transparent 32%),
+    repeating-linear-gradient(92deg, transparent 0 13px, rgba(255,255,255,.018) 13px 14px),
+    linear-gradient(145deg, #6b4327, #3f281b 55%, #2d1b13);
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,.52),
+    inset 0 0 0 13px rgba(116,73,36,.34);
+}
+
+.envelope-back::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(210,164,83,.38);
+  background:
+    radial-gradient(circle at 0 0, transparent 0 16px, rgba(210,164,83,.36) 17px 18px, transparent 19px) 0 0 / 54px 54px,
+    radial-gradient(circle at 100% 100%, transparent 0 16px, rgba(210,164,83,.28) 17px 18px, transparent 19px) 100% 100% / 54px 54px;
+  pointer-events: none;
 }
 
 .envelope-pocket {
   z-index: 5;
   background:
-    linear-gradient(32deg, #a97d45 0 49.7%, transparent 50%) left / 51% 100% no-repeat,
-    linear-gradient(-32deg, #b78b50 0 49.7%, transparent 50%) right / 51% 100% no-repeat,
-    linear-gradient(0deg, #b78b50 0 49.5%, transparent 50%);
+    linear-gradient(32deg, #5b3823 0 49.7%, transparent 50%) left / 51% 100% no-repeat,
+    linear-gradient(-32deg, #6b4327 0 49.7%, transparent 50%) right / 51% 100% no-repeat,
+    linear-gradient(0deg, #5a361f 0 49.5%, transparent 50%);
   clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
-  box-shadow: inset 0 -30px 55px rgba(72,39,14,.24);
+  box-shadow:
+    inset 0 -42px 60px rgba(21,11,7,.46),
+    inset 0 0 0 12px rgba(123,77,37,.22);
+}
+
+.envelope-pocket::after {
+  content: "❧  ✦  ❧";
+  position: absolute;
+  right: 0;
+  bottom: 9%;
+  left: 0;
+  color: rgba(207,158,76,.48);
+  font-family: var(--font-display);
+  font-size: clamp(.7rem, 2vw, 1rem);
+  letter-spacing: .55em;
+  text-align: center;
+  text-shadow: 0 1px 2px #1a0d08;
 }
 
 .envelope-flap {
@@ -1097,13 +1131,26 @@ body.gates-opening .hero-content-door-copy-right {
   height: 61%;
   border-bottom: 0;
   background:
-    linear-gradient(160deg, rgba(255,255,255,.11), transparent 42%),
-    #c49a60;
+    linear-gradient(160deg, rgba(222,177,93,.15), transparent 42%),
+    repeating-linear-gradient(95deg, transparent 0 12px, rgba(255,255,255,.018) 12px 13px),
+    linear-gradient(145deg, #74502f, #4a2d1d 58%, #321d14);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: 50% 0;
   transform: rotateX(0deg);
   backface-visibility: visible;
-  transition: transform .9s cubic-bezier(.65, 0, .35, 1) .35s, z-index 0s linear .8s;
+  box-shadow: inset 0 20px 45px rgba(0,0,0,.24);
+  transition:
+    transform 1.35s cubic-bezier(.45, 0, .15, 1) .42s,
+    filter 1.1s ease .3s,
+    z-index 0s linear 1.25s;
+}
+
+.envelope-flap::after {
+  content: "";
+  position: absolute;
+  inset: 13px 16px 38%;
+  border: 1px solid rgba(210,164,83,.34);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
 .letter-sheet {
@@ -1112,20 +1159,23 @@ body.gates-opening .hero-content-door-copy-right {
   right: 7%;
   bottom: 4%;
   z-index: 3;
-  min-height: 92%;
-  max-height: min(78vh, 720px);
+  min-height: 88%;
+  max-height: min(78vh, 700px);
   overflow-y: auto;
   padding: clamp(2rem, 5vw, 4rem);
   border: 1px solid rgba(97,65,29,.32);
   color: #302318;
   text-align: center;
   background:
-    radial-gradient(circle at 50% 35%, rgba(255,255,255,.42), transparent 28rem),
-    repeating-linear-gradient(0deg, transparent 0 9px, rgba(99,65,30,.025) 9px 10px),
-    #e8d5aa;
-  box-shadow: 0 12px 28px rgba(47,26,10,.28), inset 0 0 50px rgba(110,72,31,.12);
-  transform: translateY(25%) scale(.94);
-  transition: transform 1.25s cubic-bezier(.16, 1, .3, 1) 1s, box-shadow 1s ease 1s;
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.46), transparent 26rem),
+    linear-gradient(90deg, rgba(112,69,29,.08), transparent 8%, transparent 92%, rgba(112,69,29,.08)),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(99,65,30,.026) 9px 10px),
+    #e7d1a0;
+  box-shadow: 0 12px 28px rgba(24,12,7,.38), inset 0 0 58px rgba(110,72,31,.16);
+  transform: translateY(30%) scale(.9) rotateX(3deg);
+  transform-origin: center bottom;
+  opacity: .96;
+  will-change: transform, opacity;
 }
 
 .letter-sheet::before,
@@ -1259,13 +1309,33 @@ body.gates-opening .hero-content-door-copy-right {
   background: transparent;
   transform: translate(-50%, -50%);
   cursor: pointer;
-  transition: opacity .35s ease .5s, visibility .35s ease .5s;
+  transition: opacity .55s ease .45s, visibility .55s ease .45s, transform .4s ease;
+}
+
+.seal-open-button::before {
+  content: "";
+  position: absolute;
+  inset: 16%;
+  border: 2px solid rgba(255,136,123,.18);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255,116,104,.34), transparent 20%),
+    radial-gradient(circle, #a82c35 0 54%, #6f1720 72%, #3c0c12 100%);
+  box-shadow:
+    0 12px 25px rgba(31,5,8,.62),
+    inset 0 0 0 5px rgba(72,10,16,.34),
+    inset 0 -8px 14px rgba(45,5,9,.42);
 }
 
 .seal-fragment {
   position: absolute;
   inset: 0;
-  transition: transform .65s cubic-bezier(.34, 1.56, .64, 1), opacity .5s ease .15s;
+  z-index: 1;
+  filter:
+    drop-shadow(0 12px 14px rgba(25,4,7,.58))
+    brightness(1.12)
+    saturate(1.18);
+  transition: transform .82s cubic-bezier(.2, .8, .2, 1), opacity .62s ease .12s, filter .4s ease;
 }
 
 .seal-fragment img {
@@ -1287,7 +1357,8 @@ body.gates-opening .hero-content-door-copy-right {
   top: calc(100% + .35rem);
   left: 50%;
   width: max-content;
-  color: var(--paper);
+  z-index: 2;
+  color: var(--gold-light);
   font-family: var(--font-display);
   font-size: .68rem;
   letter-spacing: .18em;
@@ -1325,12 +1396,12 @@ body.gates-opening .hero-content-door-copy-right {
 
 .invitation-popup.is-breaking .seal-fragment-left {
   opacity: 0;
-  transform: translate(-55px, 24px) rotate(-24deg) scale(.9);
+  transform: translate(-68px, 34px) rotate(-32deg) scale(.84);
 }
 
 .invitation-popup.is-breaking .seal-fragment-right {
   opacity: 0;
-  transform: translate(55px, 24px) rotate(24deg) scale(.9);
+  transform: translate(68px, 34px) rotate(32deg) scale(.84);
 }
 
 .invitation-popup.is-breaking .seal-crumbs i {
@@ -1345,22 +1416,26 @@ body.gates-opening .hero-content-door-copy-right {
 .invitation-popup.is-open .letter-introduction {
   opacity: 0;
   visibility: visible;
-  transform: translateY(-25px);
+  transform: translateY(-35px) scale(.98);
 }
 
 .invitation-popup.is-open .sealed-envelope {
-  transform: translateY(-5vh) scale(.98);
+  filter:
+    drop-shadow(0 52px 48px rgba(0,0,0,.56))
+    drop-shadow(0 0 42px rgba(166,112,46,.16));
+  transform: translateY(8vh) scale(.94);
 }
 
 .invitation-popup.is-open .envelope-flap {
   z-index: 2;
+  filter: brightness(.72);
   transform: rotateX(180deg);
 }
 
 .invitation-popup.is-open .letter-sheet {
   z-index: 7;
   box-shadow: 0 32px 70px rgba(0,0,0,.5), inset 0 0 50px rgba(110,72,31,.12);
-  transform: translateY(-36%) scale(1);
+  animation: letterRiseAndOpen 1.85s cubic-bezier(.16, 1, .3, 1) .95s both;
 }
 
 .invitation-popup.is-open .seal-open-button {
@@ -1376,6 +1451,35 @@ body.gates-opening .hero-content-door-copy-right {
   100% {
     opacity: 0;
     transform: translate(var(--crumb-x, -32px), var(--crumb-y, 42px)) rotate(180deg);
+  }
+}
+
+@keyframes envelopeArrival {
+  from {
+    opacity: 0;
+    transform: translateY(45px) rotateX(7deg) scale(.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes letterRiseAndOpen {
+  0% {
+    opacity: .96;
+    transform: translateY(30%) scale(.9) rotateX(3deg);
+  }
+  42% {
+    opacity: 1;
+    transform: translateY(-8%) scale(.94) rotateX(0);
+  }
+  72% {
+    transform: translateY(-22%) scale(.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-28%) scale(1);
   }
 }
 
