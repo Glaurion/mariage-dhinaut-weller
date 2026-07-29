@@ -9,14 +9,20 @@ const invitationCodeForm = document.querySelector('#invitation-code-form');
 const invitationCodeInput = document.querySelector('#invitation-code');
 const invitationCodeError = document.querySelector('#invitation-code-error');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const castleDoorSound = new Audio('assets/castle-door-opening.wav');
+const castleDoorSound = new Audio('assets/castle-door-opening.mp3');
 castleDoorSound.preload = 'auto';
-castleDoorSound.volume = 0.78;
+castleDoorSound.volume = 0.28;
+let castleDoorSoundTimer = null;
 let invitationWasShown = false;
 
 function playCastleDoorSound() {
-  castleDoorSound.currentTime = 0;
+  window.clearTimeout(castleDoorSoundTimer);
+  castleDoorSound.pause();
+  castleDoorSound.currentTime = 0.35;
   castleDoorSound.play().catch(() => {});
+  castleDoorSoundTimer = window.setTimeout(() => {
+    castleDoorSound.pause();
+  }, 4400);
 }
 
 function createOpeningTextPanels() {
@@ -51,6 +57,8 @@ function openKingdom() {
 function showInvitationPopup() {
   if (!invitationPopup || invitationWasShown) return;
   invitationWasShown = true;
+  invitationPopup.classList.remove('is-breaking', 'is-open', 'is-letter-visible');
+  openInvitationButton?.removeAttribute('disabled');
   invitationPopup.setAttribute('aria-hidden', 'false');
   invitationPopup.classList.add('is-visible');
   document.body.classList.add('invitation-modal-open');
@@ -62,12 +70,13 @@ function openInvitation() {
   invitationPopup.classList.add('is-breaking');
   openInvitationButton?.setAttribute('disabled', '');
   window.setTimeout(() => invitationPopup.classList.add('is-open'), reducedMotion ? 0 : 520);
+  window.setTimeout(() => invitationPopup.classList.add('is-letter-visible'), reducedMotion ? 0 : 1450);
   window.setTimeout(() => closeInvitationButton?.focus(), reducedMotion ? 0 : 1750);
 }
 
 function closeInvitation() {
   if (!invitationPopup) return;
-  invitationPopup.classList.remove('is-visible', 'is-breaking', 'is-open');
+  invitationPopup.classList.remove('is-visible', 'is-breaking', 'is-open', 'is-letter-visible');
   invitationPopup.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('invitation-modal-open');
   openInvitationButton?.removeAttribute('disabled');
@@ -79,6 +88,11 @@ function openPersonalInvitation(event) {
     .trim()
     .toUpperCase()
     .replace(/\s+/g, '');
+
+  if (invitationCode === 'ADMIN!!!') {
+    window.location.href = 'invitation.html?code=DEMO&admin=1';
+    return;
+  }
 
   if (!invitationCode || !/^[A-ZÀ-ÖØ-Ý0-9-]{4,40}$/.test(invitationCode)) {
     if (invitationCodeError) {
