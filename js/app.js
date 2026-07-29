@@ -1,35 +1,14 @@
-const header = document.querySelector('.site-header');
-const menuButton = document.querySelector('.menu-toggle');
-const navigation = document.querySelector('.main-nav');
-const navigationLinks = document.querySelectorAll('.main-nav a');
+const introScreen = document.querySelector('#intro-screen');
 const revealElements = document.querySelectorAll('.reveal');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function updateHeader() {
-  header?.classList.toggle('scrolled', window.scrollY > 24);
+function revealSite() {
+  document.body.classList.remove('intro-active');
+  document.body.classList.add('intro-complete');
+  window.setTimeout(() => introScreen?.remove(), reducedMotion ? 50 : 1200);
 }
 
-function closeMenu() {
-  if (!menuButton || !navigation) return;
-  menuButton.setAttribute('aria-expanded', 'false');
-  navigation.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-menuButton?.addEventListener('click', () => {
-  const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
-  menuButton.setAttribute('aria-expanded', String(!isOpen));
-  navigation?.classList.toggle('open', !isOpen);
-  document.body.style.overflow = isOpen ? '' : 'hidden';
-});
-
-navigationLinks.forEach((link) => link.addEventListener('click', closeMenu));
-
-window.addEventListener('scroll', updateHeader, { passive: true });
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 900) closeMenu();
-});
-
-updateHeader();
+window.setTimeout(revealSite, reducedMotion ? 500 : 3000);
 
 if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(

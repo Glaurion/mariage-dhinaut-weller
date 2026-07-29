@@ -36,6 +36,10 @@ body {
   overflow-x: hidden;
 }
 
+body.intro-active {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -117,84 +121,10 @@ svg {
   to { transform: translateY(-105vh); opacity: 0; }
 }
 
-.site-header {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 76px;
-  padding: 0 4vw;
-  border-bottom: 1px solid transparent;
-  transition: background .35s ease, border-color .35s ease, backdrop-filter .35s ease;
-}
-
-.site-header.scrolled {
-  background: rgba(7, 9, 13, .84);
-  border-color: var(--border);
-  backdrop-filter: blur(16px);
-}
-
-.main-nav {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  font-family: var(--font-display);
-  font-size: .69rem;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-}
-
-.main-nav a {
-  position: relative;
-  padding: 1rem 0;
-  color: rgba(233,223,201,.78);
-  transition: color .25s ease;
-}
-
-.main-nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 100%;
-  bottom: .6rem;
-  height: 1px;
-  background: var(--gold);
-  transition: right .25s ease;
-}
-
-.main-nav a:hover,
-.main-nav a:focus-visible {
-  color: var(--gold-light);
-}
-
-.main-nav a:hover::after,
-.main-nav a:focus-visible::after {
-  right: 0;
-}
-
-.menu-toggle {
-  display: none;
-  width: 44px;
-  height: 44px;
-  padding: 10px;
-  border: 0;
-  background: transparent;
-}
-
-.menu-toggle span:not(.sr-only) {
-  display: block;
-  width: 100%;
-  height: 1px;
-  margin: 6px 0;
-  background: var(--paper);
-  transition: transform .25s ease, opacity .25s ease;
-}
-
 .hero {
-  position: relative;
-  min-height: 100svh;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   display: grid;
   place-items: center;
   isolation: isolate;
@@ -205,6 +135,30 @@ svg {
     linear-gradient(120deg, rgba(35,54,74,.25), transparent 45%),
     linear-gradient(240deg, rgba(111,24,29,.24), transparent 45%),
     #090b10;
+  transition:
+    opacity 1s ease,
+    transform 1.2s cubic-bezier(.7, 0, .2, 1),
+    filter 1s ease;
+}
+
+.site-content {
+  opacity: 0;
+  transform: translateY(44px);
+  transition:
+    opacity 1s ease .25s,
+    transform 1.1s cubic-bezier(.22, 1, .36, 1) .25s;
+}
+
+body.intro-complete .hero {
+  opacity: 0;
+  filter: blur(12px);
+  pointer-events: none;
+  transform: scale(1.08);
+}
+
+body.intro-complete .site-content {
+  opacity: 1;
+  transform: none;
 }
 
 .hero::before,
@@ -243,8 +197,22 @@ svg {
 
 .hero-content {
   width: min(96%, 1600px);
-  padding: 8rem 1.5rem 6rem;
+  padding: 3rem 1.5rem;
   text-align: center;
+  animation: introArrival 1.4s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes introArrival {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(28px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
 }
 
 .eyebrow {
@@ -761,6 +729,9 @@ svg {
 }
 
 .invitation-section {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
   background:
     radial-gradient(circle at 50% 35%, rgba(196,154,82,.11), transparent 30rem),
     #0a0c11;
@@ -876,6 +847,15 @@ svg {
   transform: translateY(0);
 }
 
+.invitation-card.reveal {
+  transform: translateY(90px) scale(.96);
+  transition-duration: 1.15s;
+}
+
+.invitation-card.reveal.is-visible {
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -883,36 +863,6 @@ svg {
 }
 
 @media (max-width: 900px) {
-  .site-header { padding-inline: 1rem; }
-
-  .menu-toggle {
-    position: relative;
-    z-index: 2;
-    display: block;
-  }
-
-  .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-  .main-nav {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1.4rem;
-    background: rgba(6,8,11,.97);
-    transform: translateX(100%);
-    transition: transform .35s ease;
-  }
-
-  .main-nav.open { transform: translateX(0); }
-
-  .main-nav a {
-    font-size: .85rem;
-  }
-
   .houses-grid {
     grid-template-columns: 1fr;
     max-width: 620px;

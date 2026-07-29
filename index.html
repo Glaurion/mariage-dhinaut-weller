@@ -16,28 +16,13 @@
   <link rel="stylesheet" href="css/pets.css">
   <script src="js/app.js" defer></script>
 </head>
-<body>
+<body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
 
-  <header class="site-header" id="top">
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
-      <span></span><span></span><span></span>
-      <span class="sr-only">Ouvrir le menu</span>
-    </button>
 
-    <nav class="main-nav" id="main-nav" aria-label="Navigation principale">
-      <a href="#maisons">Les Maisons</a>
-      <a href="#familiers">Les Familiers</a>
-      <a href="#chronique">La Chronique</a>
-      <a href="#royaume">Le Royaume</a>
-      <a href="#invitation">Invitation</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero" aria-labelledby="hero-title">
+  <section class="hero" id="intro-screen" aria-labelledby="hero-title">
       <div class="hero-vignette" aria-hidden="true"></div>
-      <div class="hero-content reveal">
+      <div class="hero-content">
         <p class="eyebrow">En l'année 2028</p>
         <p class="hero-kicker">The Wedding Is Coming</p>
         <h1 id="hero-title">
@@ -56,13 +41,9 @@
           <a class="button button-ghost" href="#chronique">Lire notre chronique</a>
         </div>
       </div>
-
-      <a class="scroll-hint" href="#maisons" aria-label="Découvrir la suite">
-        <span>Découvrir</span>
-        <i></i>
-      </a>
     </section>
 
+  <main class="site-content">
     <section class="section intro" id="maisons">
       <div class="section-heading reveal">
         <p class="eyebrow">Les souverains</p>
@@ -204,6 +185,14 @@
       </div>
     </section>
 
+    <section class="final-oath">
+      <div class="reveal">
+        <p>Maison Dhinaut-Weller</p>
+        <h2>The Wedding Is Coming</h2>
+        <span>Annaël &amp; Benjamin · 2028</span>
+      </div>
+    </section>
+
     <section class="section invitation-section" id="invitation">
       <div class="invitation-card reveal">
         <img class="wax-seal" src="assets/wax-seal-dragon-wolf.webp" alt="" aria-hidden="true">
@@ -222,13 +211,6 @@
       </div>
     </section>
 
-    <section class="final-oath">
-      <div class="reveal">
-        <p>Maison Dhinaut-Weller</p>
-        <h2>Le feu et la neige ne formeront plus qu'un royaume.</h2>
-        <span>Annaël &amp; Benjamin · 2028</span>
-      </div>
-    </section>
   </main>
 </body>
 </html>
