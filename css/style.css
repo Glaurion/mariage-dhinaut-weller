@@ -401,30 +401,31 @@ body.gates-opening .kingdom-gate-wolf {
   transform: translateX(102%) rotateY(16deg);
 }
 
-body.gates-opening .hero-content {
+body.gates-opening .hero-content:not(.hero-content-door-copy) {
   visibility: hidden;
 }
 
 body.gates-opening .hero-content-door-copy-left {
-  opacity: .2;
-  filter: blur(3px) brightness(.65);
-  transform: translate(calc(-50% - 102vw), -50%) rotateY(-16deg);
+  opacity: 1;
+  filter: none;
+  transform: translate(calc(-50% - 51vw), -50%) rotateY(-16deg);
 }
 
 body.gates-opening .hero-content-door-copy-right {
-  opacity: .2;
-  filter: blur(3px) brightness(.65);
-  transform: translate(calc(-50% + 102vw), -50%) rotateY(16deg);
+  opacity: 1;
+  filter: none;
+  transform: translate(calc(-50% + 51vw), -50%) rotateY(16deg);
 }
 
 .kingdom-open-button.button-primary {
   position: relative;
   display: inline-grid;
-  grid-template-columns: 68px 1fr;
+  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+  grid-template-rows: 52px auto;
   align-items: center;
-  width: min(100%, 430px);
-  min-height: 86px;
-  padding: .55rem 1.3rem .55rem .85rem;
+  width: min(100%, 520px);
+  min-height: 94px;
+  padding: .5rem 1.4rem .65rem;
   overflow: visible;
   border: 1px solid #987035;
   color: var(--paper);
@@ -475,6 +476,9 @@ body.gates-opening .hero-content-door-copy-right {
   width: 54px;
   height: 58px;
   margin: 0 auto;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
 }
 
 .kingdom-lock-shackle {
@@ -511,13 +515,7 @@ body.gates-opening .hero-content-door-copy-right {
   transform: translateY(-5px) rotate(-10deg);
 }
 
-.kingdom-open-copy {
-  display: grid;
-  gap: .28rem;
-  text-align: left;
-}
-
-.kingdom-open-copy strong {
+.kingdom-open-side {
   font-family: var(--font-display);
   font-size: clamp(.74rem, 1.6vw, .9rem);
   font-weight: 600;
@@ -525,7 +523,20 @@ body.gates-opening .hero-content-door-copy-right {
   text-transform: uppercase;
 }
 
-.kingdom-open-copy small {
+.kingdom-open-side-left {
+  grid-column: 1;
+  text-align: right;
+}
+
+.kingdom-open-side-right {
+  grid-column: 3;
+  text-align: left;
+}
+
+.kingdom-open-subtitle {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: end;
   color: rgba(233,223,201,.58);
   font-family: var(--font-body);
   font-size: .86rem;
@@ -1811,21 +1822,22 @@ body.gates-opening .hero-content-door-copy-right {
   }
 
   .kingdom-open-button.button-primary {
-    grid-template-columns: 58px minmax(0, 1fr);
-    min-height: 80px;
-    padding: .5rem 1.1rem .5rem .75rem;
+    grid-template-columns: minmax(0, 1fr) 58px minmax(0, 1fr);
+    grid-template-rows: 48px auto;
+    min-height: 84px;
+    padding: .45rem .8rem .55rem;
   }
 
   .kingdom-lock {
     transform: scale(.9);
   }
 
-  .kingdom-open-copy strong {
-    font-size: .72rem;
-    letter-spacing: .09em;
+  .kingdom-open-side {
+    font-size: .66rem;
+    letter-spacing: .07em;
   }
 
-  .kingdom-open-copy small {
+  .kingdom-open-subtitle {
     font-size: .76rem;
   }
 

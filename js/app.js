@@ -83,6 +83,7 @@ function revealSite() {
 function openKingdom() {
   if (document.body.classList.contains('gates-opening')) return;
   createOpeningTextPanels();
+  introScreen?.getBoundingClientRect();
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
