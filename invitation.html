@@ -11,11 +11,12 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260729-2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="assets/realm-beyond-gates.webp">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260729-5">
-  <link rel="stylesheet" href="css/invitation.css">
+  <link rel="stylesheet" href="css/invitation.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/invitation.js?v=20260729-3" type="module" defer></script>
+  <script src="js/invitation.js?v=20260729-4" type="module" defer></script>
 </head>
 <body class="invitation-page">
   <main class="invitation-shell">
@@ -84,5 +85,87 @@
       </div>
     </section>
   </main>
+
+  <section
+    class="raven-dispatch"
+    id="raven-dispatch"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dispatch-confirmation-title"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="dispatch-castle" aria-hidden="true"></div>
+    <div class="dispatch-sky-glow" aria-hidden="true"></div>
+    <button class="dispatch-skip" id="dispatch-skip" type="button">Passer l’animation</button>
+
+    <div class="dispatch-mail-stage" aria-hidden="true">
+      <div class="dispatch-letter">
+        <div class="dispatch-paper-panel dispatch-paper-top">
+          <span class="dispatch-paper-ornament">✦</span>
+          <span class="dispatch-paper-title">Réponse au Royaume</span>
+          <span class="dispatch-paper-line dispatch-paper-line-long"></span>
+        </div>
+        <div class="dispatch-paper-panel dispatch-paper-middle">
+          <span class="dispatch-paper-line"></span>
+          <strong id="dispatch-letter-house">Maison invitée</strong>
+          <span class="dispatch-paper-line dispatch-paper-line-short"></span>
+        </div>
+        <div class="dispatch-paper-panel dispatch-paper-bottom">
+          <span class="dispatch-paper-line dispatch-paper-line-long"></span>
+          <span class="dispatch-paper-line"></span>
+          <span class="dispatch-paper-signature">A &amp; B · 2028</span>
+        </div>
+      </div>
+
+      <div class="dispatch-envelope">
+        <div class="dispatch-envelope-back"></div>
+        <div class="dispatch-envelope-lining"></div>
+        <div class="dispatch-envelope-flap"></div>
+        <div class="dispatch-envelope-pocket"></div>
+        <img class="dispatch-envelope-seal" src="assets/wax-seal-dragon-wolf.webp" alt="">
+      </div>
+    </div>
+
+    <div class="dispatch-raven-flight" aria-hidden="true">
+      <svg class="dispatch-raven" viewBox="0 0 320 190" focusable="false">
+        <g class="dispatch-raven-wing dispatch-raven-wing-left">
+          <path d="M147 93C119 59 77 27 15 20c27 24 46 48 59 71-22-12-43-18-64-16 31 29 66 49 109 55z"></path>
+          <path d="M128 87C104 65 74 49 39 43c21 18 37 36 48 55z" class="dispatch-raven-feather"></path>
+        </g>
+        <g class="dispatch-raven-wing dispatch-raven-wing-right">
+          <path d="M172 92c31-35 73-65 134-70-28 23-48 46-62 69 23-11 44-16 65-13-33 28-69 46-112 50z"></path>
+          <path d="M191 86c25-21 56-36 91-41-22 17-39 35-50 53z" class="dispatch-raven-feather"></path>
+        </g>
+        <path class="dispatch-raven-tail" d="M151 126l-28 49 38-22 14 29 13-31 40 20-31-47z"></path>
+        <path class="dispatch-raven-body" d="M125 95c5-31 22-50 48-53 21-3 42 9 49 28l34 10-31 14c-2 29-20 55-54 61-33-3-49-25-46-60z"></path>
+        <path class="dispatch-raven-beak" d="M220 69l59 13-55 14c7-10 6-18-4-27z"></path>
+        <path class="dispatch-raven-neck" d="M135 78c-13 10-20 27-18 48l19-10 11 17 8-21 20 5-9-22 17-12-24-2-5-22z"></path>
+        <circle class="dispatch-raven-eye" cx="207" cy="67" r="4"></circle>
+        <path class="dispatch-raven-leg" d="M153 147l-7 19m37-19 8 18m-45 0-11 7m11-7 8 8m37-8-9 8m9-8 12 6"></path>
+      </svg>
+      <div class="dispatch-cargo">
+        <span class="dispatch-cargo-cord"></span>
+        <span class="dispatch-cargo-envelope">
+          <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+        </span>
+      </div>
+    </div>
+
+    <div class="dispatch-confirmation">
+      <img class="dispatch-confirmation-seal" src="assets/wax-seal-dragon-wolf.webp" alt="" aria-hidden="true">
+      <p class="eyebrow">Le corbeau a pris son envol</p>
+      <h2 id="dispatch-confirmation-title">Votre réponse est en route</h2>
+      <p id="dispatch-confirmation-message">
+        Votre lettre a été scellée et confiée aux corbeaux. Elle vole désormais vers le château d’Annaël et Benjamin.
+      </p>
+      <div class="dispatch-confirmation-actions">
+        <button class="button button-primary" id="dispatch-close" type="button">Revoir mon invitation</button>
+        <a class="button button-ghost" href="index.html">Retourner au royaume</a>
+      </div>
+    </div>
+
+    <p class="sr-only" id="dispatch-live-status" aria-live="assertive"></p>
+  </section>
 </body>
 </html>

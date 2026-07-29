@@ -24,6 +24,13 @@ const houseNameElement = document.querySelector('#house-name');
 const guestListElement = document.querySelector('#guest-list');
 const rsvpForm = document.querySelector('#rsvp-form');
 const feedbackElement = document.querySelector('#form-feedback');
+const invitationShell = document.querySelector('.invitation-shell');
+const ravenDispatch = document.querySelector('#raven-dispatch');
+const dispatchSkipButton = document.querySelector('#dispatch-skip');
+const dispatchCloseButton = document.querySelector('#dispatch-close');
+const dispatchLetterHouse = document.querySelector('#dispatch-letter-house');
+const dispatchConfirmationMessage = document.querySelector('#dispatch-confirmation-message');
+const dispatchLiveStatus = document.querySelector('#dispatch-live-status');
 
 const params = new URLSearchParams(window.location.search);
 const invitationCode = params.get('code')?.trim() ?? '';
@@ -34,6 +41,7 @@ const invitationCode = params.get('code')?.trim() ?? '';
 const supabaseConfig = window.SUPABASE_CONFIG ?? null;
 let supabaseClient = null;
 let currentInvitation = null;
+let dispatchConfirmationTimer = null;
 
 function showState(state) {
   loadingState?.classList.toggle('hidden', state !== 'loading');
@@ -119,6 +127,63 @@ async function loadInvitation() {
   }
 }
 
+function revealDispatchConfirmation() {
+  if (!ravenDispatch || ravenDispatch.classList.contains('is-confirmed')) return;
+
+  window.clearTimeout(dispatchConfirmationTimer);
+  ravenDispatch.classList.add('is-confirmed');
+  dispatchSkipButton?.setAttribute('disabled', '');
+
+  if (dispatchLiveStatus) {
+    dispatchLiveStatus.textContent = 'Votre réponse a été scellée. Le corbeau est arrivé au château.';
+  }
+
+  window.setTimeout(() => dispatchCloseButton?.focus({ preventScroll: true }), 850);
+}
+
+function playRavenDispatch(isDemo = false) {
+  if (!ravenDispatch) return;
+
+  const householdName = currentInvitation?.household_name ?? 'Votre Maison';
+
+  if (dispatchLetterHouse) dispatchLetterHouse.textContent = householdName;
+  if (dispatchConfirmationMessage) {
+    dispatchConfirmationMessage.textContent = isDemo
+      ? `L’aperçu de la réponse de ${householdName} est terminé. En conditions réelles, le message serait désormais enregistré au château.`
+      : `La réponse de ${householdName} a bien été scellée et confiée aux corbeaux. Elle est désormais arrivée au château d’Annaël et Benjamin.`;
+  }
+
+  window.clearTimeout(dispatchConfirmationTimer);
+  ravenDispatch.classList.remove('is-running', 'is-confirmed', 'is-closing');
+  ravenDispatch.hidden = false;
+  ravenDispatch.setAttribute('aria-hidden', 'false');
+  dispatchSkipButton?.removeAttribute('disabled');
+  if (dispatchLiveStatus) dispatchLiveStatus.textContent = '';
+  document.body.classList.add('dispatch-open');
+  if (invitationShell) invitationShell.inert = true;
+
+  void ravenDispatch.offsetWidth;
+  ravenDispatch.classList.add('is-running');
+  dispatchSkipButton?.focus({ preventScroll: true });
+  dispatchConfirmationTimer = window.setTimeout(revealDispatchConfirmation, 8200);
+}
+
+function closeRavenDispatch() {
+  if (!ravenDispatch || ravenDispatch.hidden) return;
+
+  window.clearTimeout(dispatchConfirmationTimer);
+  ravenDispatch.classList.add('is-closing');
+
+  window.setTimeout(() => {
+    ravenDispatch.classList.remove('is-running', 'is-confirmed', 'is-closing');
+    ravenDispatch.setAttribute('aria-hidden', 'true');
+    ravenDispatch.hidden = true;
+    document.body.classList.remove('dispatch-open');
+    if (invitationShell) invitationShell.inert = false;
+    rsvpForm?.querySelector('button[type="submit"]')?.focus({ preventScroll: true });
+  }, 360);
+}
+
 rsvpForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
   feedbackElement.textContent = '';
@@ -131,14 +196,17 @@ rsvpForm?.addEventListener('submit', async (event) => {
     return;
   }
 
-  if (currentInvitation?.is_demo) {
-    feedbackElement.textContent = 'Aperçu validé : le véritable formulaire enregistrera la réponse dans Supabase.';
-    return;
-  }
-
   const submitButton = rsvpForm.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   submitButton.textContent = 'Le sceau est apposé…';
+
+  if (currentInvitation?.is_demo) {
+    feedbackElement.textContent = 'Aperçu validé : lancement du messager royal.';
+    playRavenDispatch(true);
+    submitButton.disabled = false;
+    submitButton.textContent = 'Sceller notre réponse';
+    return;
+  }
 
   try {
     const { error } = await supabaseClient.rpc('submit_rsvp', {
@@ -150,12 +218,26 @@ rsvpForm?.addEventListener('submit', async (event) => {
 
     if (error) throw error;
     feedbackElement.textContent = 'Votre réponse a bien été transmise au Conseil Restreint.';
+    playRavenDispatch();
   } catch (error) {
     console.error('Impossible d’enregistrer la réponse :', error);
     feedbackElement.textContent = 'Le corbeau n’a pas pu partir. Réessayez dans quelques instants.';
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = 'Sceller notre réponse';
+  }
+});
+
+dispatchSkipButton?.addEventListener('click', revealDispatchConfirmation);
+dispatchCloseButton?.addEventListener('click', closeRavenDispatch);
+
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || ravenDispatch?.hidden) return;
+
+  if (ravenDispatch.classList.contains('is-confirmed')) {
+    closeRavenDispatch();
+  } else {
+    revealDispatchConfirmation();
   }
 });
 
