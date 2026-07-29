@@ -27,6 +27,7 @@ const invitationCodeForm = document.querySelector('#invitation-code-form');
 const invitationCodeInput = document.querySelector('#invitation-code');
 const invitationCodeError = document.querySelector('#invitation-code-error');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const castleDoorSound = new Audio('assets/castle-door-opening.mp3');
 castleDoorSound.preload = 'auto';
 castleDoorSound.volume = 0.28;
@@ -105,9 +106,11 @@ function openInvitation() {
   if (!invitationPopup || invitationPopup.classList.contains('is-breaking')) return;
   invitationPopup.classList.add('is-breaking');
   openInvitationButton?.setAttribute('disabled', '');
-  window.setTimeout(() => invitationPopup.classList.add('is-open'), reducedMotion ? 0 : 520);
-  window.setTimeout(() => invitationPopup.classList.add('is-letter-visible'), reducedMotion ? 0 : 1450);
-  window.setTimeout(() => closeInvitationButton?.focus(), reducedMotion ? 0 : 1750);
+  window.setTimeout(() => invitationPopup.classList.add('is-open'), 620);
+  window.setTimeout(() => invitationPopup.classList.add('is-letter-visible'), 1780);
+  if (finePointer) {
+    window.setTimeout(() => invitationCodeInput?.focus(), 3800);
+  }
 }
 
 function closeInvitation() {
