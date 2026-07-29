@@ -21,6 +21,9 @@
 
 
   <section class="hero" id="intro-screen" aria-labelledby="hero-title">
+      <div class="realm-beyond" aria-hidden="true">
+        <div class="realm-castle"></div>
+      </div>
       <div class="kingdom-gates" aria-hidden="true">
         <div class="kingdom-gate kingdom-gate-dragon">
           <img src="assets/dragon-emblem.webp" alt="">
@@ -46,7 +49,14 @@
         </p>
         <div class="hero-actions">
           <button class="button button-primary kingdom-open-button" id="open-kingdom" type="button">
-            Ouvrir les portes du Royaume
+            <span class="kingdom-lock" aria-hidden="true">
+              <i class="kingdom-lock-shackle"></i>
+              <i class="kingdom-lock-body">✦</i>
+            </span>
+            <span class="kingdom-open-copy">
+              <strong>Déverrouiller le Royaume</strong>
+              <small>Ouvrir les portes du château</small>
+            </span>
           </button>
         </div>
       </div>
