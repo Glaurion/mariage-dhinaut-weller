@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260729-6">
+  <link rel="stylesheet" href="css/style.css?v=20260729-7">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/app.js?v=20260729-5" defer></script>
 </head>
@@ -186,11 +186,54 @@
           </p>
           <span class="status-badge">Lieu en préparation</span>
         </div>
-        <div class="map-emblem" aria-hidden="true">
+        <div class="map-emblem" role="img" aria-label="Carte stylisée de Westeros avec Port-Réal indiqué par une étoile">
           <span class="map-ring"></span>
           <span class="map-compass">N</span>
-          <b>✦</b>
-          <small>La Robertsau</small>
+          <svg class="westeros-map" viewBox="0 0 300 360" aria-hidden="true">
+            <defs>
+              <linearGradient id="westeros-land" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#d3ae68" stop-opacity=".23"></stop>
+                <stop offset=".55" stop-color="#9f783e" stop-opacity=".13"></stop>
+                <stop offset="1" stop-color="#e1c184" stop-opacity=".2"></stop>
+              </linearGradient>
+              <filter id="westeros-glow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="blur"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <path
+              class="westeros-land"
+              d="M151 12 128 21 108 38 91 50 75 75 67 102 72 125 85 145 103 157 106 171 97 181 83 190 76 205 61 218 68 235 88 248 82 263 72 277 89 292 109 301 118 320 142 340 172 339 199 330 228 325 243 309 233 292 220 279 230 263 226 247 235 233 219 224 232 212 247 200 239 185 221 173 224 158 239 147 231 132 215 123 216 105 228 84 218 62 196 46 177 23Z"
+            ></path>
+
+            <path class="westeros-region" d="M78 128c42 13 95 8 137-5"></path>
+            <path class="westeros-region" d="M101 158c34 11 79 10 119 1"></path>
+            <path class="westeros-region" d="M97 181c17 12 35 18 55 20 25 3 49-3 71-13"></path>
+            <path class="westeros-region" d="M76 219c31 13 59 17 88 13 23-3 43-10 61-21"></path>
+            <path class="westeros-region" d="M86 263c32-4 64 1 91 14 17 8 34 11 51 9"></path>
+            <path class="westeros-region" d="M119 302c26-12 54-12 82 1"></path>
+            <path class="westeros-river" d="M174 171c-9 22-10 41-2 58 5 12 2 25-8 40"></path>
+
+            <g class="westeros-islands">
+              <path d="M48 187 39 194 42 207 51 201Z"></path>
+              <path d="M45 214 37 221 42 231 50 224Z"></path>
+              <path d="M58 233 50 239 54 247 62 242Z"></path>
+              <path d="M206 48 214 39 220 50 215 60Z"></path>
+            </g>
+
+            <text class="westeros-name" x="132" y="116" transform="rotate(-8 132 116)">WESTEROS</text>
+
+            <g class="map-capital" transform="translate(220 226)">
+              <circle r="15"></circle>
+              <path d="m0-10 2.8 6.5 7.2.7-5.5 4.7 1.7 7.1L0 5.2-6.2 9l1.7-7.1L-10-.8l7.2-.7Z"></path>
+              <path class="map-capital-line" d="M-13 3h-31"></path>
+              <text x="-49" y="7">PORT-RÉAL</text>
+            </g>
+          </svg>
         </div>
       </div>
     </section>
