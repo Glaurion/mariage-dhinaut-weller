@@ -49,6 +49,7 @@
 }
 
 .companion-card-flame {
+  order: -1;
   box-shadow: var(--shadow), 0 0 55px rgba(127, 31, 36, .13);
 }
 
