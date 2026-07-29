@@ -23,16 +23,10 @@
   <section class="hero" id="intro-screen" aria-labelledby="hero-title">
       <div class="kingdom-gates" aria-hidden="true">
         <div class="kingdom-gate kingdom-gate-dragon">
-          <svg viewBox="0 0 160 160">
-            <path d="M116 35c-25 0-43 14-51 34-11-9-23-12-36-8 15 7 23 19 23 35 0 25 19 40 42 38-15-7-21-19-16-34 9 13 23 20 40 17-14-7-20-17-19-30 12 10 25 13 38 8-18-12-27-30-24-50l3-10Z"/>
-            <path d="M77 58c7-15 18-24 35-28-10 10-13 22-9 37l-26-9Z"/>
-          </svg>
+          <img src="assets/dragon-emblem.webp" alt="">
         </div>
         <div class="kingdom-gate kingdom-gate-wolf">
-          <svg viewBox="0 0 160 160">
-            <path d="M35 43 57 57l23-31 23 31 22-14-8 39c13 15 18 34 9 50-10-19-27-29-46-29s-36 10-46 29c-9-16-4-35 9-50l-8-39Z"/>
-            <path d="m57 77 23 13 23-13-7 25H64l-7-25Z"/>
-          </svg>
+          <img src="assets/wolf-emblem.webp" alt="">
         </div>
       </div>
       <div class="hero-vignette" aria-hidden="true"></div>
@@ -216,30 +210,61 @@
     <div class="invitation-popup-panel">
       <button class="invitation-popup-close" type="button" aria-label="Fermer l'invitation">×</button>
 
-      <div class="sealed-envelope">
+      <div class="letter-introduction">
         <p class="eyebrow">Un message porté par les corbeaux</p>
         <h2 id="invitation-popup-title">Une lettre vous est destinée</h2>
-        <p>Le Royaume vous invite à briser le sceau pour découvrir votre invitation.</p>
-        <button class="seal-open-button" id="open-invitation" type="button" aria-label="Briser le sceau et ouvrir l'invitation">
-          <img class="wax-seal large" src="assets/wax-seal-dragon-wolf.webp" alt="">
-          <span>Briser le sceau</span>
-        </button>
+        <p>Brisez le sceau pour ouvrir le pli royal.</p>
       </div>
 
-      <div class="invitation-card popup-invitation-card">
-        <img class="wax-seal" src="assets/wax-seal-dragon-wolf.webp" alt="" aria-hidden="true">
-        <p class="eyebrow">Message porté par les corbeaux</p>
-        <h2>Votre invitation personnelle</h2>
-        <p>
-          Chaque Maison conviée recevra un lien privé permettant de découvrir son invitation, de confirmer sa présence et d'indiquer ses choix pour le banquet.
-        </p>
-        <div class="invitation-features">
-          <span>Réponse RSVP</span>
-          <span>Accompagnants</span>
-          <span>Banquet et allergies</span>
-          <span>Message aux mariés</span>
+      <div class="sealed-envelope">
+        <div class="envelope-back" aria-hidden="true"></div>
+
+        <article class="letter-sheet">
+          <div class="letter-crest" aria-hidden="true">A <span>&amp;</span> B</div>
+          <p class="eyebrow">Message porté par les corbeaux</p>
+          <h2>Ouvrez votre invitation</h2>
+          <p>
+            Inscrivez le code personnel confié à votre Maison pour découvrir la lettre qui vous est destinée.
+          </p>
+          <form class="invitation-code-form" id="invitation-code-form">
+            <label for="invitation-code">Code de votre Maison</label>
+            <div class="invitation-code-control">
+              <input
+                id="invitation-code"
+                name="invitation-code"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                minlength="4"
+                maxlength="40"
+                placeholder="Ex. PDUPONT28"
+                required
+              >
+              <button class="button button-primary" type="submit">Ouvrir ma lettre</button>
+            </div>
+            <p class="invitation-code-help">Le code est composé de lettres et de chiffres, sans espace.</p>
+            <p class="invitation-code-error" id="invitation-code-error" aria-live="polite"></p>
+          </form>
+        </article>
+
+        <div class="envelope-pocket" aria-hidden="true"></div>
+        <div class="envelope-flap" aria-hidden="true"></div>
+
+        <button class="seal-open-button" id="open-invitation" type="button" aria-label="Briser le sceau et ouvrir l'invitation">
+          <span class="seal-fragment seal-fragment-left">
+            <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+          </span>
+          <span class="seal-fragment seal-fragment-right">
+            <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+          </span>
+          <span class="seal-instruction">Briser le sceau</span>
+        </button>
+
+        <div class="seal-crumbs" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
         </div>
-        <a class="button button-primary" href="invitation.html?code=DEMO">Voir l'aperçu de l'invitation</a>
       </div>
     </div>
   </section>
