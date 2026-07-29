@@ -420,12 +420,13 @@ body.gates-opening .hero-content-door-copy-right {
 .kingdom-open-button.button-primary {
   position: relative;
   display: inline-grid;
-  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
-  grid-template-rows: 52px auto;
+  grid-template-columns: 1fr;
+  grid-template-rows: 62px auto;
   align-items: center;
-  width: min(100%, 520px);
-  min-height: 94px;
-  padding: .5rem 1.4rem .65rem;
+  gap: .45rem;
+  width: min(100%, 420px);
+  min-height: 116px;
+  padding: .7rem 1.4rem .9rem;
   overflow: visible;
   border: 1px solid #987035;
   color: var(--paper);
@@ -476,9 +477,9 @@ body.gates-opening .hero-content-door-copy-right {
   width: 54px;
   height: 58px;
   margin: 0 auto;
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
 }
 
 .kingdom-lock-shackle {
@@ -515,33 +516,16 @@ body.gates-opening .hero-content-door-copy-right {
   transform: translateY(-5px) rotate(-10deg);
 }
 
-.kingdom-open-side {
-  font-family: var(--font-display);
-  font-size: clamp(.74rem, 1.6vw, .9rem);
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
-.kingdom-open-side-left {
-  grid-column: 1;
-  text-align: right;
-}
-
-.kingdom-open-side-right {
-  grid-column: 3;
-  text-align: left;
-}
-
 .kingdom-open-subtitle {
-  grid-column: 1 / -1;
+  grid-column: 1;
   grid-row: 2;
-  align-self: end;
-  color: rgba(233,223,201,.58);
+  align-self: center;
+  color: rgba(233,223,201,.82);
   font-family: var(--font-body);
-  font-size: .86rem;
+  font-size: .92rem;
   font-style: italic;
   letter-spacing: .04em;
+  line-height: 1.2;
 }
 
 @keyframes introArrival {
@@ -1822,23 +1806,18 @@ body.gates-opening .hero-content-door-copy-right {
   }
 
   .kingdom-open-button.button-primary {
-    grid-template-columns: minmax(0, 1fr) 58px minmax(0, 1fr);
-    grid-template-rows: 48px auto;
-    min-height: 84px;
-    padding: .45rem .8rem .55rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 58px auto;
+    min-height: 108px;
+    padding: .6rem .8rem .8rem;
   }
 
   .kingdom-lock {
     transform: scale(.9);
   }
 
-  .kingdom-open-side {
-    font-size: .66rem;
-    letter-spacing: .07em;
-  }
-
   .kingdom-open-subtitle {
-    font-size: .76rem;
+    font-size: .82rem;
   }
 
   .invitation-popup {
