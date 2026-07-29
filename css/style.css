@@ -40,6 +40,10 @@ body.intro-active {
   overflow: hidden;
 }
 
+body.invitation-modal-open {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -141,6 +145,66 @@ svg {
     filter 1s ease;
 }
 
+.kingdom-gates {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  perspective: 1600px;
+}
+
+.kingdom-gate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: transform 1.5s cubic-bezier(.76, 0, .24, 1), filter 1.2s ease;
+  box-shadow: inset 0 0 100px rgba(0,0,0,.75);
+}
+
+.kingdom-gate::before,
+.kingdom-gate::after {
+  content: "";
+  position: absolute;
+  inset: 3.5%;
+  border: 1px solid rgba(196,154,82,.22);
+  pointer-events: none;
+}
+
+.kingdom-gate::after {
+  inset: 7%;
+  border-color: rgba(233,223,201,.08);
+}
+
+.kingdom-gate-dragon {
+  border-right: 1px solid rgba(196,154,82,.38);
+  background:
+    radial-gradient(circle at 55% 50%, rgba(127,31,36,.35), transparent 26rem),
+    linear-gradient(90deg, #080b10, #211015);
+  transform-origin: left center;
+}
+
+.kingdom-gate-wolf {
+  border-left: 1px solid rgba(196,154,82,.38);
+  background:
+    radial-gradient(circle at 45% 50%, rgba(70,100,126,.3), transparent 26rem),
+    linear-gradient(90deg, #121b24, #080a0e);
+  transform-origin: right center;
+}
+
+.kingdom-gate svg {
+  width: min(30vw, 390px);
+  color: var(--gold);
+  fill: currentColor;
+  opacity: .14;
+  filter: drop-shadow(0 0 35px currentColor);
+}
+
+.kingdom-gate-wolf svg {
+  color: var(--ice);
+}
+
 .site-content {
   opacity: 0;
   transform: translateY(44px);
@@ -196,10 +260,34 @@ body.intro-complete .site-content {
 }
 
 .hero-content {
+  position: relative;
+  z-index: 2;
   width: min(96%, 1600px);
   padding: 3rem 1.5rem;
   text-align: center;
   animation: introArrival 1.4s cubic-bezier(.22, 1, .36, 1) both;
+  transition: opacity .65s ease, transform .9s ease, filter .65s ease;
+}
+
+body.gates-opening .kingdom-gate-dragon {
+  filter: brightness(.55) blur(2px);
+  transform: translateX(-102%) rotateY(-12deg);
+}
+
+body.gates-opening .kingdom-gate-wolf {
+  filter: brightness(.55) blur(2px);
+  transform: translateX(102%) rotateY(12deg);
+}
+
+body.gates-opening .hero-content {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(1.04);
+}
+
+.kingdom-open-button {
+  min-width: min(100%, 330px);
+  cursor: pointer;
 }
 
 @keyframes introArrival {
@@ -728,13 +816,9 @@ body.intro-complete .site-content {
   text-transform: uppercase;
 }
 
-.invitation-section {
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 50% 35%, rgba(196,154,82,.11), transparent 30rem),
-    #0a0c11;
+.invitation-trigger {
+  width: 100%;
+  height: 1px;
 }
 
 .invitation-card {
@@ -856,6 +940,157 @@ body.intro-complete .site-content {
   transform: none;
 }
 
+.invitation-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: rgba(3,5,8,.88);
+  backdrop-filter: blur(12px);
+  transition: opacity .55s ease, visibility .55s ease;
+}
+
+.invitation-popup.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.invitation-popup-panel {
+  position: relative;
+  width: min(94vw, 920px);
+  height: min(88vh, 760px);
+  overflow: hidden;
+  border: 1px solid rgba(196,154,82,.42);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(127,31,36,.16), transparent 25rem),
+    #0a0c11;
+  box-shadow: 0 35px 100px rgba(0,0,0,.72);
+  transform: translateY(45px) scale(.96);
+  transition: transform .7s cubic-bezier(.22, 1, .36, 1);
+}
+
+.invitation-popup.is-visible .invitation-popup-panel {
+  transform: none;
+}
+
+.invitation-popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  color: var(--paper);
+  background: rgba(7,9,13,.72);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sealed-envelope,
+.popup-invitation-card {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity .7s ease,
+    transform .9s cubic-bezier(.22, 1, .36, 1),
+    visibility .7s ease;
+}
+
+.sealed-envelope {
+  display: grid;
+  place-content: center;
+  padding: clamp(2rem, 7vw, 5rem);
+  overflow: hidden;
+  text-align: center;
+  background:
+    linear-gradient(rgba(16,15,15,.93), rgba(11,11,13,.97)),
+    repeating-linear-gradient(0deg, transparent 0 8px, rgba(255,255,255,.02) 8px 9px);
+}
+
+.sealed-envelope::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 42%;
+  border-bottom: 1px solid rgba(196,154,82,.28);
+  background: linear-gradient(160deg, rgba(196,154,82,.07), transparent 55%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.sealed-envelope h2 {
+  position: relative;
+  margin: .3rem auto 1rem;
+  max-width: 700px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.sealed-envelope > p:not(.eyebrow) {
+  position: relative;
+  max-width: 580px;
+  margin: 0 auto 1.2rem;
+  color: rgba(233,223,201,.7);
+}
+
+.seal-open-button {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: .4rem;
+  margin: 1rem auto 0;
+  padding: 0;
+  border: 0;
+  color: var(--gold-light);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: .68rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.seal-open-button .wax-seal {
+  width: clamp(150px, 20vw, 200px);
+  margin: 0;
+  transition: transform .35s ease, filter .35s ease;
+}
+
+.seal-open-button:hover .wax-seal,
+.seal-open-button:focus-visible .wax-seal {
+  filter: drop-shadow(0 18px 28px rgba(96,12,18,.65)) brightness(1.08);
+  transform: rotate(0) scale(1.05);
+}
+
+.popup-invitation-card {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(65px) scale(.96);
+}
+
+.invitation-popup.is-open .sealed-envelope {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-80px) scale(.92) rotateX(16deg);
+}
+
+.invitation-popup.is-open .popup-invitation-card {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -889,6 +1124,8 @@ body.intro-complete .site-content {
 
 @media (max-width: 680px) {
   body { font-size: 1.08rem; }
+  .kingdom-gate svg { width: 55vw; }
+  .hero-content { padding: 1.5rem 1rem; }
   .hero h1 { display: flex; flex-direction: column; gap: .35rem; }
   .hero h1 b { margin: -.15rem 0; }
   .hero-copy br { display: none; }
@@ -927,5 +1164,18 @@ body.intro-complete .site-content {
 
   .button {
     width: 100%;
+  }
+
+  .invitation-popup {
+    padding: .7rem;
+  }
+
+  .invitation-popup-panel {
+    width: 100%;
+    height: 94svh;
+  }
+
+  .sealed-envelope {
+    padding: 2rem 1.2rem;
   }
 }
