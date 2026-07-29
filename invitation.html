@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Invitation personnelle au mariage de Benjamin et Annaël.">
+  <meta name="theme-color" content="#090b10">
+  <title>Invitation — Benjamin & Annaël</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/invitation.css">
+  <script src="js/invitation.js" type="module" defer></script>
+</head>
+<body class="invitation-page">
+  <main class="invitation-shell">
+    <a class="back-link" href="index.html">← Revenir au royaume</a>
+
+    <section class="sealed-letter" id="sealed-letter" aria-labelledby="invitation-title">
+      <div class="letter-border" aria-hidden="true"></div>
+      <div class="wax-seal large" aria-hidden="true">BA</div>
+
+      <p class="eyebrow">Message porté par les corbeaux</p>
+      <h1 id="invitation-title">Une Maison est appelée</h1>
+
+      <div id="invitation-loading" class="invitation-state">
+        <div class="loader" aria-hidden="true"></div>
+        <p>Le registre du royaume est consulté…</p>
+      </div>
+
+      <div id="invitation-error" class="invitation-state hidden" role="alert">
+        <h2>Ce sceau n'est pas reconnu</h2>
+        <p>Le lien est peut-être incomplet ou l'invitation n'est pas encore active.</p>
+        <a class="button button-ghost" href="index.html">Retourner au royaume</a>
+      </div>
+
+      <div id="invitation-content" class="hidden">
+        <p class="house-welcome">Bienvenue, <strong id="house-name">Maison invitée</strong></p>
+        <p class="invitation-proclamation">
+          Benjamin Dhinaut, Roi du Nord, et Annaël Weller, Reine des Dragons,
+          ont l'honneur de convier votre Maison à célébrer leur union en l'année 2028.
+        </p>
+
+        <div class="guest-list" id="guest-list"></div>
+
+        <form id="rsvp-form" class="rsvp-form">
+          <fieldset>
+            <legend>Votre réponse au royaume</legend>
+            <label class="choice-card">
+              <input type="radio" name="attendance" value="present" required>
+              <span>
+                <strong>Notre Maison sera présente</strong>
+                <small>Nous prendrons part aux festivités.</small>
+              </span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="attendance" value="absent" required>
+              <span>
+                <strong>Notre Maison ne pourra être présente</strong>
+                <small>Nous penserons à vous depuis nos terres.</small>
+              </span>
+            </label>
+          </fieldset>
+
+          <div class="form-grid">
+            <label>
+              <span>Allergies ou régime particulier</span>
+              <textarea name="dietary_notes" rows="3" placeholder="Végétarien, sans gluten, allergie…"></textarea>
+            </label>
+            <label>
+              <span>Message pour Benjamin et Annaël</span>
+              <textarea name="message" rows="3" placeholder="Écrivez quelques mots…"></textarea>
+            </label>
+          </div>
+
+          <button class="button button-primary" type="submit">Sceller notre réponse</button>
+          <p class="form-feedback" id="form-feedback" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
