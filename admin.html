@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#080a0f">
+  <title>Conseil Restreint — Administration</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=20260729-2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20260802-1">
+  <link rel="stylesheet" href="css/admin.css?v=20260802-1">
+  <script src="js/supabase-config.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
+  <script src="js/admin.js?v=20260802-1" type="module" defer></script>
+</head>
+<body class="admin-page">
+  <main>
+    <section class="admin-login" id="admin-login" aria-labelledby="login-title">
+      <div class="admin-login-card">
+        <img src="assets/wax-seal-dragon-wolf.webp" alt="Sceau du Conseil Restreint">
+        <p class="eyebrow">Accès réservé</p>
+        <h1 id="login-title">Le Conseil Restreint</h1>
+        <p>Le code <strong>ADMIN!!!</strong> conduit à cette porte, mais seul un compte autorisé dans Supabase peut consulter les données.</p>
+        <form id="login-form">
+          <label><span>Adresse e-mail</span><input type="email" name="email" autocomplete="username" required></label>
+          <label><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
+          <button class="button button-primary" type="submit">Entrer au Conseil</button>
+          <p class="admin-feedback" id="login-feedback" aria-live="polite"></p>
+        </form>
+        <a class="admin-back-link" href="index.html">← Revenir aux portes du royaume</a>
+      </div>
+    </section>
+
+    <section class="admin-app hidden" id="admin-app" aria-labelledby="dashboard-title">
+      <header class="admin-header">
+        <div>
+          <p class="eyebrow">Conseil Restreint</p>
+          <h1 id="dashboard-title">Administration du royaume</h1>
+          <p id="admin-welcome">Connexion au registre…</p>
+        </div>
+        <div class="admin-header-actions">
+          <button class="button button-ghost" id="refresh-data" type="button">Actualiser</button>
+          <button class="button button-ghost" id="sign-out" type="button">Quitter le Conseil</button>
+        </div>
+      </header>
+
+      <nav class="admin-nav" aria-label="Rubriques d’administration">
+        <a href="#dashboard">Tableau de bord</a>
+        <a href="#guest-registry">Invités</a>
+        <a href="#roles">Missions</a>
+        <a href="#content">Informations</a>
+      </nav>
+
+      <section class="admin-section" id="dashboard">
+        <div class="admin-section-heading">
+          <div><p class="eyebrow">Vue d’ensemble</p><h2>État du royaume</h2></div>
+          <p id="last-refresh">Aucune donnée chargée.</p>
+        </div>
+        <div class="metric-grid">
+          <article><span id="metric-guests">0</span><p>Invités</p></article>
+          <article><span id="metric-opened">0</span><p>Invitations ouvertes</p></article>
+          <article><span id="metric-responses">0</span><p>Réponses reçues</p></article>
+          <article><span id="metric-present">0</span><p>Présents</p></article>
+          <article><span id="metric-absent">0</span><p>Absents</p></article>
+          <article><span id="metric-waiting">0</span><p>En attente</p></article>
+          <article><span id="metric-adults">0</span><p>Adultes</p></article>
+          <article><span id="metric-children">0</span><p>Enfants</p></article>
+        </div>
+        <div class="insight-grid">
+          <article><h3>Régimes et allergies</h3><div id="dietary-insights" class="insight-list"><p>Aucune information.</p></div></article>
+          <article><h3>Voyage et hébergement</h3><div id="travel-insights" class="insight-list"><p>Aucune demande.</p></div></article>
+          <article><h3>E-mails</h3><div id="email-insights" class="insight-list"><p>Aucun envoi enregistré.</p></div></article>
+        </div>
+      </section>
+
+      <section class="admin-section" id="guest-registry">
+        <div class="admin-section-heading">
+          <div><p class="eyebrow">Registre des Maisons</p><h2>Invités et réponses</h2></div>
+          <div class="registry-actions">
+            <button class="button button-primary" id="open-import" type="button">Importer Excel / CSV</button>
+            <button class="button button-ghost" id="export-csv" type="button">Exporter CSV</button>
+            <button class="button button-ghost" id="export-xlsx" type="button">Exporter Excel</button>
+            <button class="button button-ghost" id="print-report" type="button">Rapport PDF</button>
+          </div>
+        </div>
+        <div class="registry-filters">
+          <label><span>Rechercher</span><input type="search" id="guest-search" placeholder="Nom, e-mail, provenance…"></label>
+          <label><span>Maison</span><select id="house-filter"><option value="">Toutes</option><option value="dragon">Dragon</option><option value="loup">Loup</option><option value="royaume">Royaume uni</option></select></label>
+          <label><span>Réponse</span><select id="status-filter"><option value="">Toutes</option><option value="present">Présents</option><option value="uncertain">Incertains</option><option value="absent">Absents</option><option value="waiting">En attente</option></select></label>
+        </div>
+        <div class="registry-table-wrap">
+          <table class="registry-table">
+            <thead><tr><th>Maison invitée</th><th>Foyer</th><th>Contact</th><th>Statut</th><th>Participants</th><th>Réponse</th><th>Actions</th></tr></thead>
+            <tbody id="guest-table-body"><tr><td colspan="7">Le registre est en cours de chargement…</td></tr></tbody>
+          </table>
+        </div>
+        <p class="admin-feedback" id="registry-feedback" aria-live="polite"></p>
+      </section>
+
+      <section class="admin-section" id="roles">
+        <div class="admin-section-heading">
+          <div><p class="eyebrow">Missions du grand jour</p><h2>Volontaires et attributions</h2></div>
+        </div>
+        <div class="role-dashboard" id="role-dashboard"><p>Aucune préférence enregistrée.</p></div>
+      </section>
+
+      <section class="admin-section" id="content">
+        <div class="admin-section-heading">
+          <div><p class="eyebrow">Annonces royales</p><h2>Informations du rassemblement</h2></div>
+        </div>
+        <form class="content-form" id="content-form">
+          <label><span>Lieu</span><textarea name="venue_description" rows="3"></textarea></label>
+          <label><span>Date et horaires</span><textarea name="date_description" rows="3"></textarea></label>
+          <label><span>Transport</span><textarea name="transport_description" rows="3"></textarea></label>
+          <label><span>Hébergements</span><textarea name="accommodation_description" rows="3"></textarea></label>
+          <label><span>Texte de la cagnotte</span><textarea name="treasury_description" rows="3"></textarea></label>
+          <label><span>Lien PayPal ou cagnotte</span><input type="url" name="treasury_url" placeholder="https://…"></label>
+          <button class="button button-primary" type="submit">Publier les informations</button>
+          <p class="admin-feedback" id="content-feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <dialog class="admin-dialog import-dialog" id="import-dialog">
+    <form method="dialog" class="admin-dialog-panel">
+      <button class="dialog-close" value="cancel" aria-label="Fermer">×</button>
+      <p class="eyebrow">Intendance du royaume</p>
+      <h2>Importer les invités</h2>
+      <p>Formats acceptés : <strong>.xlsx</strong>, <strong>.xls</strong> et <strong>.csv</strong>. Les lignes existantes ne sont jamais supprimées.</p>
+      <label class="file-drop"><span>Choisir le registre</span><input type="file" id="import-file" accept=".xlsx,.xls,.csv,text/csv"></label>
+      <div class="import-summary" id="import-summary"></div>
+      <div class="import-preview-wrap"><table class="import-preview"><thead id="import-preview-head"></thead><tbody id="import-preview-body"></tbody></table></div>
+      <div class="dialog-actions">
+        <button class="button button-ghost" value="cancel">Annuler</button>
+        <button class="button button-primary" id="confirm-import" type="button" disabled>Confirmer l’import</button>
+      </div>
+      <p class="admin-feedback" id="import-feedback" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <dialog class="admin-dialog guest-dialog" id="guest-dialog">
+    <div class="admin-dialog-panel">
+      <button class="dialog-close" id="close-guest-dialog" type="button" aria-label="Fermer">×</button>
+      <p class="eyebrow">Fiche confidentielle</p>
+      <h2 id="guest-dialog-title">Maison invitée</h2>
+      <div id="guest-detail"></div>
+      <div class="guest-admin-actions">
+        <button class="button button-ghost" id="reset-code" type="button">Réinitialiser le code</button>
+        <button class="button button-ghost" id="queue-email" type="button">Renvoyer la confirmation</button>
+      </div>
+      <section class="assignment-editor">
+        <h3>Attribuer une mission</h3>
+        <div class="assignment-fields"><select id="assignment-role"></select><input id="assignment-note" type="text" placeholder="Note privée"><button class="button button-primary" id="save-assignment" type="button">Attribuer</button></div>
+        <div id="current-assignments"></div>
+      </section>
+      <details><summary>Historique des modifications</summary><div id="rsvp-history"></div></details>
+      <p class="admin-feedback" id="guest-dialog-feedback" aria-live="polite"></p>
+    </div>
+  </dialog>
+
+  <dialog class="admin-dialog code-dialog" id="code-dialog">
+    <div class="admin-dialog-panel code-result-panel">
+      <p class="eyebrow">Nouveau sauf-conduit</p>
+      <h2>Copiez ce code maintenant</h2>
+      <p>Il est haché dans la base et ne pourra plus être affiché ensuite.</p>
+      <output id="generated-code">—</output>
+      <button class="button button-primary" id="copy-code" type="button">Copier le code et le lien</button>
+      <button class="button button-ghost" id="close-code-dialog" type="button">Fermer</button>
+    </div>
+  </dialog>
+</body>
+</html>

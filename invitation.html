@@ -12,13 +12,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="assets/realm-beyond-gates.webp">
+  <link rel="preload" as="audio" href="assets/realm-theme.mp3">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260729-8">
-  <link rel="stylesheet" href="css/invitation.css?v=20260729-2">
+  <link rel="stylesheet" href="css/style.css?v=20260802-1">
+  <link rel="stylesheet" href="css/invitation.css?v=20260802-1">
   <script src="js/supabase-config.js"></script>
-  <script src="js/invitation.js?v=20260729-4" type="module" defer></script>
+  <script src="js/invitation.js?v=20260802-1" type="module" defer></script>
 </head>
 <body class="invitation-page">
+  <audio id="realm-theme" src="assets/realm-theme.mp3" preload="metadata" loop></audio>
+  <button class="sound-toggle invitation-sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-label="Couper la musique">
+    <span aria-hidden="true">♪</span>
+    <span class="sound-toggle-label">Musique</span>
+  </button>
+
   <main class="invitation-shell">
     <a class="back-link" href="index.html">← Revenir au royaume</a>
 
@@ -42,44 +49,91 @@
 
       <div id="invitation-content" class="hidden">
         <p class="house-welcome">Bienvenue, <strong id="house-name">Maison invitée</strong></p>
-        <p class="invitation-proclamation">
-          Annaël Weller, Reine des Dragons, et Benjamin Dhinaut, Roi du Nord,
-          ont l'honneur de convier votre Maison à célébrer leur union en l'année 2028.
-        </p>
+        <div class="invitation-proclamation">
+          <p id="personal-message">Annaël Weller, Reine des Dragons, et Benjamin Dhinaut, Roi du Nord, ont l'honneur de convier votre Maison à célébrer leur union en l'année 2028.</p>
+          <dl class="invitation-facts" aria-label="Informations immuables de l'invitation">
+            <div><dt>Maison</dt><dd id="assigned-house">Royaume uni</dd></div>
+            <div><dt>Provenance</dt><dd id="guest-origin">Terres inconnues</dd></div>
+            <div><dt>Places réservées</dt><dd id="maximum-guests">1 personne</dd></div>
+          </dl>
+        </div>
 
         <div class="guest-list" id="guest-list"></div>
 
         <form id="rsvp-form" class="rsvp-form">
-          <fieldset>
-            <legend>Votre réponse au royaume</legend>
-            <label class="choice-card">
-              <input type="radio" name="attendance" value="present" required>
-              <span>
-                <strong>Notre Maison sera présente</strong>
-                <small>Nous prendrons part aux festivités.</small>
-              </span>
-            </label>
-            <label class="choice-card">
-              <input type="radio" name="attendance" value="absent" required>
-              <span>
-                <strong>Notre Maison ne pourra être présente</strong>
-                <small>Nous penserons à vous depuis nos terres.</small>
-              </span>
-            </label>
-          </fieldset>
+          <section class="form-chapter" aria-labelledby="attendance-legend">
+            <p class="form-step">I · Le serment</p>
+            <fieldset>
+              <legend id="attendance-legend">Votre réponse au royaume</legend>
+              <div class="choice-grid choice-grid-three">
+                <label class="choice-card">
+                  <input type="radio" name="attendance" value="present" required>
+                  <span><strong>Présente</strong><small>Notre Maison prendra part aux festivités.</small></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="attendance" value="uncertain" required>
+                  <span><strong>Encore incertaine</strong><small>Nous confirmerons dès que les augures seront clairs.</small></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="attendance" value="absent" required>
+                  <span><strong>Absente</strong><small>Nous penserons à vous depuis nos terres.</small></span>
+                </label>
+              </div>
+            </fieldset>
 
-          <div class="form-grid">
-            <label>
-              <span>Allergies ou régime particulier</span>
-              <textarea name="dietary_notes" rows="3" placeholder="Végétarien, sans gluten, allergie…"></textarea>
-            </label>
-            <label>
-              <span>Message pour Annaël et Benjamin</span>
-              <textarea name="message" rows="3" placeholder="Écrivez quelques mots…"></textarea>
-            </label>
-          </div>
+            <fieldset id="attending-members-fieldset">
+              <legend>Membres qui franchiront les portes</legend>
+              <div class="member-choice-list" id="member-choice-list"></div>
+            </fieldset>
+          </section>
 
-          <button class="button button-primary" type="submit">Sceller notre réponse</button>
+          <section class="form-chapter" aria-labelledby="contact-title">
+            <p class="form-step">II · Le messager</p>
+            <h2 id="contact-title">Vos coordonnées</h2>
+            <div class="form-grid">
+              <label><span>Adresse e-mail</span><input type="email" name="email" autocomplete="email" placeholder="votre@adresse.fr"></label>
+              <label><span>Téléphone</span><input type="tel" name="phone" autocomplete="tel" placeholder="06 00 00 00 00"></label>
+            </div>
+          </section>
+
+          <section class="form-chapter attendance-details" id="attendance-details" aria-labelledby="journey-title">
+            <p class="form-step">III · Le voyage et le banquet</p>
+            <h2 id="journey-title">Votre séjour au royaume</h2>
+            <div class="form-grid form-grid-three">
+              <label><span>Cérémonie</span><select name="ceremony_attendance"><option value="yes">Présent</option><option value="no">Absent</option><option value="unknown">À confirmer</option></select></label>
+              <label><span>Repas</span><select name="meal_attendance"><option value="yes">Présent</option><option value="no">Absent</option><option value="unknown">À confirmer</option></select></label>
+              <label><span>Brunch</span><select name="brunch_attendance"><option value="yes">Présent</option><option value="no">Absent</option><option value="unknown">À confirmer</option></select></label>
+            </div>
+            <div class="form-grid">
+              <label><span>Régime alimentaire</span><textarea name="dietary_preferences" rows="3" placeholder="Végétarien, sans porc, autre…"></textarea></label>
+              <label><span>Allergies</span><textarea name="allergies" rows="3" placeholder="Indiquez chaque allergie importante"></textarea></label>
+              <label><span>Hébergement</span><select name="accommodation_needs"><option value="none">Aucun besoin</option><option value="information">Je souhaite des informations</option><option value="needed">J’aurai besoin d’aide</option></select></label>
+              <label><span>Transport</span><select name="transport_needs"><option value="none">Aucun besoin</option><option value="can_drive">Je peux conduire</option><option value="carpool">Je cherche un covoiturage</option><option value="shuttle">Je souhaite une navette</option></select></label>
+              <label class="form-span-two"><span>Besoins particuliers</span><textarea name="special_needs" rows="3" placeholder="Mobilité, enfants, contraintes horaires…"></textarea></label>
+            </div>
+          </section>
+
+          <section class="form-chapter attendance-details" id="roles-section" aria-labelledby="roles-title">
+            <p class="form-step">IV · Les missions du royaume</p>
+            <h2 id="roles-title">Souhaitez-vous prêter main-forte ?</h2>
+            <p class="form-note">Ces choix expriment seulement vos préférences. Annaël et Benjamin confirmeront ensuite les missions.</p>
+            <div class="role-grid" id="role-grid"></div>
+            <label class="role-other"><span>Autre proposition</span><input type="text" name="other_role" maxlength="120" placeholder="Une mission digne de votre Maison"></label>
+          </section>
+
+          <section class="form-chapter" aria-labelledby="message-title">
+            <p class="form-step">V · Les derniers mots</p>
+            <h2 id="message-title">Message aux mariés</h2>
+            <div class="form-grid">
+              <label class="form-span-two"><span>Votre message</span><textarea name="message" rows="4" placeholder="Écrivez quelques mots à Annaël et Benjamin…"></textarea></label>
+            </div>
+            <label class="consent-choice">
+              <input type="checkbox" name="display_name_consent" value="true">
+              <span>J’accepte que mon prénom apparaisse dans la liste privée des participants.</span>
+            </label>
+          </section>
+
+          <button class="button button-primary" type="submit">Relire puis sceller notre réponse</button>
           <p class="form-feedback" id="form-feedback" aria-live="polite"></p>
         </form>
       </div>
@@ -161,11 +215,24 @@
       </p>
       <div class="dispatch-confirmation-actions">
         <button class="button button-primary" id="dispatch-close" type="button">Revoir mon invitation</button>
-        <a class="button button-ghost" href="index.html">Retourner au royaume</a>
+        <a class="button button-ghost" href="royaume.html">Découvrir le rassemblement</a>
       </div>
     </div>
 
     <p class="sr-only" id="dispatch-live-status" aria-live="assertive"></p>
   </section>
+
+  <dialog class="rsvp-summary" id="rsvp-summary" aria-labelledby="rsvp-summary-title">
+    <form method="dialog" class="summary-parchment">
+      <p class="eyebrow">Avant d’envoyer le corbeau</p>
+      <h2 id="rsvp-summary-title" tabindex="-1">Relisez votre réponse</h2>
+      <div class="summary-list" id="summary-list"></div>
+      <p class="summary-warning">La réponse pourra être modifiée plus tard avec le même code personnel.</p>
+      <div class="summary-actions">
+        <button class="button button-ghost" value="cancel" type="submit">Corriger</button>
+        <button class="button button-primary" id="confirm-rsvp" value="confirm" type="button">Sceller définitivement</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>

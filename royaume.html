@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informations privées sur le rassemblement des royaumes d’Annaël et Benjamin.">
+  <meta name="theme-color" content="#090b10">
+  <title>Le rassemblement des royaumes — Annaël & Benjamin</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=20260729-2">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260729-2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20260802-1">
+  <link rel="stylesheet" href="css/royaume.css?v=20260802-1">
+  <script src="js/supabase-config.js"></script>
+  <script src="js/royaume.js?v=20260802-1" type="module" defer></script>
+</head>
+<body class="gathering-page">
+  <audio id="realm-theme" src="assets/realm-theme.mp3" preload="metadata" loop></audio>
+  <button class="sound-toggle gathering-sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-label="Couper la musique">
+    <span aria-hidden="true">♪</span><span class="sound-toggle-label">Musique</span>
+  </button>
+
+  <header class="gathering-hero">
+    <div class="gathering-hero-content">
+      <p class="eyebrow">Archives privées du royaume</p>
+      <h1>Le rassemblement<br>des deux Maisons</h1>
+      <p>Les informations utiles pour préparer votre venue auprès d’Annaël et Benjamin.</p>
+      <nav class="gathering-actions" aria-label="Navigation privée">
+        <a class="button button-primary" id="review-invitation" href="invitation.html?code=DEMO">Revoir mon invitation</a>
+        <a class="button button-ghost" href="index.html">Revenir au récit</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="gathering-main">
+    <section class="gathering-section gathering-intro" aria-labelledby="gathering-title">
+      <p class="chapter-label">Livre des préparatifs</p>
+      <h2 id="gathering-title">Tout ce qu’il faut savoir</h2>
+      <p id="gathering-status">Le Conseil Restreint consulte les dernières annonces…</p>
+    </section>
+
+    <section class="gathering-grid" aria-label="Informations essentielles">
+      <article class="realm-card">
+        <span class="realm-card-rune" aria-hidden="true">⌖</span>
+        <p class="eyebrow">Le domaine</p>
+        <h2>La Robertsau</h2>
+        <p id="venue-description">Le rassemblement est envisagé dans les terres verdoyantes de La Robertsau, à Strasbourg. L’adresse exacte sera révélée aux invités confirmés.</p>
+        <a class="text-link" href="https://www.openstreetmap.org/search?query=La%20Robertsau%20Strasbourg" target="_blank" rel="noreferrer">Ouvrir la carte</a>
+      </article>
+
+      <article class="realm-card">
+        <span class="realm-card-rune" aria-hidden="true">◷</span>
+        <p class="eyebrow">Le calendrier</p>
+        <h2>En l’année 2028</h2>
+        <p id="date-description">La date, les horaires de convocation et les différents temps forts seront annoncés ici dès qu’ils seront scellés.</p>
+      </article>
+
+      <article class="realm-card">
+        <span class="realm-card-rune" aria-hidden="true">♞</span>
+        <p class="eyebrow">Le voyage</p>
+        <h2>Rejoindre le royaume</h2>
+        <p id="transport-description">Train jusqu’à Strasbourg, transports urbains et covoiturages entre Maisons seront regroupés dans cette rubrique.</p>
+      </article>
+
+      <article class="realm-card">
+        <span class="realm-card-rune" aria-hidden="true">⌂</span>
+        <p class="eyebrow">Le repos</p>
+        <h2>Hébergements</h2>
+        <p id="accommodation-description">Une sélection d’hôtels et de logements proches du domaine sera ajoutée pour les voyageurs venus de loin.</p>
+      </article>
+    </section>
+
+    <section class="gathering-section program-section" aria-labelledby="program-title">
+      <p class="chapter-label">Chronique du grand jour</p>
+      <h2 id="program-title">Programme provisoire</h2>
+      <ol class="royal-timeline" id="royal-timeline">
+        <li><time>À venir</time><div><strong>Accueil des Maisons</strong><p>Ouverture du domaine et retrouvailles.</p></div></li>
+        <li><time>À venir</time><div><strong>Cérémonie</strong><p>Union d’Annaël et Benjamin.</p></div></li>
+        <li><time>À venir</time><div><strong>Banquet royal</strong><p>Repas, discours, jeux et célébrations.</p></div></li>
+        <li><time>Le lendemain</time><div><strong>Brunch des survivants</strong><p>Dernier rassemblement avant le retour vers vos terres.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="gathering-split">
+      <article class="gathering-section participants-section" aria-labelledby="participants-title">
+        <p class="chapter-label">Maisons annoncées</p>
+        <h2 id="participants-title">Ils ont répondu à l’appel</h2>
+        <p class="privacy-note">Seuls les prénoms des personnes ayant donné leur accord sont affichés.</p>
+        <div class="participant-list" id="participant-list">
+          <p>La liste apparaîtra après les premières confirmations.</p>
+        </div>
+      </article>
+
+      <article class="gathering-section treasury-section" aria-labelledby="treasury-title">
+        <p class="chapter-label">Le trésor commun</p>
+        <h2 id="treasury-title">Cagnotte des mariés</h2>
+        <p id="treasury-description">Aucun tribut n’est attendu : votre présence est déjà un présent. Une cagnotte facultative pourra être ajoutée ici.</p>
+        <a class="button button-primary is-disabled" id="treasury-link" href="#" aria-disabled="true">Lien bientôt disponible</a>
+      </article>
+    </section>
+
+    <section class="gathering-section updates-section" aria-labelledby="updates-title">
+      <p class="chapter-label">Messages du Conseil</p>
+      <h2 id="updates-title">Dernières annonces</h2>
+      <div class="updates-list" id="updates-list">
+        <article><time>2 août 2026</time><p>Les portes du site ont été reforgées. Les préparatifs du royaume continuent.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="gathering-footer">
+    <img src="assets/wax-seal-dragon-wolf.webp" alt="Sceau des Maisons du Dragon et du Loup">
+    <p>Annaël & Benjamin · The Wedding Is Coming · 2028</p>
+  </footer>
+</body>
+</html>

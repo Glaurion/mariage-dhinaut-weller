@@ -1,0 +1,333 @@
+.gathering-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(75, 105, 134, .18), transparent 32rem),
+    radial-gradient(circle at 91% 16%, rgba(126, 30, 34, .18), transparent 34rem),
+    #090b10;
+}
+
+.gathering-page .gathering-sound-toggle {
+  top: auto;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.gathering-hero {
+  position: relative;
+  display: grid;
+  min-height: min(78svh, 760px);
+  place-items: center;
+  overflow: hidden;
+  padding: 5rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(5, 7, 10, .16), rgba(7, 9, 13, .76) 78%, #090b10),
+    linear-gradient(90deg, rgba(23, 45, 65, .5), transparent 44%, rgba(91, 19, 24, .45)),
+    url("../assets/realm-beyond-gates.webp") center 42% / cover;
+}
+
+.gathering-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, transparent 0 24%, rgba(4, 5, 8, .46) 78%);
+  pointer-events: none;
+}
+
+.gathering-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  text-align: center;
+  text-shadow: 0 4px 24px #000;
+}
+
+.gathering-hero h1 {
+  margin: .45rem 0 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 7.5vw, 6.6rem);
+  font-weight: 500;
+  line-height: .98;
+}
+
+.gathering-hero-content > p:not(.eyebrow) {
+  max-width: 650px;
+  margin: 0 auto;
+  color: rgba(233, 223, 201, .76);
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+}
+
+.gathering-actions {
+  display: flex;
+  gap: .8rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.gathering-main {
+  width: min(100% - 2rem, 1180px);
+  margin: 0 auto;
+  padding: 2rem 0 7rem;
+}
+
+.gathering-section {
+  position: relative;
+  padding: clamp(2rem, 6vw, 4.5rem);
+  border: 1px solid rgba(196, 154, 82, .25);
+  background:
+    linear-gradient(rgba(15, 16, 19, .92), rgba(9, 10, 13, .96)),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgba(255, 255, 255, .02) 9px 10px);
+  box-shadow: 0 25px 75px rgba(0, 0, 0, .35);
+}
+
+.gathering-intro {
+  max-width: 880px;
+  margin: -5rem auto 3rem;
+  text-align: center;
+}
+
+.gathering-section h2,
+.realm-card h2 {
+  margin: .3rem 0 1rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.gathering-section > h2 {
+  font-size: clamp(1.8rem, 5vw, 3.4rem);
+  text-align: center;
+}
+
+.gathering-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.realm-card {
+  position: relative;
+  min-height: 290px;
+  padding: clamp(1.5rem, 5vw, 2.8rem);
+  overflow: hidden;
+  border: 1px solid rgba(196, 154, 82, .24);
+  background:
+    radial-gradient(circle at 100% 0, rgba(196, 154, 82, .09), transparent 15rem),
+    rgba(11, 13, 17, .82);
+}
+
+.realm-card-rune {
+  position: absolute;
+  top: .8rem;
+  right: 1.3rem;
+  color: rgba(196, 154, 82, .22);
+  font-family: var(--font-display);
+  font-size: 4.8rem;
+}
+
+.realm-card p:not(.eyebrow) {
+  color: rgba(233, 223, 201, .68);
+}
+
+.text-link {
+  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-size: .66rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.program-section {
+  margin-bottom: 3rem;
+}
+
+.royal-timeline {
+  max-width: 760px;
+  margin: 2rem auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.royal-timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1.5rem;
+  padding: 0 0 2rem;
+}
+
+.royal-timeline li::before {
+  content: "";
+  position: absolute;
+  top: .55rem;
+  bottom: -.2rem;
+  left: 132px;
+  width: 1px;
+  background: linear-gradient(var(--gold), transparent);
+}
+
+.royal-timeline li::after {
+  content: "✦";
+  position: absolute;
+  top: -.3rem;
+  left: 124px;
+  color: var(--gold-light);
+  font-size: .75rem;
+}
+
+.royal-timeline time {
+  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-size: .65rem;
+  letter-spacing: .08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.royal-timeline strong {
+  font-family: var(--font-display);
+  font-size: .84rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.royal-timeline p {
+  margin: .25rem 0 0;
+  color: rgba(233, 223, 201, .62);
+}
+
+.gathering-split {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.privacy-note {
+  color: rgba(233, 223, 201, .55);
+  font-style: italic;
+  text-align: center;
+}
+
+.participant-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.participant-name {
+  padding: .45rem .7rem;
+  border: 1px solid rgba(196, 154, 82, .22);
+  color: rgba(233, 223, 201, .78);
+  font-family: var(--font-display);
+  font-size: .62rem;
+  letter-spacing: .06em;
+}
+
+.treasury-section {
+  text-align: center;
+}
+
+.treasury-section .button {
+  margin-top: 1.2rem;
+}
+
+.button.is-disabled {
+  opacity: .46;
+  pointer-events: none;
+}
+
+.updates-section {
+  margin-bottom: 3rem;
+}
+
+.updates-list {
+  max-width: 760px;
+  margin: 2rem auto 0;
+}
+
+.updates-list article {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(196, 154, 82, .18);
+}
+
+.updates-list time {
+  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-size: .62rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.updates-list p {
+  margin: 0;
+}
+
+.gathering-footer {
+  padding: 2rem 1rem 5rem;
+  border-top: 1px solid rgba(196, 154, 82, .16);
+  text-align: center;
+}
+
+.gathering-footer img {
+  width: 110px;
+  margin: 0 auto 1rem;
+}
+
+.gathering-footer p {
+  color: rgba(233, 223, 201, .55);
+  font-family: var(--font-display);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .gathering-hero {
+    min-height: 82svh;
+  }
+
+  .gathering-actions,
+  .gathering-grid,
+  .gathering-split {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .gathering-actions .button {
+    width: 100%;
+  }
+
+  .gathering-main {
+    width: min(100% - 1rem, 1180px);
+  }
+
+  .gathering-intro {
+    margin-top: -2.5rem;
+  }
+
+  .royal-timeline li {
+    grid-template-columns: 78px 1fr;
+    gap: 1rem;
+  }
+
+  .royal-timeline li::before {
+    left: 87px;
+  }
+
+  .royal-timeline li::after {
+    left: 79px;
+  }
+
+  .updates-list article {
+    grid-template-columns: 1fr;
+    gap: .2rem;
+  }
+}

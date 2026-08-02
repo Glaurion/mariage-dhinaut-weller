@@ -12,9 +12,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260729-8">
+  <link rel="preload" as="image" href="assets/dragon-cinematic.webp">
+  <link rel="preload" as="audio" href="assets/realm-theme.mp3">
+  <link rel="stylesheet" href="css/style.css?v=20260802-1">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
-  <script src="js/app.js?v=20260729-6" defer></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/app.js?v=20260802-1" defer></script>
 </head>
 <body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
@@ -33,6 +36,17 @@
         </div>
       </div>
       <div class="hero-vignette" aria-hidden="true"></div>
+      <div class="cinematic-dragon" aria-hidden="true">
+        <img src="assets/dragon-cinematic.webp" alt="">
+      </div>
+      <div class="dragon-fire-blast" aria-hidden="true">
+        <span class="fire-core"></span>
+        <span class="fire-wave"></span>
+      </div>
+      <div class="cinematic-smoke" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <div class="cinematic-cinders" aria-hidden="true"></div>
       <div class="hero-content">
         <p class="eyebrow">En l'année 2028</p>
         <p class="hero-kicker">The Wedding Is Coming</p>
@@ -57,11 +71,32 @@
           </button>
         </div>
       </div>
+      <button class="intro-skip" id="intro-skip" type="button">Passer l’introduction</button>
+      <p class="cinematic-caption" id="cinematic-caption" role="status" aria-live="polite"></p>
     </section>
+
+  <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-label="Couper la musique">
+    <span class="sound-toggle-icon" aria-hidden="true">♪</span>
+    <span class="sound-toggle-label">Son activé</span>
+  </button>
+
+  <header class="realm-index" aria-label="Sommaire du royaume">
+    <div class="realm-index-inner">
+      <a class="realm-index-mark" href="#maisons" aria-label="Commencer la visite">A <span>&amp;</span> B</a>
+      <nav class="realm-index-links" aria-label="Chapitres">
+        <a href="#chronique">Notre histoire</a>
+        <a href="#maisons">Les deux maisons</a>
+        <a href="#royaume">Le royaume</a>
+        <a href="#lettre-secrete">La lettre secrète</a>
+      </nav>
+      <p>Descendez jusqu’au bout du royaume pour découvrir la lettre qui vous est destinée.</p>
+    </div>
+  </header>
 
   <main class="site-content">
     <section class="section intro" id="maisons">
       <div class="section-heading reveal">
+        <p class="chapter-label">Chapitre I — Les deux Maisons</p>
         <p class="eyebrow">Les souverains</p>
         <h2>Deux Maisons appelées à s'unir</h2>
         <p>Le feu des Dragons et la force du Nord ne formeront bientôt plus qu'un seul royaume.</p>
@@ -104,6 +139,7 @@
 
     <section class="section companions" id="familiers">
       <div class="section-heading reveal">
+        <p class="chapter-label">Interlude — Les gardiennes</p>
         <p class="eyebrow">Les gardiennes des deux Maisons</p>
         <h2>Les Familières du Royaume</h2>
         <p>Aux côtés de la Reine des Dragons et du Roi du Nord veillent deux fidèles compagnes.</p>
@@ -140,6 +176,7 @@
 
     <section class="section chronicle" id="chronique">
       <div class="section-heading reveal">
+        <p class="chapter-label">Chapitre II — La chronique</p>
         <p class="eyebrow">Les archives du royaume</p>
         <h2>Notre Chronique</h2>
         <p>Quelques dates sont destinées à être gravées dans la pierre.</p>
@@ -178,6 +215,7 @@
     <section class="section kingdom" id="royaume">
       <div class="kingdom-panel reveal">
         <div class="kingdom-copy">
+          <p class="chapter-label">Chapitre III — Le rassemblement</p>
           <p class="eyebrow">Le domaine pressenti</p>
           <h2>La Robertsau</h2>
           <p class="kingdom-location">Strasbourg · Terres d'Alsace</p>
@@ -238,8 +276,9 @@
       </div>
     </section>
 
-    <section class="final-oath">
+    <section class="final-oath" id="lettre-secrete">
       <div class="reveal">
+        <p class="chapter-label">Chapitre IV — La lettre secrète</p>
         <p>Maison Dhinaut-Weller</p>
         <h2>The Wedding Is Coming</h2>
         <span>Annaël &amp; Benjamin · 2028</span>
@@ -250,64 +289,95 @@
 
   </main>
 
-  <section class="invitation-popup" id="invitation-popup" role="dialog" aria-modal="true" aria-labelledby="invitation-popup-title" aria-hidden="true">
-    <div class="invitation-popup-panel">
-      <button class="invitation-popup-close" type="button" aria-label="Fermer l'invitation">×</button>
+  <section class="invitation-popup treasure-popup" id="invitation-popup" role="dialog" aria-modal="true" aria-labelledby="invitation-popup-title" aria-hidden="true">
+    <div class="invitation-popup-panel treasure-popup-panel">
+      <button class="invitation-popup-close" type="button" aria-label="Fermer le coffre">×</button>
 
-      <div class="letter-introduction">
-        <p class="eyebrow">Un message porté par les corbeaux</p>
-        <h2 id="invitation-popup-title">Une lettre vous est destinée</h2>
-        <p>Brisez le sceau pour ouvrir le pli royal.</p>
+      <div class="letter-introduction vault-introduction">
+        <p class="eyebrow">Au plus profond du royaume</p>
+        <h2 id="invitation-popup-title">Le trésor du dragon</h2>
+        <p>Le gardien ne remettra la lettre qu’à la Maison capable de prononcer son code.</p>
       </div>
 
-      <div class="sealed-envelope">
-        <div class="envelope-back" aria-hidden="true"></div>
+      <div class="treasure-stage" id="treasure-stage">
+        <div class="guardian-dragon" aria-hidden="true">
+          <img src="assets/dragon-cinematic.webp" alt="">
+          <span class="guardian-eye guardian-eye-left"></span>
+          <span class="guardian-eye guardian-eye-right"></span>
+        </div>
+        <div class="treasure-aura" aria-hidden="true"></div>
 
-        <article class="letter-sheet">
-          <div class="letter-crest" aria-hidden="true">A <span>&amp;</span> B</div>
-          <p class="eyebrow">Message porté par les corbeaux</p>
-          <h2>Ouvrez votre invitation</h2>
-          <p>
-            Inscrivez le code personnel confié à votre Maison pour découvrir la lettre qui vous est destinée.
-          </p>
-          <form class="invitation-code-form" id="invitation-code-form">
-            <label for="invitation-code">Code de votre Maison</label>
-            <div class="invitation-code-control">
-              <input
-                id="invitation-code"
-                name="invitation-code"
-                type="text"
-                inputmode="text"
-                autocomplete="off"
-                autocapitalize="characters"
-                spellcheck="false"
-                minlength="4"
-                maxlength="40"
-                placeholder="Ex. PDUPONT28"
-                required
-              >
-              <button class="button button-primary" type="submit">Ouvrir ma lettre</button>
+        <div class="treasure-chest" aria-hidden="true">
+          <div class="chest-lid">
+            <span class="chest-lid-band"></span>
+            <span class="chest-lid-rivets"></span>
+          </div>
+          <div class="chest-body">
+            <span class="chest-panel"></span>
+            <span class="chest-lock"><i></i></span>
+          </div>
+          <span class="chest-chain chest-chain-left"></span>
+          <span class="chest-chain chest-chain-right"></span>
+          <span class="chest-dust"></span>
+        </div>
+
+        <form class="treasure-code-form" id="invitation-code-form">
+          <label for="invitation-code">Code de votre Maison</label>
+          <div class="treasure-code-control">
+            <input
+              id="invitation-code"
+              name="invitation-code"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              minlength="6"
+              maxlength="40"
+              placeholder="Ex. BENDHI"
+              aria-describedby="invitation-code-help invitation-code-error"
+              required
+            >
+            <button class="button button-primary" type="submit">Défier le dragon</button>
+          </div>
+          <p class="invitation-code-help" id="invitation-code-help">Trois lettres du prénom, puis trois lettres du nom. Accents, espaces et tirets sont ignorés.</p>
+          <p class="invitation-code-error" id="invitation-code-error" aria-live="polite"></p>
+        </form>
+
+        <div class="dragon-warning" id="dragon-warning" aria-hidden="true">
+          <span class="dragon-warning-smoke"></span>
+          <p>Le dragon vous observe.</p>
+        </div>
+
+        <div class="chest-envelope" aria-hidden="true">
+          <div class="sealed-envelope">
+            <div class="envelope-back" aria-hidden="true"></div>
+
+            <article class="letter-sheet">
+              <div class="letter-crest" aria-hidden="true">A <span>&amp;</span> B</div>
+              <p class="eyebrow">La lettre vous reconnaît</p>
+              <h2>Bienvenue, <span id="validated-household">Maison invitée</span></h2>
+              <p>Votre invitation personnelle est prête à être déployée.</p>
+              <button class="button button-primary invitation-enter-button" id="enter-invitation" type="button">Lire mon invitation</button>
+            </article>
+
+            <div class="envelope-pocket" aria-hidden="true"></div>
+            <div class="envelope-flap" aria-hidden="true"></div>
+
+            <button class="seal-open-button" id="open-invitation" type="button" aria-label="Briser le sceau et ouvrir l'invitation" disabled>
+              <span class="seal-fragment seal-fragment-left">
+                <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+              </span>
+              <span class="seal-fragment seal-fragment-right">
+                <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+              </span>
+              <span class="seal-instruction">Briser le sceau</span>
+            </button>
+
+            <div class="seal-crumbs" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i>
             </div>
-            <p class="invitation-code-help">Le code est composé de lettres et de chiffres, sans espace.</p>
-            <p class="invitation-code-error" id="invitation-code-error" aria-live="polite"></p>
-          </form>
-        </article>
-
-        <div class="envelope-pocket" aria-hidden="true"></div>
-        <div class="envelope-flap" aria-hidden="true"></div>
-
-        <button class="seal-open-button" id="open-invitation" type="button" aria-label="Briser le sceau et ouvrir l'invitation">
-          <span class="seal-fragment seal-fragment-left">
-            <img src="assets/wax-seal-dragon-wolf.webp" alt="">
-          </span>
-          <span class="seal-fragment seal-fragment-right">
-            <img src="assets/wax-seal-dragon-wolf.webp" alt="">
-          </span>
-          <span class="seal-instruction">Briser le sceau</span>
-        </button>
-
-        <div class="seal-crumbs" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i>
+          </div>
         </div>
       </div>
     </div>
