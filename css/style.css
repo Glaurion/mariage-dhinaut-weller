@@ -4376,8 +4376,10 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   }
 
   .chapter-section > .chapter-cover {
-    margin-right: -5vw;
-    margin-left: -5vw;
+    width: 100vw;
+    max-width: none;
+    margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
   }
 
   .chapter-cover {
@@ -4385,7 +4387,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     display: grid;
     width: 100%;
     min-height: 100svh;
-    padding: max(6.7rem, calc(env(safe-area-inset-top) + 5.8rem)) 1.5rem max(4.8rem, calc(env(safe-area-inset-bottom) + 4rem));
+    padding: max(6.2rem, calc(env(safe-area-inset-top) + 4.8rem)) 1.5rem;
     overflow: hidden;
     place-content: center;
     justify-items: center;
