@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
-  <link rel="stylesheet" href="css/style.css?v=20260803-21">
+  <link rel="stylesheet" href="css/style.css?v=20260803-22">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
   <script src="js/app.js?v=20260803-18" defer></script>
@@ -48,9 +48,11 @@
         </p>
         <div class="hero-actions">
           <button class="button button-primary kingdom-open-button" id="open-kingdom" type="button">
-            <span class="kingdom-lock" aria-hidden="true">
-              <i class="kingdom-lock-shackle"></i>
-              <i class="kingdom-lock-body">✦</i>
+            <span class="kingdom-lock-frame" aria-hidden="true">
+              <span class="kingdom-lock">
+                <i class="kingdom-lock-shackle"></i>
+                <i class="kingdom-lock-body">✦</i>
+              </span>
             </span>
             <small class="kingdom-open-subtitle">Ouvrir les portes du château</small>
           </button>

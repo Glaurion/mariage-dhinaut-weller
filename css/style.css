@@ -435,36 +435,52 @@ body.gates-opening .hero-content-door-copy-right {
 
 .kingdom-open-button.button-primary {
   position: relative;
-  display: inline-grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 62px auto;
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: .45rem;
-  width: min(100%, 420px);
-  min-height: 116px;
-  padding: .7rem 1.4rem .9rem;
+  gap: .8rem;
+  width: min(88vw, 320px);
+  min-height: 0;
+  padding: 0;
   overflow: visible;
-  border: 1px solid #987035;
+  border: 0;
   color: var(--paper);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.06), transparent 36%),
-    repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,.018) 18px 19px),
-    #171510;
-  box-shadow:
-    0 18px 36px rgba(0,0,0,.46),
-    inset 0 0 0 3px #090a0c,
-    inset 0 0 0 4px rgba(196,154,82,.32);
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
-  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease, filter .35s ease;
+  transition: transform .35s ease, filter .35s ease;
 }
 
 .kingdom-open-button::before,
 .kingdom-open-button::after {
+  display: none;
+}
+
+.kingdom-lock-frame {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 88px;
+  border: 1px solid #987035;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), transparent 38%),
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(255,255,255,.018) 14px 15px),
+    #171510;
+  box-shadow:
+    0 16px 30px rgba(0,0,0,.46),
+    inset 0 0 0 3px #090a0c,
+    inset 0 0 0 4px rgba(196,154,82,.32);
+  place-items: center;
+  transition: border-color .35s ease, box-shadow .35s ease, filter .35s ease;
+}
+
+.kingdom-lock-frame::before,
+.kingdom-lock-frame::after {
   content: "";
   position: absolute;
   top: 50%;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border: 1px solid rgba(231,190,111,.72);
   border-radius: 50%;
   background: #332a1d;
@@ -472,17 +488,22 @@ body.gates-opening .hero-content-door-copy-right {
   transform: translateY(-50%);
 }
 
-.kingdom-open-button::before { left: 10px; }
-.kingdom-open-button::after { right: 10px; }
+.kingdom-lock-frame::before { left: 8px; }
+.kingdom-lock-frame::after { right: 8px; }
 
 .kingdom-open-button.button-primary:hover,
 .kingdom-open-button.button-primary:focus-visible {
-  border-color: var(--gold-light);
   filter: brightness(1.08);
   transform: translateY(-3px);
+  box-shadow: none;
+}
+
+.kingdom-open-button:hover .kingdom-lock-frame,
+.kingdom-open-button:focus-visible .kingdom-lock-frame {
+  border-color: var(--gold-light);
   box-shadow:
-    0 22px 44px rgba(0,0,0,.54),
-    0 0 28px rgba(196,154,82,.18),
+    0 20px 38px rgba(0,0,0,.54),
+    0 0 24px rgba(196,154,82,.18),
     inset 0 0 0 3px #090a0c,
     inset 0 0 0 4px rgba(224,180,94,.46);
 }
@@ -493,9 +514,7 @@ body.gates-opening .hero-content-door-copy-right {
   width: 54px;
   height: 58px;
   margin: 0 auto;
-  grid-column: 1;
-  grid-row: 1;
-  align-self: end;
+  transform: scale(.86);
 }
 
 .kingdom-lock-shackle {
@@ -533,15 +552,14 @@ body.gates-opening .hero-content-door-copy-right {
 }
 
 .kingdom-open-subtitle {
-  grid-column: 1;
-  grid-row: 2;
-  align-self: center;
+  display: block;
   color: rgba(233,223,201,.82);
   font-family: var(--font-body);
-  font-size: .92rem;
+  font-size: .9rem;
   font-style: italic;
-  letter-spacing: .04em;
-  line-height: 1.2;
+  letter-spacing: .055em;
+  line-height: 1.25;
+  text-shadow: 0 3px 12px rgba(0,0,0,.9);
 }
 
 @keyframes introArrival {
@@ -1907,18 +1925,18 @@ body.gates-opening .hero-content-door-copy-right {
   }
 
   .kingdom-open-button.button-primary {
-    grid-template-columns: 1fr;
-    grid-template-rows: 58px auto;
-    min-height: 108px;
-    padding: .6rem .8rem .8rem;
+    width: min(84vw, 290px);
+    min-height: 0;
+    padding: 0;
   }
 
-  .kingdom-lock {
-    transform: scale(.9);
+  .kingdom-lock-frame {
+    width: 104px;
+    height: 82px;
   }
 
   .kingdom-open-subtitle {
-    font-size: .82rem;
+    font-size: .86rem;
   }
 
   .invitation-popup {
