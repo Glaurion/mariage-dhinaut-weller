@@ -236,9 +236,135 @@
   margin-top: 1.2rem;
 }
 
-.button.is-disabled {
-  opacity: .46;
+.treasury-paypal-dialog {
+  width: min(92vw, 560px);
+  max-width: none;
+  max-height: 92svh;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  color: #2a1a10;
+  background: transparent;
+  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, .72));
+}
+
+.treasury-paypal-dialog::backdrop {
+  background: rgba(3, 4, 7, .82);
+  backdrop-filter: blur(8px) brightness(.72);
+}
+
+.treasury-paypal-parchment {
+  position: relative;
+  padding: 3rem clamp(2rem, 6vw, 4rem) 2.6rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255, 248, 219, .78), transparent 24%),
+    radial-gradient(circle at 84% 92%, rgba(105, 61, 27, .17), transparent 28%),
+    repeating-linear-gradient(3deg, rgba(83, 48, 25, .035) 0 1px, transparent 1px 6px),
+    linear-gradient(145deg, #ead7ad, #d5bb88 54%, #ebd7aa);
+  clip-path: polygon(1.2% 1%, 12% 0, 28% .8%, 46% 0, 67% .7%, 86% 0, 99% 1.5%, 100% 19%, 99.2% 38%, 100% 58%, 99% 79%, 100% 98.5%, 83% 100%, 65% 99.2%, 46% 100%, 27% 99.1%, 1% 100%, 0 82%, .8% 61%, 0 42%, .9% 21%);
+  box-shadow:
+    inset 0 0 0 1px rgba(84, 49, 24, .5),
+    inset 0 0 42px rgba(72, 39, 18, .24);
+  text-align: center;
+}
+
+.treasury-paypal-parchment::before,
+.treasury-paypal-parchment::after {
+  content: "";
+  position: absolute;
   pointer-events: none;
+}
+
+.treasury-paypal-parchment::before {
+  inset: 14px;
+  border: 1px solid rgba(84, 49, 24, .44);
+  box-shadow: inset 0 0 0 3px rgba(236, 215, 173, .32);
+}
+
+.treasury-paypal-parchment::after {
+  inset: 0;
+  opacity: .16;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.68' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+.treasury-paypal-parchment > * {
+  position: relative;
+  z-index: 1;
+}
+
+.treasury-dialog-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.2rem;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(77, 43, 22, .45);
+  border-radius: 50%;
+  color: #4a2d18;
+  background: rgba(236, 215, 173, .35);
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.treasury-dialog-close:hover,
+.treasury-dialog-close:focus-visible {
+  border-color: #713f20;
+  background: rgba(255, 245, 215, .68);
+}
+
+.treasury-parchment-ornament {
+  display: block;
+  margin-bottom: .55rem;
+  color: #8b5a28;
+  font-size: 1.15rem;
+}
+
+.treasury-paypal-parchment .chapter-label {
+  color: #74471f;
+}
+
+.treasury-paypal-parchment h2 {
+  margin: .35rem 0 1.2rem;
+  color: #2a1a10;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.45rem);
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.treasury-qr-frame {
+  width: min(68vw, 270px);
+  margin: 0 auto;
+  padding: .75rem;
+  border: 1px solid rgba(77, 43, 22, .52);
+  background: #f4e4c2;
+  box-shadow:
+    0 12px 28px rgba(64, 35, 17, .22),
+    inset 0 0 0 4px rgba(139, 90, 40, .12);
+}
+
+.treasury-qr-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+#treasury-paypal-description {
+  max-width: 36ch;
+  margin: 1.15rem auto .25rem;
+  color: rgba(42, 26, 16, .8);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.treasury-paypal-parchment .button {
+  margin-top: 1rem;
 }
 
 .updates-section {
@@ -329,5 +455,11 @@
   .updates-list article {
     grid-template-columns: 1fr;
     gap: .2rem;
+  }
+}
+
+@media (max-width: 760px), (hover: none), (pointer: coarse) {
+  .treasury-paypal-dialog {
+    display: none;
   }
 }

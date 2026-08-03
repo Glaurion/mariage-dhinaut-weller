@@ -12,9 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260802-1">
-  <link rel="stylesheet" href="css/royaume.css?v=20260802-1">
+  <link rel="stylesheet" href="css/royaume.css?v=20260803-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/royaume.js?v=20260803-3" type="module" defer></script>
+  <script src="js/royaume.js?v=20260803-4" type="module" defer></script>
 </head>
 <body class="gathering-page">
   <audio id="realm-theme" src="assets/realm-theme.mp3" preload="metadata" loop></audio>
@@ -96,8 +96,8 @@
       <article class="gathering-section treasury-section" aria-labelledby="treasury-title">
         <p class="chapter-label">Le trésor commun</p>
         <h2 id="treasury-title">Cagnotte des mariés</h2>
-        <p id="treasury-description">Aucun tribut n’est attendu : votre présence est déjà un présent. Une cagnotte facultative pourra être ajoutée ici.</p>
-        <a class="button button-primary is-disabled" id="treasury-link" href="#" aria-disabled="true">Lien bientôt disponible</a>
+        <p id="treasury-description">Aucun tribut n’est attendu : votre présence est déjà un présent. Pour celles et ceux qui le souhaitent, le trésor royal est ouvert.</p>
+        <a class="button button-primary" id="treasury-link" href="https://www.paypal.com/qrcodes/p2pqrc/N33GGTUNFJU3G" target="_blank" rel="noopener noreferrer">Contribuer au trésor royal</a>
       </article>
     </section>
 
@@ -109,6 +109,20 @@
       </div>
     </section>
   </main>
+
+  <dialog class="treasury-paypal-dialog" id="treasury-paypal-dialog" aria-labelledby="treasury-paypal-title" aria-describedby="treasury-paypal-description">
+    <div class="treasury-paypal-parchment">
+      <button class="treasury-dialog-close" id="treasury-dialog-close" type="button" aria-label="Fermer la fenêtre PayPal">×</button>
+      <span class="treasury-parchment-ornament" aria-hidden="true">✦</span>
+      <p class="chapter-label">Le trésor royal</p>
+      <h2 id="treasury-paypal-title">Contribuer par PayPal</h2>
+      <div class="treasury-qr-frame">
+        <img src="assets/paypal-treasury-qr.png" alt="QR code PayPal de la cagnotte d’Annaël et Benjamin" width="540" height="540">
+      </div>
+      <p id="treasury-paypal-description">Scannez ce code avec votre téléphone, ou ouvrez directement PayPal.</p>
+      <a class="button button-primary" href="https://www.paypal.com/qrcodes/p2pqrc/N33GGTUNFJU3G" target="_blank" rel="noopener noreferrer">Ouvrir PayPal</a>
+    </div>
+  </dialog>
 
   <footer class="gathering-footer">
     <img src="assets/wax-seal-dragon-wolf.webp" alt="Sceau des Maisons du Dragon et du Loup">

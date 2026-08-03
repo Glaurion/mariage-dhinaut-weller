@@ -1,6 +1,8 @@
 const SOUND_PREFERENCE_KEY = 'dhinaut-weller-sound';
 const MUSIC_TIME_KEY = 'dhinaut-weller-music-time';
 const MUSIC_HANDOFF_KEY = 'dhinaut-weller-music-handoff';
+const PAYPAL_TREASURY_URL = 'https://www.paypal.com/qrcodes/p2pqrc/N33GGTUNFJU3G';
+const DESKTOP_PAYPAL_QUERY = '(min-width: 761px) and (hover: hover) and (pointer: fine)';
 
 const params = new URLSearchParams(window.location.search);
 const invitationCode = params.get('code')?.trim() || sessionStorage.getItem('dhinaut-weller-invitation-code') || '';
@@ -8,6 +10,8 @@ const reviewInvitationLink = document.querySelector('#review-invitation');
 const gatheringStatus = document.querySelector('#gathering-status');
 const participantList = document.querySelector('#participant-list');
 const treasuryLink = document.querySelector('#treasury-link');
+const treasuryDialog = document.querySelector('#treasury-paypal-dialog');
+const treasuryDialogClose = document.querySelector('#treasury-dialog-close');
 const realmTheme = document.querySelector('#realm-theme');
 const soundToggle = document.querySelector('#sound-toggle');
 const supabaseConfig = window.SUPABASE_CONFIG ?? null;
@@ -28,6 +32,23 @@ try {
 if (reviewInvitationLink && invitationCode) {
   reviewInvitationLink.href = `invitation.html?code=${encodeURIComponent(invitationCode)}`;
 }
+
+if (treasuryLink) {
+  treasuryLink.href = PAYPAL_TREASURY_URL;
+  treasuryLink.target = '_blank';
+  treasuryLink.rel = 'noopener noreferrer';
+  treasuryLink.addEventListener('click', () => {
+    if (!window.matchMedia(DESKTOP_PAYPAL_QUERY).matches || typeof treasuryDialog?.showModal !== 'function') return;
+    window.setTimeout(() => {
+      if (!treasuryDialog.open) treasuryDialog.showModal();
+    }, 0);
+  });
+}
+
+treasuryDialogClose?.addEventListener('click', () => treasuryDialog?.close());
+treasuryDialog?.addEventListener('click', (event) => {
+  if (event.target === treasuryDialog) treasuryDialog.close();
+});
 
 function updateSoundButton() {
   soundToggle?.setAttribute('aria-pressed', String(soundEnabled));
@@ -136,18 +157,11 @@ function renderSummary(data) {
   setText('date-description', content.date_description);
   setText('transport-description', content.transport_description);
   setText('accommodation-description', content.accommodation_description);
-  setText('treasury-description', content.treasury_description);
+  if (content.treasury_description && !content.treasury_description.includes('pourra être ajoutée ici')) {
+    setText('treasury-description', content.treasury_description);
+  }
   renderParticipants(data?.participants ?? []);
   renderUpdates(data?.updates ?? []);
-
-  if (content.treasury_url && treasuryLink) {
-    treasuryLink.href = content.treasury_url;
-    treasuryLink.textContent = 'Ouvrir la cagnotte';
-    treasuryLink.classList.remove('is-disabled');
-    treasuryLink.removeAttribute('aria-disabled');
-    treasuryLink.target = '_blank';
-    treasuryLink.rel = 'noreferrer';
-  }
 
   gatheringStatus.textContent = data?.household_name
     ? `Bienvenue, ${data.household_name}. Ces archives sont réservées aux Maisons conviées.`
