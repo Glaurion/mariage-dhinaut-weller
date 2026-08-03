@@ -31,6 +31,7 @@ const yumeCard = document.querySelector('.companion-card-flame');
 const summonRavenButton = document.querySelector('#summon-raven');
 const invitationPopup = document.querySelector('#invitation-popup');
 const ravenDeliveryStage = document.querySelector('#raven-delivery-stage');
+const ravenCinematicImage = document.querySelector('#raven-cinematic-image');
 const openInvitationButton = document.querySelector('#open-invitation');
 const closeInvitationButton = document.querySelector('.invitation-popup-close');
 const invitationCodeForm = document.querySelector('#invitation-code-form');
@@ -115,13 +116,18 @@ const musicTimeKey = 'dhinaut-weller-music-time';
 const musicHandoffKey = 'dhinaut-weller-music-handoff';
 const realmTheme = new Audio('assets/realm-theme.mp3');
 const castleDoorSound = new Audio('assets/castle-door-opening.mp3');
+const ravenDeliverySound = new Audio('assets/raven-delivery.m4a');
 const castleDoorOpeningDuration = 1950;
 const castleDoorSoundDuration = 1900;
+const ravenCinematicSettleDelay = 5050;
+const ravenCinematicDuration = 6040;
 realmTheme.preload = 'metadata';
 realmTheme.loop = true;
 realmTheme.volume = 0;
 castleDoorSound.preload = 'auto';
 castleDoorSound.volume = 0.24;
+ravenDeliverySound.preload = 'auto';
+ravenDeliverySound.volume = 0.48;
 
 try {
   sessionStorage.removeItem(musicTimeKey);
@@ -241,6 +247,7 @@ function setPageAudioActive(isActive) {
     themeFadeGeneration += 1;
     realmTheme.pause();
     castleDoorSound.pause();
+    ravenDeliverySound.pause();
     window.clearTimeout(castleDoorSoundTimer);
     castleDoorSoundTimer = null;
 
@@ -283,6 +290,7 @@ function toggleSound() {
   } else {
     fadeThemeTo(0, 500, true);
     castleDoorSound.pause();
+    ravenDeliverySound.pause();
   }
 }
 
@@ -485,6 +493,31 @@ function setEnvelopeStatus(message = '') {
   if (envelopeStatus) envelopeStatus.textContent = message;
 }
 
+function stopRavenCinematic(restoreTheme = false) {
+  ravenDeliverySound.pause();
+  ravenDeliverySound.currentTime = 0;
+  ravenCinematicImage?.removeAttribute('src');
+
+  if (restoreTheme && soundEnabled && pageAudioActive && !realmTheme.paused) {
+    fadeThemeTo(0.11, 850);
+  }
+}
+
+function startRavenCinematic() {
+  if (!reducedMotion && ravenCinematicImage?.dataset.src) {
+    ravenCinematicImage.removeAttribute('src');
+    void ravenCinematicImage.offsetWidth;
+    ravenCinematicImage.src = ravenCinematicImage.dataset.src;
+  }
+
+  if (!reducedMotion && soundEnabled && pageAudioActive) {
+    ravenDeliverySound.pause();
+    ravenDeliverySound.currentTime = 0;
+    ravenDeliverySound.play().catch(() => {});
+    if (!realmTheme.paused) fadeThemeTo(0.035, 420);
+  }
+}
+
 function resetInvitationPopup() {
   invitationWasShown = false;
   ravenDeliveryRunning = false;
@@ -494,6 +527,7 @@ function resetInvitationPopup() {
   invitationPopup?.classList.remove(
     'is-visible',
     'is-raven-arriving',
+    'is-raven-settling',
     'is-raven-landed',
     'is-raven-departing',
     'is-validating',
@@ -519,6 +553,7 @@ function resetInvitationPopup() {
   if (submitButton) submitButton.textContent = 'Présenter le code';
   if (invitationCodeError) invitationCodeError.textContent = '';
   ravenWarning?.setAttribute('aria-hidden', 'true');
+  stopRavenCinematic(true);
   setEnvelopeStatus('');
   document.body.classList.remove('invitation-modal-open');
   validatedInvitationCode = '';
@@ -540,14 +575,20 @@ function showInvitationPopup() {
   invitationPopup.setAttribute('aria-hidden', 'false');
   invitationPopup.classList.add('is-visible', 'is-raven-arriving');
   document.body.classList.add('invitation-modal-open');
+  startRavenCinematic();
 
   queueInvitationAnimation(() => {
-    invitationPopup.classList.remove('is-raven-arriving');
+    invitationPopup.classList.add('is-raven-settling');
+  }, reducedMotion ? 20 : ravenCinematicSettleDelay);
+
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.remove('is-raven-arriving', 'is-raven-settling');
     invitationPopup.classList.add('is-raven-landed');
+    stopRavenCinematic(true);
     ravenDeliveryRunning = false;
     summonRavenButton?.removeAttribute('disabled');
     invitationCodeInput?.focus({ preventScroll: true });
-  }, reducedMotion ? 80 : 1900);
+  }, reducedMotion ? 80 : ravenCinematicDuration);
 }
 
 function summonRaven() {
@@ -555,7 +596,9 @@ function summonRaven() {
   ravenDeliveryRunning = true;
   summonRavenButton?.setAttribute('disabled', '');
   ensureAudioContext();
-  startRealmTheme();
+  startRealmTheme().then(() => {
+    if (ravenDeliveryRunning && soundEnabled && !realmTheme.paused) fadeThemeTo(0.035, 420);
+  });
   showInvitationPopup();
 }
 
@@ -763,6 +806,7 @@ function openInvitation() {
 function closeInvitation() {
   if (!invitationPopup) return;
   if (invitationPopup.classList.contains('is-seal-cracking') || letterExchangeRunning) return;
+  stopRavenCinematic(true);
   invitationPopup.classList.remove('is-visible');
   invitationPopup.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('invitation-modal-open');

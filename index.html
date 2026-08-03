@@ -13,10 +13,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
-  <link rel="stylesheet" href="css/style.css?v=20260803-22">
+  <link rel="preload" as="image" href="assets/raven-delivery-keyed.webp" type="image/webp">
+  <link rel="stylesheet" href="css/style.css?v=20260804-1">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/app.js?v=20260803-18" defer></script>
+  <script src="js/app.js?v=20260804-1" defer></script>
 </head>
 <body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
@@ -264,8 +265,14 @@
       <button class="invitation-popup-close" type="button" aria-label="Fermer la missive">×</button>
 
       <div class="raven-delivery-stage" id="raven-delivery-stage">
+        <div class="raven-cinematic-layer" aria-hidden="true">
+          <span class="raven-cinematic-mist raven-cinematic-mist-left"></span>
+          <span class="raven-cinematic-mist raven-cinematic-mist-right"></span>
+          <img class="raven-cinematic-image" id="raven-cinematic-image" data-src="assets/raven-delivery-keyed.webp" alt="">
+        </div>
+
         <div class="raven-messenger-visual" aria-hidden="true">
-          <img src="assets/three-eyed-raven-messenger.webp" alt="">
+          <img src="assets/raven-delivery-rest.webp" alt="">
         </div>
 
         <div class="letter-introduction raven-introduction">
