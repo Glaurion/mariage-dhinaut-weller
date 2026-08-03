@@ -401,6 +401,22 @@ body.gates-opening .kingdom-gate-wolf {
   transform: translateX(102%) rotateY(16deg);
 }
 
+body.gates-opening .hero {
+  background: transparent;
+}
+
+body.gates-opening .hero::before,
+body.gates-opening .hero::after,
+body.gates-opening .hero-vignette {
+  opacity: 0;
+}
+
+body.gates-opening .site-content {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
 body.gates-opening .hero-content:not(.hero-content-door-copy) {
   visibility: hidden;
 }

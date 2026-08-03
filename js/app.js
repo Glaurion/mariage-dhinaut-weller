@@ -18,11 +18,6 @@ lockPageToTopDuringLoad();
 
 const introScreen = document.querySelector('#intro-screen');
 const openKingdomButton = document.querySelector('#open-kingdom');
-const skipIntroButton = document.querySelector('#intro-skip');
-const cinematicCaption = document.querySelector('#cinematic-caption');
-const introCinematicStage = document.querySelector('#intro-cinematic-stage');
-const introCinematicVideo = document.querySelector('#intro-cinematic-video');
-const introCinematicBackdrop = document.querySelector('#intro-cinematic-backdrop');
 const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
 const realmIndex = document.querySelector('.realm-index');
@@ -192,10 +187,6 @@ function syncCinematicSound() {
 updateSoundToggle();
 syncCinematicSound();
 document.body.classList.add('sound-ready');
-
-function setCinematicCaption(message = '') {
-  if (cinematicCaption) cinematicCaption.textContent = message;
-}
 
 function queueIntro(callback, delay) {
   const timer = window.setTimeout(callback, delay);
@@ -586,33 +577,20 @@ function completeIntro() {
   if (introFinished) return;
   introFinished = true;
   clearIntroTimers();
-  resetCinematicStage(introCinematicStage);
-  document.body.classList.remove(
-    'intro-active',
-    'gates-opening',
-    'dragon-approach',
-    'dragon-fire',
-    'intro-revealing',
-    'intro-video-playing',
-    'cinematic-modal-open'
-  );
-  document.body.classList.add('intro-complete');
-  queueChapterIndexSync();
-  setCinematicCaption('');
-  preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
-  window.setTimeout(() => introScreen?.remove(), 260);
-}
-
-function revealSite() {
-  if (introFinished) return;
   startRealmTheme();
-  introCinematicStage?.classList.add('is-bridging');
-  document.body.classList.add('intro-revealing');
-  setCinematicCaption('La fumée se dissipe et révèle le royaume.');
-  queueIntro(completeIntro, reducedMotion ? 220 : 1400);
+  document.body.classList.remove('intro-active');
+  document.body.classList.add('intro-complete');
+  setActiveChapter('maisons');
+  scrollToPageTop();
+  queueChapterIndexSync();
+  preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
+  window.setTimeout(() => {
+    introScreen?.remove();
+    document.body.classList.remove('gates-opening');
+  }, 260);
 }
 
-async function openKingdom() {
+function openKingdom() {
   if (introRunning || introFinished) return;
   introRunning = true;
   createOpeningTextPanels();
@@ -621,39 +599,7 @@ async function openKingdom() {
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
-  setCinematicCaption('Les lourdes portes du château s’ouvrent.');
-
-  if (reducedMotion) {
-    queueIntro(revealSite, 720);
-    return;
-  }
-
-  queueIntro(() => setCinematicCaption('Le gardien ailé surgit derrière le château.'), 3100);
-  queueIntro(() => setCinematicCaption('Le souffle du dragon embrase le passage.'), 6300);
-
-  const result = await playCinematic({
-    stage: introCinematicStage,
-    video: introCinematicVideo,
-    backdrop: introCinematicBackdrop,
-    bodyClass: 'intro-video-playing',
-    maxDuration: 10500,
-    volume: 0.55,
-    playbackRate: 1.15
-  });
-
-  if (result !== 'busy' && !introFinished) revealSite();
-}
-
-function skipIntro() {
-  if (introFinished) return;
-  introRunning = true;
-  clearIntroTimers();
-  if (activeCinematic?.stage === introCinematicStage) {
-    activeCinematic.finish('skipped');
-    return;
-  }
-  setCinematicCaption('Le royaume vous ouvre ses portes.');
-  revealSite();
+  queueIntro(completeIntro, reducedMotion ? 120 : 3900);
 }
 
 function normalizeInvitationCode(value) {
@@ -1015,7 +961,6 @@ function closeInvitation() {
 }
 
 openKingdomButton?.addEventListener('click', openKingdom);
-skipIntroButton?.addEventListener('click', skipIntro);
 soundToggle?.addEventListener('click', toggleSound);
 beginVaultJourneyButton?.addEventListener('click', beginVaultJourney);
 openInvitationButton?.addEventListener('click', openInvitation);
@@ -1024,8 +969,6 @@ invitationCodeForm?.addEventListener('submit', openPersonalInvitation);
 cinematicSkipButtons.forEach((button) => {
   button.addEventListener('click', () => activeCinematic?.finish('skipped'));
 });
-
-preloadCinematic(introCinematicVideo, introCinematicBackdrop);
 
 invitationPopup?.addEventListener('click', (event) => {
   if (event.target === invitationPopup) closeInvitation();
