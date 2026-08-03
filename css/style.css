@@ -4481,6 +4481,11 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     text-wrap: balance;
   }
 
+  .chapter-cover-familiars h2 {
+    width: min(100%, 330px);
+    max-width: none;
+  }
+
   .chapter-cover-subtitle {
     margin: 1.15rem 0 0;
     color: rgba(233,223,201,.62);
