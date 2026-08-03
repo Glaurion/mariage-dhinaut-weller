@@ -730,6 +730,8 @@ function openInvitation() {
   openInvitationButton?.setAttribute('disabled', '');
   closeInvitationButton?.setAttribute('disabled', '');
   setEnvelopeStatus('Le sceau de cire se brise. Votre invitation va s’ouvrir.');
+  realmThemePausedByInactivity = false;
+  fadeThemeTo(0, reducedMotion ? 40 : 450, true);
   playWaxSealBreak();
 
   const sealBreakDelay = reducedMotion ? 20 : 260;
@@ -747,8 +749,8 @@ function openInvitation() {
       } else {
         sessionStorage.removeItem('dhinaut-weller-envelope-transition');
       }
-      sessionStorage.setItem(musicTimeKey, String(realmTheme.currentTime));
-      sessionStorage.setItem(musicHandoffKey, '1');
+      sessionStorage.removeItem(musicTimeKey);
+      sessionStorage.removeItem(musicHandoffKey);
     } catch {}
   }, transitionDelay);
   queueInvitationAnimation(() => {
