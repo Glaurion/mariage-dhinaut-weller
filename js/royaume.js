@@ -1,5 +1,6 @@
 const SOUND_PREFERENCE_KEY = 'dhinaut-weller-sound';
 const MUSIC_TIME_KEY = 'dhinaut-weller-music-time';
+const MUSIC_HANDOFF_KEY = 'dhinaut-weller-music-handoff';
 
 const params = new URLSearchParams(window.location.search);
 const invitationCode = params.get('code')?.trim() || sessionStorage.getItem('dhinaut-weller-invitation-code') || '';
@@ -12,6 +13,17 @@ const soundToggle = document.querySelector('#sound-toggle');
 const supabaseConfig = window.SUPABASE_CONFIG ?? null;
 
 let soundEnabled = localStorage.getItem(SOUND_PREFERENCE_KEY) !== 'off';
+let shouldResumeMusic = false;
+let pageAudioActive = document.visibilityState !== 'hidden';
+let musicPausedByInactivity = false;
+
+try {
+  shouldResumeMusic = sessionStorage.getItem(MUSIC_HANDOFF_KEY) === '1';
+  sessionStorage.removeItem(MUSIC_HANDOFF_KEY);
+  if (!shouldResumeMusic) sessionStorage.removeItem(MUSIC_TIME_KEY);
+} catch {
+  shouldResumeMusic = false;
+}
 
 if (reviewInvitationLink && invitationCode) {
   reviewInvitationLink.href = `invitation.html?code=${encodeURIComponent(invitationCode)}`;
@@ -26,15 +38,43 @@ function updateSoundButton() {
 
 async function startMusic() {
   if (!realmTheme || !soundEnabled) return;
+  if (!pageAudioActive) {
+    musicPausedByInactivity = true;
+    return;
+  }
   realmTheme.volume = 0.11;
-  const savedTime = Number(sessionStorage.getItem(MUSIC_TIME_KEY));
-  if (Number.isFinite(savedTime) && savedTime > 0 && realmTheme.currentTime < 1) realmTheme.currentTime = savedTime;
+  if (shouldResumeMusic) {
+    const savedTime = Number(sessionStorage.getItem(MUSIC_TIME_KEY));
+    if (Number.isFinite(savedTime) && savedTime > 0 && realmTheme.currentTime < 1) realmTheme.currentTime = savedTime;
+    shouldResumeMusic = false;
+  }
   try {
     await realmTheme.play();
   } catch {
     document.addEventListener('pointerdown', startMusic, { once: true });
   }
 }
+
+function setPageAudioActive(isActive) {
+  const nextState = Boolean(isActive && !document.hidden);
+  if (nextState === pageAudioActive) return;
+  pageAudioActive = nextState;
+
+  if (!pageAudioActive) {
+    musicPausedByInactivity = Boolean(realmTheme && !realmTheme.paused);
+    realmTheme?.pause();
+    return;
+  }
+
+  if (soundEnabled && musicPausedByInactivity) startMusic();
+  musicPausedByInactivity = false;
+}
+
+document.addEventListener('visibilitychange', () => {
+  setPageAudioActive(!document.hidden && document.hasFocus());
+});
+window.addEventListener('blur', () => setPageAudioActive(false));
+window.addEventListener('focus', () => setPageAudioActive(!document.hidden));
 
 soundToggle?.addEventListener('click', async () => {
   soundEnabled = !soundEnabled;

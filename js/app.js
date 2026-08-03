@@ -25,6 +25,9 @@ const introCinematicVideo = document.querySelector('#intro-cinematic-video');
 const introCinematicBackdrop = document.querySelector('#intro-cinematic-backdrop');
 const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
+const realmIndex = document.querySelector('.realm-index');
+const realmIndexLinks = [...document.querySelectorAll('.realm-index-links a[href^="#"]')];
+const chapterSections = [...document.querySelectorAll('#maisons, #chronique, #royaume, #lettre-secrete')];
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
@@ -58,6 +61,7 @@ if (companionsGrid && yumeCard) {
 const forceFullMotion = new URLSearchParams(window.location.search).get('motion') === 'full';
 const reducedMotion = !forceFullMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const mobileChapterIndex = window.matchMedia('(max-width: 680px)');
 const connection = navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
 const performanceLite = Boolean(
   connection?.saveData
@@ -69,8 +73,98 @@ const performanceLite = Boolean(
 document.body.classList.toggle('performance-lite', performanceLite);
 document.body.classList.toggle('force-full-motion', forceFullMotion);
 
+let activeChapterId = '';
+let chapterIndexShownAt = 0;
+let lastChapterScrollY = window.scrollY;
+let chapterIndexFrame = 0;
+
+function setActiveChapter(chapterId) {
+  activeChapterId = chapterId;
+  realmIndexLinks.forEach((link) => {
+    const isActive = link.hash === `#${chapterId}`;
+    if (isActive) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+
+function revealChapterIndex(chapterId) {
+  if (!realmIndex || !chapterId) return;
+  setActiveChapter(chapterId);
+  if (!mobileChapterIndex.matches) return;
+
+  chapterIndexShownAt = window.scrollY;
+  lastChapterScrollY = window.scrollY;
+  realmIndex.classList.add('is-chapter-visible');
+}
+
+function hideChapterIndex() {
+  if (!realmIndex || !mobileChapterIndex.matches) return;
+  realmIndex.classList.remove('is-chapter-visible');
+}
+
+function getCurrentChapterId() {
+  if (!chapterSections.length) return '';
+  const activationLine = window.innerHeight * .28;
+  let currentChapter = chapterSections[0];
+
+  chapterSections.forEach((section) => {
+    if (section.getBoundingClientRect().top <= activationLine) currentChapter = section;
+  });
+
+  return currentChapter.id;
+}
+
+function syncChapterIndex() {
+  chapterIndexFrame = 0;
+  if (!mobileChapterIndex.matches || !document.body.classList.contains('intro-complete')) return;
+
+  const currentChapterId = getCurrentChapterId();
+  const currentScrollY = window.scrollY;
+  const isScrollingDown = currentScrollY > lastChapterScrollY + 1;
+
+  if (currentChapterId && currentChapterId !== activeChapterId) {
+    revealChapterIndex(currentChapterId);
+  } else if (isScrollingDown && currentScrollY - chapterIndexShownAt > 72) {
+    hideChapterIndex();
+  }
+
+  lastChapterScrollY = currentScrollY;
+}
+
+function queueChapterIndexSync() {
+  if (chapterIndexFrame) return;
+  chapterIndexFrame = window.requestAnimationFrame(syncChapterIndex);
+}
+
+function handleChapterIndexViewportChange() {
+  if (!realmIndex) return;
+  realmIndex.classList.remove('is-chapter-visible');
+  if (mobileChapterIndex.matches && document.body.classList.contains('intro-complete')) {
+    revealChapterIndex(getCurrentChapterId());
+  }
+}
+
+realmIndexLinks.forEach((link) => {
+  link.addEventListener('click', () => revealChapterIndex(link.hash.slice(1)));
+});
+
+window.addEventListener('scroll', queueChapterIndexSync, { passive: true });
+window.addEventListener('resize', queueChapterIndexSync, { passive: true });
+window.addEventListener('pageshow', () => {
+  if (document.body.classList.contains('intro-complete')) {
+    window.requestAnimationFrame(() => revealChapterIndex(getCurrentChapterId()));
+  }
+});
+
+if (typeof mobileChapterIndex.addEventListener === 'function') {
+  mobileChapterIndex.addEventListener('change', handleChapterIndexViewportChange);
+} else {
+  mobileChapterIndex.addListener(handleChapterIndexViewportChange);
+}
+
 const soundPreferenceKey = 'dhinaut-weller-sound';
 const musicTimeKey = 'dhinaut-weller-music-time';
+const musicHandoffKey = 'dhinaut-weller-music-handoff';
 const realmTheme = new Audio('assets/realm-theme.mp3');
 const castleDoorSound = new Audio('assets/castle-door-opening.mp3');
 realmTheme.preload = 'metadata';
@@ -79,12 +173,10 @@ realmTheme.volume = 0;
 castleDoorSound.preload = 'auto';
 castleDoorSound.volume = 0.24;
 
-realmTheme.addEventListener('loadedmetadata', () => {
-  const savedTime = Number(sessionStorage.getItem(musicTimeKey));
-  if (Number.isFinite(savedTime) && savedTime > 0 && savedTime < realmTheme.duration) {
-    realmTheme.currentTime = savedTime;
-  }
-}, { once: true });
+try {
+  sessionStorage.removeItem(musicTimeKey);
+  sessionStorage.removeItem(musicHandoffKey);
+} catch {}
 
 window.addEventListener('pagehide', () => {
   if (Number.isFinite(realmTheme.currentTime)) {
@@ -97,6 +189,9 @@ let themeFadeFrame = 0;
 let themeFadeGeneration = 0;
 let castleDoorSoundTimer = null;
 let audioContext = null;
+let pageAudioActive = document.visibilityState !== 'hidden';
+let realmThemePausedByInactivity = false;
+let realmThemeVolumeBeforeInactivity = 0.11;
 let introRunning = false;
 let introFinished = false;
 let introTimers = [];
@@ -128,7 +223,7 @@ function updateSoundToggle() {
 
 function syncCinematicSound() {
   cinematicMainVideos.forEach((video) => {
-    video.muted = !soundEnabled;
+    video.muted = !soundEnabled || !pageAudioActive;
   });
 }
 
@@ -179,6 +274,10 @@ function fadeThemeTo(targetVolume, duration = 900, pauseAfter = false) {
 
 async function startRealmTheme() {
   if (!soundEnabled) return;
+  if (!pageAudioActive) {
+    realmThemePausedByInactivity = true;
+    return;
+  }
 
   try {
     if (realmTheme.paused) {
@@ -191,6 +290,45 @@ async function startRealmTheme() {
     updateSoundToggle();
   }
 }
+
+function setPageAudioActive(isActive) {
+  const nextState = Boolean(isActive && !document.hidden);
+  if (nextState === pageAudioActive) return;
+  pageAudioActive = nextState;
+  syncCinematicSound();
+
+  if (!pageAudioActive) {
+    realmThemePausedByInactivity = !realmTheme.paused;
+    realmThemeVolumeBeforeInactivity = realmTheme.volume || 0.11;
+    window.cancelAnimationFrame(themeFadeFrame);
+    themeFadeGeneration += 1;
+    realmTheme.pause();
+    castleDoorSound.pause();
+    window.clearTimeout(castleDoorSoundTimer);
+    castleDoorSoundTimer = null;
+
+    if (audioContext && audioContext.state !== 'closed') {
+      const contextToClose = audioContext;
+      audioContext = null;
+      contextToClose.close().catch(() => {});
+    }
+    return;
+  }
+
+  if (soundEnabled && realmThemePausedByInactivity) {
+    realmTheme.volume = 0;
+    realmTheme.play()
+      .then(() => fadeThemeTo(realmThemeVolumeBeforeInactivity, 500))
+      .catch(() => {});
+  }
+  realmThemePausedByInactivity = false;
+}
+
+document.addEventListener('visibilitychange', () => {
+  setPageAudioActive(!document.hidden && document.hasFocus());
+});
+window.addEventListener('blur', () => setPageAudioActive(false));
+window.addEventListener('focus', () => setPageAudioActive(!document.hidden));
 
 function toggleSound() {
   soundEnabled = !soundEnabled;
@@ -213,7 +351,7 @@ function toggleSound() {
 }
 
 function ensureAudioContext() {
-  if (!soundEnabled) return null;
+  if (!soundEnabled || !pageAudioActive) return null;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return null;
 
@@ -301,7 +439,7 @@ function playFireWhoosh() {
 }
 
 function playCastleDoorSound() {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !pageAudioActive) return;
   window.clearTimeout(castleDoorSoundTimer);
   castleDoorSound.pause();
   castleDoorSound.currentTime = 0.35;
@@ -453,7 +591,7 @@ function playCinematic({ stage, video, backdrop, bodyClass, maxDuration, volume,
     }
   });
 
-  video.muted = !soundEnabled;
+  video.muted = !soundEnabled || !pageAudioActive;
   video.volume = volume;
   video.playbackRate = playbackRate;
   if (activeBackdrop) {
@@ -548,6 +686,7 @@ function completeIntro() {
     'cinematic-modal-open'
   );
   document.body.classList.add('intro-complete');
+  revealChapterIndex('maisons');
   setCinematicCaption('');
   preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
   window.setTimeout(() => introScreen?.remove(), 260);
@@ -963,6 +1102,7 @@ function openInvitation() {
         sessionStorage.removeItem('dhinaut-weller-envelope-transition');
       }
       sessionStorage.setItem(musicTimeKey, String(realmTheme.currentTime));
+      sessionStorage.setItem(musicHandoffKey, '1');
     } catch {}
   }, timing.transition);
   queueInvitationAnimation(() => {

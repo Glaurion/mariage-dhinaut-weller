@@ -15,19 +15,16 @@
   <link rel="preload" as="video" href="assets/cinematics/intro-realm.mp4" type="video/mp4">
   <link rel="preload" as="image" href="assets/dragon-cinematic.webp">
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
-  <link rel="stylesheet" href="css/style.css?v=20260803-2">
+  <link rel="stylesheet" href="css/style.css?v=20260803-5">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/app.js?v=20260803-2" defer></script>
+  <script src="js/app.js?v=20260803-6" defer></script>
 </head>
 <body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
 
 
   <section class="hero" id="intro-screen" aria-labelledby="hero-title">
-      <div class="realm-beyond" aria-hidden="true">
-        <div class="realm-castle"></div>
-      </div>
       <div class="kingdom-gates" aria-hidden="true">
         <div class="kingdom-gate kingdom-gate-dragon">
           <img src="assets/dragon-emblem.webp" alt="">
@@ -82,8 +79,6 @@
           </button>
         </div>
       </div>
-      <button class="intro-skip" id="intro-skip" type="button">Passer l’introduction</button>
-      <p class="cinematic-caption" id="cinematic-caption" role="status" aria-live="polite"></p>
     </section>
 
   <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-label="Couper la musique">
@@ -95,17 +90,28 @@
     <div class="realm-index-inner">
       <a class="realm-index-mark" href="#maisons" aria-label="Commencer la visite">A <span>&amp;</span> B</a>
       <nav class="realm-index-links" aria-label="Chapitres">
-        <a href="#chronique">Notre histoire</a>
-        <a href="#maisons">Les deux maisons</a>
-        <a href="#royaume">Le royaume</a>
-        <a href="#lettre-secrete">La lettre secrète</a>
+        <a href="#maisons" data-chapter="I">Maisons</a>
+        <a href="#chronique" data-chapter="II">Chronique</a>
+        <a href="#royaume" data-chapter="III">Royaume</a>
+        <a href="#lettre-secrete" data-chapter="IV">Lettre</a>
       </nav>
       <p>Descendez jusqu’au bout du royaume pour découvrir la lettre qui vous est destinée.</p>
     </div>
   </header>
 
   <main class="site-content">
-    <section class="section intro" id="maisons">
+    <section class="section intro chapter-section" id="maisons">
+      <div class="chapter-cover chapter-cover-houses reveal">
+        <p class="chapter-cover-kicker">Chapitre I</p>
+        <div class="chapter-cover-emblem chapter-cover-emblem-dual" aria-hidden="true">
+          <img src="assets/dragon-emblem.webp" alt="">
+          <img src="assets/wolf-emblem.webp" alt="">
+        </div>
+        <h2>Les deux Maisons</h2>
+        <p class="chapter-cover-subtitle">Le feu rencontre le Nord</p>
+        <span class="chapter-cover-scroll">Découvrir le chapitre</span>
+      </div>
+
       <div class="section-heading reveal">
         <p class="chapter-label">Chapitre I — Les deux Maisons</p>
         <p class="eyebrow">Les souverains</p>
@@ -185,7 +191,17 @@
       <p class="companion-oath reveal">« Une louve et une dragonne veillent désormais sur un même royaume. »</p>
     </section>
 
-    <section class="section chronicle" id="chronique">
+    <section class="section chronicle chapter-section" id="chronique">
+      <div class="chapter-cover chapter-cover-chronicle reveal">
+        <p class="chapter-cover-kicker">Chapitre II</p>
+        <div class="chapter-cover-emblem chapter-cover-emblem-seal" aria-hidden="true">
+          <img src="assets/wax-seal-dragon-wolf.webp" alt="" loading="lazy" decoding="async">
+        </div>
+        <h2>La Chronique</h2>
+        <p class="chapter-cover-subtitle">Les archives du royaume</p>
+        <span class="chapter-cover-scroll">Découvrir le chapitre</span>
+      </div>
+
       <div class="section-heading reveal">
         <p class="chapter-label">Chapitre II — La chronique</p>
         <p class="eyebrow">Les archives du royaume</p>
@@ -223,7 +239,17 @@
       </div>
     </section>
 
-    <section class="section kingdom" id="royaume">
+    <section class="section kingdom chapter-section" id="royaume">
+      <div class="chapter-cover chapter-cover-kingdom reveal">
+        <p class="chapter-cover-kicker">Chapitre III</p>
+        <div class="chapter-cover-emblem chapter-cover-emblem-castle" aria-hidden="true">
+          <img src="assets/realm-beyond-gates.webp" alt="" loading="lazy" decoding="async">
+        </div>
+        <h2>Le Rassemblement</h2>
+        <p class="chapter-cover-subtitle">Le domaine de l’union</p>
+        <span class="chapter-cover-scroll">Découvrir le chapitre</span>
+      </div>
+
       <div class="kingdom-panel reveal">
         <div class="kingdom-copy">
           <p class="chapter-label">Chapitre III — Le rassemblement</p>
@@ -288,7 +314,17 @@
     </section>
 
     <section class="final-oath" id="lettre-secrete">
-      <div class="reveal">
+      <div class="chapter-cover chapter-cover-letter reveal">
+        <p class="chapter-cover-kicker">Chapitre IV</p>
+        <div class="chapter-cover-emblem chapter-cover-emblem-seal" aria-hidden="true">
+          <img src="assets/wax-seal-dragon-wolf.webp" alt="" loading="lazy" decoding="async">
+        </div>
+        <h2>La Lettre Secrète</h2>
+        <p class="chapter-cover-subtitle">Votre invitation vous attend</p>
+        <span class="chapter-cover-scroll">Découvrir le chapitre</span>
+      </div>
+
+      <div class="final-oath-content reveal">
         <p class="chapter-label">Chapitre IV — La lettre secrète</p>
         <p>Maison Dhinaut-Weller</p>
         <h2>The Wedding Is Coming</h2>
