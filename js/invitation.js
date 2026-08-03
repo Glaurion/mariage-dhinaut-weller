@@ -42,7 +42,6 @@ const summaryList = document.querySelector('#summary-list');
 const confirmRsvpButton = document.querySelector('#confirm-rsvp');
 const rsvpConfirmation = document.querySelector('#rsvp-confirmation');
 const confirmationSealHalo = document.querySelector('.royal-seal-impact-halo');
-const fallingFeather = document.querySelector('.falling-feather');
 const openRealmSummaryButton = document.querySelector('#open-realm-summary');
 const realmTheme = document.querySelector('#realm-theme');
 const soundToggle = document.querySelector('#sound-toggle');
@@ -554,6 +553,8 @@ async function playRoyalSealConfirmation() {
   await waitForTransition(rsvpForm, 'opacity', 720);
   rsvpForm.hidden = true;
   rsvpForm.classList.remove('is-submit-success');
+  document.body.classList.add('response-sealed');
+  scrollToPageTop();
 
   rsvpConfirmation.hidden = false;
   rsvpConfirmation.classList.remove('is-confirmation-visible', 'is-seal-impact', 'is-animation-complete');
@@ -578,9 +579,8 @@ async function playRoyalSealConfirmation() {
   }
 
   rsvpConfirmation.classList.add('is-confirmation-visible');
-  rsvpConfirmation.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
 
-  await waitForAnimation(fallingFeather, 'royalFeatherFall', 3800);
+  await waitForAnimation(confirmationSealHalo, 'royalSealHalo', 1800);
   rsvpConfirmation.classList.add('is-animation-complete');
 }
 

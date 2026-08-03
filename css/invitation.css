@@ -315,6 +315,92 @@ textarea:focus {
   transform: none;
 }
 
+body.response-sealed {
+  height: 100dvh;
+  overflow: hidden;
+  background: #06070a;
+}
+
+body.response-sealed .invitation-arrival-parchment,
+body.response-sealed .back-link,
+body.response-sealed .sealed-letter > :not(#invitation-content),
+body.response-sealed #invitation-content > :not(#rsvp-confirmation) {
+  display: none !important;
+}
+
+body.response-sealed .invitation-shell,
+body.response-sealed .sealed-letter,
+body.response-sealed #invitation-content,
+body.response-sealed .rsvp-confirmation {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
+body.response-sealed .invitation-shell {
+  z-index: 200;
+  max-width: none;
+}
+
+body.response-sealed .sealed-letter {
+  min-height: 100svh;
+  overflow: hidden;
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(127, 31, 36, .16), transparent 18rem),
+    radial-gradient(ellipse at 50% 100%, rgba(196, 154, 82, .07), transparent 30rem),
+    #06070a;
+  box-shadow: none;
+}
+
+body.response-sealed .sealed-letter::before,
+body.response-sealed .sealed-letter::after,
+body.response-sealed .rsvp-confirmation-parchment::before,
+body.response-sealed .rsvp-confirmation-parchment::after {
+  display: none;
+}
+
+body.response-sealed .rsvp-confirmation {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+
+body.response-sealed .rsvp-confirmation-parchment {
+  width: 100%;
+  min-height: 100svh;
+  height: 100dvh;
+  gap: clamp(1.1rem, 4svh, 2rem);
+  padding:
+    max(2rem, env(safe-area-inset-top))
+    7vw
+    max(2rem, env(safe-area-inset-bottom));
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.response-sealed .royal-letter-closing {
+  width: min(76vw, 300px);
+  height: min(57vw, 225px);
+  margin: 0;
+}
+
+body.response-sealed .rsvp-confirmation h2 {
+  max-width: 92vw;
+  font-size: clamp(1.8rem, 9vw, 3.25rem);
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+body.response-sealed .open-realm-summary {
+  width: min(82vw, 310px);
+  margin-top: .35rem;
+}
+
 .rsvp-confirmation-parchment {
   position: relative;
   display: flex;
