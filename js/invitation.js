@@ -43,7 +43,7 @@ const confirmRsvpButton = document.querySelector('#confirm-rsvp');
 const rsvpConfirmation = document.querySelector('#rsvp-confirmation');
 const confirmationSealHalo = document.querySelector('.royal-seal-impact-halo');
 const fallingFeather = document.querySelector('.falling-feather');
-const returnToKingdomButton = document.querySelector('#return-to-kingdom');
+const openRealmSummaryButton = document.querySelector('#open-realm-summary');
 const realmTheme = document.querySelector('#realm-theme');
 const soundToggle = document.querySelector('#sound-toggle');
 
@@ -570,7 +570,7 @@ async function playRoyalSealConfirmation() {
   if (prefersReducedMotion()) {
     triggerImpact();
   } else {
-    const impactFallback = window.setTimeout(triggerImpact, 650);
+    const impactFallback = window.setTimeout(triggerImpact, 1350);
     confirmationSealHalo?.addEventListener('animationstart', () => {
       window.clearTimeout(impactFallback);
       triggerImpact();
@@ -634,10 +634,13 @@ summaryDialog?.addEventListener('close', () => {
   if (summaryDialog.returnValue === 'cancel') pendingPayload = null;
 });
 
-returnToKingdomButton?.addEventListener('click', () => {
+openRealmSummaryButton?.addEventListener('click', () => {
   saveMusicPosition();
   sessionStorage.setItem(MUSIC_HANDOFF_KEY, '1');
-  window.location.assign('index.html');
+  const recapUrl = invitationCode
+    ? `royaume.html?code=${encodeURIComponent(invitationCode)}`
+    : 'royaume.html';
+  window.location.assign(recapUrl);
 });
 
 renderRoleOptions();

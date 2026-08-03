@@ -23,9 +23,9 @@
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260803-1">
-  <link rel="stylesheet" href="css/invitation.css?v=20260803-2">
+  <link rel="stylesheet" href="css/invitation.css?v=20260803-3">
   <script src="js/supabase-config.js"></script>
-  <script src="js/invitation.js?v=20260803-4" type="module" defer></script>
+  <script src="js/invitation.js?v=20260803-5" type="module" defer></script>
 </head>
 <body class="invitation-page">
   <div class="invitation-arrival-parchment" aria-hidden="true">
@@ -158,17 +158,28 @@
           hidden
         >
           <div class="rsvp-confirmation-parchment">
-            <div class="royal-seal-wrapper" id="royal-seal-wrapper" aria-hidden="true">
-              <span class="royal-seal-impact-halo"></span>
-              <img class="royal-confirmation-seal" src="assets/wax-seal-dragon-wolf.webp" alt="">
-              <span class="royal-seal-dust">
-                <i></i><i></i><i></i><i></i><i></i><i></i>
-              </span>
+            <div class="royal-letter-closing" aria-hidden="true">
+              <div class="royal-letter-sheet">
+                <span class="royal-letter-panel royal-letter-panel-top"></span>
+                <span class="royal-letter-panel royal-letter-panel-center">
+                  <i>Réponse au Royaume</i>
+                </span>
+                <span class="royal-letter-panel royal-letter-panel-bottom"></span>
+                <span class="royal-letter-envelope-seams"></span>
+              </div>
+
+              <div class="royal-seal-wrapper" id="royal-seal-wrapper">
+                <span class="royal-seal-impact-halo"></span>
+                <img class="royal-confirmation-seal" src="assets/wax-seal-dragon-wolf.webp" alt="">
+                <span class="royal-seal-dust">
+                  <i></i><i></i><i></i><i></i><i></i><i></i>
+                </span>
+              </div>
             </div>
 
             <h2 id="rsvp-confirmation-title">Votre réponse a été scellée.</h2>
             <p class="rsvp-confirmation-message">Les Corbeaux Royaux ont reçu votre missive.</p>
-            <p class="rsvp-confirmation-archive">Votre présence sera consignée dans les archives du Royaume.</p>
+            <p class="rsvp-confirmation-archive">Votre réponse est désormais consignée dans les archives du Royaume.</p>
 
             <svg class="falling-feather" viewBox="0 0 72 176" aria-hidden="true" focusable="false">
               <defs>
@@ -183,8 +194,8 @@
               <path class="feather-barbs" d="M44 37 19 54m21-1L13 73m25-3L12 91m25-4-21 21m20-4-15 22m22-77 17-17M40 87l20-20M38 104l18-17m-19 34 13-12"></path>
             </svg>
 
-            <button class="button button-ghost return-to-kingdom" id="return-to-kingdom" type="button">
-              Retourner au Royaume
+            <button class="button button-ghost open-realm-summary" id="open-realm-summary" type="button">
+              Voir le récapitulatif du Royaume
             </button>
           </div>
         </section>
