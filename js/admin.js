@@ -219,7 +219,7 @@ document.querySelector('#refresh-data')?.addEventListener('click', () => {
 });
 
 async function loadAllData() {
-  lastRefresh.textContent = 'Les corbeaux rassemblent les registres…';
+  lastRefresh.textContent = 'Les corneilles rassemblent les registres…';
   registryFeedback.textContent = '';
   try {
     const [invitationsResult, emailResult, contentResult] = await Promise.all([

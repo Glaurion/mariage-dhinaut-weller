@@ -20,7 +20,7 @@ Le code `BENDHI` ouvre l’invitation de démonstration. Le code `ADMIN!!!` ouvr
 - invitation personnalisée avec présence, participants, coordonnées, repas, allergies, transport et hébergement ;
 - choix de missions volontaires et récapitulatif avant validation ;
 - réponse unique modifiable, historique des changements et consentement d’affichage ;
-- animation finale de lettre pliée, enveloppe scellée et corbeau vers le château ;
+- animation finale de lettre pliée, enveloppe scellée et corneille vers le château ;
 - page privée du rassemblement avec lieu, programme, cagnotte et participants consentants ;
 - administration avec statistiques, filtres, import Excel/CSV, exports CSV/Excel/PDF, rôles et contenus ;
 - e-mail serveur et PDF personnel via Supabase Edge Function et Resend.

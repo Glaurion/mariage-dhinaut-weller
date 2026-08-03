@@ -651,7 +651,7 @@ function exchangeCodeForLetter(result, code) {
   validatedInvitationCode = code;
   validatedInvitationRoute = result.route;
   if (validatedHousehold) validatedHousehold.textContent = result.household_name;
-  if (invitationCodeError) invitationCodeError.textContent = 'Le corbeau reconnaît votre Maison.';
+  if (invitationCodeError) invitationCodeError.textContent = 'La corneille reconnaît votre Maison.';
   invitationPopup.classList.remove('is-validating');
   invitationPopup.classList.add('is-raven-departing');
   ravenDeliveryStage?.setAttribute('aria-busy', 'true');
@@ -661,7 +661,7 @@ function exchangeCodeForLetter(result, code) {
     invitationPopup.classList.add('is-envelope-ready');
     openInvitationButton?.removeAttribute('disabled');
     openInvitationButton?.closest('.delivered-envelope')?.setAttribute('aria-hidden', 'false');
-    setEnvelopeStatus('Le corbeau vous remet l’enveloppe royale. Touchez le sceau pour poursuivre.');
+    setEnvelopeStatus('La corneille vous remet l’enveloppe royale. Touchez le sceau pour poursuivre.');
     ravenDeliveryStage?.removeAttribute('aria-busy');
     closeInvitationButton?.removeAttribute('disabled');
     letterExchangeRunning = false;
@@ -676,7 +676,7 @@ async function openPersonalInvitation(event) {
   const now = Date.now();
   if (now < nextCodeAttemptAt) {
     const remaining = Math.max(1, Math.ceil((nextCodeAttemptAt - now) / 1000));
-    if (invitationCodeError) invitationCodeError.textContent = `Le corbeau attend encore ${remaining} s.`;
+    if (invitationCodeError) invitationCodeError.textContent = `La corneille attend encore ${remaining} s.`;
     return;
   }
 
@@ -685,7 +685,7 @@ async function openPersonalInvitation(event) {
     wrongCodeAttempts += 1;
     const delay = Math.min(7000, 900 + (wrongCodeAttempts * 700));
     nextCodeAttemptAt = Date.now() + delay;
-    showWrongCode('Le corbeau refuse ce code : il ne correspond à aucun serment connu.', delay);
+    showWrongCode('La corneille refuse ce code : il ne correspond à aucun serment connu.', delay);
     return;
   }
 
@@ -694,7 +694,7 @@ async function openPersonalInvitation(event) {
   ravenDeliveryStage?.setAttribute('aria-busy', 'true');
   invitationCodeInput.setAttribute('disabled', '');
   submitButton?.setAttribute('disabled', '');
-  if (submitButton) submitButton.textContent = 'Le corbeau vérifie…';
+  if (submitButton) submitButton.textContent = 'La corneille vérifie…';
   if (invitationCodeError) invitationCodeError.textContent = '';
 
   try {
@@ -705,7 +705,7 @@ async function openPersonalInvitation(event) {
       nextCodeAttemptAt = Date.now() + delay;
       const message = wrongCodeAttempts % 2 === 0
         ? 'Le troisième œil reste fermé : cette Maison lui est inconnue.'
-        : 'Le corbeau ne reconnaît pas cette Maison.';
+        : 'La corneille ne reconnaît pas cette Maison.';
       showWrongCode(message, delay);
       return;
     }

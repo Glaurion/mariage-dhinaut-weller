@@ -177,7 +177,7 @@ async function loadRealmSummary() {
     renderSummary(data);
   } catch (error) {
     console.error('Impossible de charger les archives privées :', error);
-    gatheringStatus.textContent = 'Les corbeaux n’ont pas encore rapporté les dernières archives. Les informations générales restent disponibles.';
+    gatheringStatus.textContent = 'Les corneilles n’ont pas encore rapporté les dernières archives. Les informations générales restent disponibles.';
     renderParticipants([]);
   }
 }

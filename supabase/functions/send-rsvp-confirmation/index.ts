@@ -153,7 +153,7 @@ Deno.serve(async (request) => {
         html: `
           <div style="background:#090b10;padding:32px;color:#e9dfc9;font-family:Georgia,serif">
             <div style="max-width:620px;margin:auto;border:1px solid #c49a52;padding:36px">
-              <p style="color:#e7c57d;letter-spacing:.16em;text-transform:uppercase;font-size:12px">Message porté par les corbeaux</p>
+              <p style="color:#e7c57d;letter-spacing:.16em;text-transform:uppercase;font-size:12px">Message porté par les corneilles</p>
               <h1 style="font-weight:normal">Bonjour ${escapeHtml(firstName)},</h1>
               <p>Le Conseil Restreint confirme que ${escapeHtml(statusText)} pour le mariage d’Annaël et Benjamin.</p>
               <p><strong>Participants enregistrés :</strong> ${Number(response.participants_count ?? 0)}</p>
