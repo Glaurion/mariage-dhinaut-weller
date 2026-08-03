@@ -27,7 +27,9 @@ const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
 const realmIndex = document.querySelector('.realm-index');
 const realmIndexLinks = [...document.querySelectorAll('.realm-index-links a[href^="#"]')];
-const chapterCovers = [...document.querySelectorAll('.chapter-cover')];
+const chapterSections = realmIndexLinks
+  .map((link) => document.querySelector(link.hash))
+  .filter(Boolean);
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
@@ -61,7 +63,6 @@ if (companionsGrid && yumeCard) {
 const forceFullMotion = new URLSearchParams(window.location.search).get('motion') === 'full';
 const reducedMotion = !forceFullMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const mobileChapterIndex = window.matchMedia('(max-width: 680px)');
 const connection = navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
 const performanceLite = Boolean(
   connection?.saveData
@@ -84,78 +85,31 @@ function setActiveChapter(chapterId) {
 }
 
 function revealChapterIndex(chapterId) {
-  if (!realmIndex || !chapterId) return;
+  if (!chapterId) return;
   setActiveChapter(chapterId);
-  if (!mobileChapterIndex.matches) return;
-  setChapterIndexProgress(1);
 }
 
-function hideChapterIndex() {
-  if (!realmIndex || !mobileChapterIndex.matches) return;
-  setChapterIndexProgress(0);
-}
+function getCurrentChapterId() {
+  const indexOffset = (realmIndex?.offsetHeight ?? 0) + Math.min(window.innerHeight * .22, 180);
+  let currentSection = chapterSections[0];
 
-function setChapterIndexProgress(progress) {
-  if (!realmIndex || !mobileChapterIndex.matches) return;
-  const safeProgress = Math.min(1, Math.max(0, progress));
-  const travelDistance = realmIndex.offsetHeight + 28;
-  const verticalShift = -(1 - safeProgress) * travelDistance;
+  chapterSections.forEach((section) => {
+    if (section.getBoundingClientRect().top <= indexOffset) currentSection = section;
+  });
 
-  realmIndex.style.setProperty('--chapter-index-opacity', safeProgress.toFixed(3));
-  realmIndex.style.setProperty('--chapter-index-shift', `${verticalShift.toFixed(2)}px`);
-  realmIndex.classList.toggle('is-chapter-visible', safeProgress > .01);
-}
-
-function getChapterIndexState() {
-  const viewportHeight = Math.max(window.innerHeight, 1);
-  const entranceStart = viewportHeight * .82;
-  const entranceEnd = viewportHeight * .58;
-  const exitStart = viewportHeight * .72;
-  const exitEnd = Math.max(64, viewportHeight * .08);
-  const entranceDistance = Math.max(1, entranceStart - entranceEnd);
-  const exitDistance = Math.max(1, exitStart - exitEnd);
-
-  return chapterCovers.reduce((currentState, cover) => {
-    const bounds = cover.getBoundingClientRect();
-    if (bounds.bottom <= exitEnd || bounds.top >= entranceStart) return currentState;
-
-    const entranceProgress = Math.min(1, Math.max(0, (entranceStart - bounds.top) / entranceDistance));
-    const exitProgress = Math.min(1, Math.max(0, (bounds.bottom - exitEnd) / exitDistance));
-    const progress = Math.min(entranceProgress, exitProgress);
-
-    if (currentState && currentState.progress >= progress) return currentState;
-    return { cover, progress };
-  }, null);
+  return currentSection?.id;
 }
 
 function syncChapterIndex() {
   chapterIndexFrame = 0;
-  if (!mobileChapterIndex.matches || !document.body.classList.contains('intro-complete')) return;
-
-  const chapterState = getChapterIndexState();
-  const visibleChapterId = chapterState?.cover.closest('[id]')?.id;
-
-  if (visibleChapterId) {
-    setActiveChapter(visibleChapterId);
-    setChapterIndexProgress(chapterState.progress);
-  } else {
-    hideChapterIndex();
-  }
+  if (!document.body.classList.contains('intro-complete')) return;
+  const visibleChapterId = getCurrentChapterId();
+  if (visibleChapterId) setActiveChapter(visibleChapterId);
 }
 
 function queueChapterIndexSync() {
   if (chapterIndexFrame) return;
   chapterIndexFrame = window.requestAnimationFrame(syncChapterIndex);
-}
-
-function handleChapterIndexViewportChange() {
-  if (!realmIndex) return;
-  realmIndex.classList.remove('is-chapter-visible');
-  realmIndex.style.removeProperty('--chapter-index-opacity');
-  realmIndex.style.removeProperty('--chapter-index-shift');
-  if (mobileChapterIndex.matches && document.body.classList.contains('intro-complete')) {
-    queueChapterIndexSync();
-  }
 }
 
 realmIndexLinks.forEach((link) => {
@@ -169,12 +123,6 @@ window.addEventListener('pageshow', () => {
     queueChapterIndexSync();
   }
 });
-
-if (typeof mobileChapterIndex.addEventListener === 'function') {
-  mobileChapterIndex.addEventListener('change', handleChapterIndexViewportChange);
-} else {
-  mobileChapterIndex.addListener(handleChapterIndexViewportChange);
-}
 
 const soundPreferenceKey = 'dhinaut-weller-sound';
 const musicTimeKey = 'dhinaut-weller-music-time';
