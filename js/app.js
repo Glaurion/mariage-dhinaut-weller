@@ -27,7 +27,7 @@ const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
 const realmIndex = document.querySelector('.realm-index');
 const realmIndexLinks = [...document.querySelectorAll('.realm-index-links a[href^="#"]')];
-const chapterSections = [...document.querySelectorAll('#maisons, #familiers, #chronique, #royaume, #lettre-secrete')];
+const chapterCovers = [...document.querySelectorAll('.chapter-cover')];
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
@@ -73,13 +73,9 @@ const performanceLite = Boolean(
 document.body.classList.toggle('performance-lite', performanceLite);
 document.body.classList.toggle('force-full-motion', forceFullMotion);
 
-let activeChapterId = '';
-let chapterIndexShownAt = 0;
-let lastChapterScrollY = window.scrollY;
 let chapterIndexFrame = 0;
 
 function setActiveChapter(chapterId) {
-  activeChapterId = chapterId;
   realmIndexLinks.forEach((link) => {
     const isActive = link.hash === `#${chapterId}`;
     if (isActive) link.setAttribute('aria-current', 'page');
@@ -91,9 +87,6 @@ function revealChapterIndex(chapterId) {
   if (!realmIndex || !chapterId) return;
   setActiveChapter(chapterId);
   if (!mobileChapterIndex.matches) return;
-
-  chapterIndexShownAt = window.scrollY;
-  lastChapterScrollY = window.scrollY;
   realmIndex.classList.add('is-chapter-visible');
 }
 
@@ -102,33 +95,28 @@ function hideChapterIndex() {
   realmIndex.classList.remove('is-chapter-visible');
 }
 
-function getCurrentChapterId() {
-  if (!chapterSections.length) return '';
-  const activationLine = window.innerHeight * .28;
-  let currentChapter = chapterSections[0];
+function getVisibleChapterCover() {
+  const visibilityTop = Math.max(72, window.innerHeight * .08);
+  const visibilityBottom = window.innerHeight * .72;
 
-  chapterSections.forEach((section) => {
-    if (section.getBoundingClientRect().top <= activationLine) currentChapter = section;
+  return chapterCovers.find((cover) => {
+    const bounds = cover.getBoundingClientRect();
+    return bounds.bottom > visibilityTop && bounds.top < visibilityBottom;
   });
-
-  return currentChapter.id;
 }
 
 function syncChapterIndex() {
   chapterIndexFrame = 0;
   if (!mobileChapterIndex.matches || !document.body.classList.contains('intro-complete')) return;
 
-  const currentChapterId = getCurrentChapterId();
-  const currentScrollY = window.scrollY;
-  const isScrollingDown = currentScrollY > lastChapterScrollY + 1;
+  const visibleCover = getVisibleChapterCover();
+  const visibleChapterId = visibleCover?.closest('[id]')?.id;
 
-  if (currentChapterId && currentChapterId !== activeChapterId) {
-    revealChapterIndex(currentChapterId);
-  } else if (isScrollingDown && currentScrollY - chapterIndexShownAt > 72) {
+  if (visibleChapterId) {
+    revealChapterIndex(visibleChapterId);
+  } else {
     hideChapterIndex();
   }
-
-  lastChapterScrollY = currentScrollY;
 }
 
 function queueChapterIndexSync() {
@@ -140,7 +128,7 @@ function handleChapterIndexViewportChange() {
   if (!realmIndex) return;
   realmIndex.classList.remove('is-chapter-visible');
   if (mobileChapterIndex.matches && document.body.classList.contains('intro-complete')) {
-    revealChapterIndex(getCurrentChapterId());
+    queueChapterIndexSync();
   }
 }
 
@@ -152,7 +140,7 @@ window.addEventListener('scroll', queueChapterIndexSync, { passive: true });
 window.addEventListener('resize', queueChapterIndexSync, { passive: true });
 window.addEventListener('pageshow', () => {
   if (document.body.classList.contains('intro-complete')) {
-    window.requestAnimationFrame(() => revealChapterIndex(getCurrentChapterId()));
+    queueChapterIndexSync();
   }
 });
 
@@ -686,7 +674,7 @@ function completeIntro() {
     'cinematic-modal-open'
   );
   document.body.classList.add('intro-complete');
-  revealChapterIndex('maisons');
+  queueChapterIndexSync();
   setCinematicCaption('');
   preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
   window.setTimeout(() => introScreen?.remove(), 260);
