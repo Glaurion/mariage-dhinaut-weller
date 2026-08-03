@@ -4618,15 +4618,16 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   pointer-events: none;
 }
 
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope::after,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .envelope-back,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .envelope-lining,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .envelope-pocket,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .envelope-side-flap,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .envelope-flap,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .royal-letter-preview,
-.treasure-popup.is-envelope-ready:not(.is-breaking) .royal-envelope .seal-intact {
-  opacity: 0;
+.treasure-popup.is-envelope-ready .royal-envelope::after,
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-back,
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-lining,
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-pocket,
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-side-flap,
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-flap,
+.treasure-popup.is-envelope-ready .royal-envelope .seal-intact {
+  visibility: hidden;
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 .treasure-popup.is-envelope-ready .royal-envelope .seal-open-button {
@@ -4642,6 +4643,12 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   opacity: 0;
   filter: brightness(.5) saturate(.55) blur(1.5px);
   transform: translate(-50%, -50%) scale(.975);
+}
+
+.treasure-popup.is-breaking:not(.is-letter-rising) .royal-envelope .royal-letter-preview {
+  z-index: 14;
+  opacity: 1;
+  transform: translateY(10%) scale(.82, .25) rotate(.12deg);
 }
 
 @keyframes photographicSealTension {

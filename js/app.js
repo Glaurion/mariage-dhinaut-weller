@@ -1036,13 +1036,13 @@ function openInvitation() {
   playWaxSealBreak();
 
   const timing = reducedMotion
-    ? { break: 30, open: 80, rise: 150, unfold: 240, transition: 360, navigate: 560 }
-    : { break: 260, open: 790, rise: 2250, unfold: 3520, transition: 4920, navigate: 5880 };
+    ? { break: 30, open: 60, rise: 100, unfold: 180, transition: 300, navigate: 460 }
+    : { break: 440, open: 620, rise: 920, unfold: 2200, transition: 3600, navigate: 4550 };
 
   queueInvitationAnimation(() => invitationPopup.classList.add('is-breaking'), timing.break);
   queueInvitationAnimation(() => {
     invitationPopup.classList.add('is-envelope-opening');
-    setEnvelopeStatus('Les rabats de l’enveloppe s’ouvrent.');
+    setEnvelopeStatus('Le sceau cède et la missive se libère.');
     playPaperUnfold();
   }, timing.open);
   queueInvitationAnimation(() => {
