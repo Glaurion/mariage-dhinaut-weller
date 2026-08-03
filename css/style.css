@@ -2272,6 +2272,17 @@ body.intro-video-playing .cinematic-cinders {
     box-shadow: none;
   }
 
+  .intro-cinematic-stage .cinematic-video-main,
+  .intro-cinematic-stage .cinematic-frame {
+    width: 56.25dvh;
+    height: 100dvh;
+    max-width: none;
+  }
+
+  .intro-cinematic-stage .cinematic-video-main {
+    object-position: center;
+  }
+
   .cinematic-frame {
     border: 0;
     box-shadow: inset 0 0 64px rgba(0, 0, 0, .38);
