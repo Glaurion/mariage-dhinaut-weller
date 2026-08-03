@@ -1980,16 +1980,20 @@ body.gates-opening .hero-content-door-copy-right {
 }
 
 .adventure-start-button span {
+  color: #171009;
   font-family: "Cinzel", serif;
   font-size: .78rem;
+  font-weight: 700;
   letter-spacing: .14em;
+  text-shadow: 0 1px rgba(255, 244, 214, .28);
   text-transform: uppercase;
 }
 
 .adventure-start-button small {
-  color: rgba(25, 19, 13, .72);
+  color: rgba(23, 16, 9, .9);
   font-family: "Cormorant Garamond", serif;
   font-size: .84rem;
+  font-weight: 600;
   font-style: italic;
   letter-spacing: .04em;
   text-transform: none;
@@ -2334,7 +2338,7 @@ body.intro-video-playing .cinematic-cinders {
   }
 
   .adventure-start-button span {
-    font-size: .68rem;
+    font-size: .74rem;
   }
 }
 
