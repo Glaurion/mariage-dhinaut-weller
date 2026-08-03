@@ -4209,6 +4209,8 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
 
 @media (max-width: 680px) {
   .realm-index {
+    --chapter-index-opacity: 0;
+    --chapter-index-shift: calc(-100% - 1.2rem);
     position: fixed;
     top: max(.55rem, env(safe-area-inset-top));
     right: max(.55rem, env(safe-area-inset-right));
@@ -4224,6 +4226,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     visibility: hidden;
     pointer-events: none;
     transform: translateY(calc(-100% - 1.2rem));
+    will-change: opacity, transform;
     transition:
       opacity .24s ease,
       visibility 0s linear .42s,
@@ -4239,11 +4242,14 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   }
 
   body.intro-complete .realm-index.is-chapter-visible {
-    opacity: 1;
+    opacity: var(--chapter-index-opacity);
     visibility: visible;
     pointer-events: auto;
-    transform: none;
-    transition-delay: 0s;
+    transform: translate3d(0, var(--chapter-index-shift), 0);
+    transition:
+      opacity .14s linear,
+      visibility 0s,
+      transform .14s linear;
   }
 
   .realm-index-inner {

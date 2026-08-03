@@ -87,33 +87,57 @@ function revealChapterIndex(chapterId) {
   if (!realmIndex || !chapterId) return;
   setActiveChapter(chapterId);
   if (!mobileChapterIndex.matches) return;
-  realmIndex.classList.add('is-chapter-visible');
+  setChapterIndexProgress(1);
 }
 
 function hideChapterIndex() {
   if (!realmIndex || !mobileChapterIndex.matches) return;
-  realmIndex.classList.remove('is-chapter-visible');
+  setChapterIndexProgress(0);
 }
 
-function getVisibleChapterCover() {
-  const visibilityTop = Math.max(72, window.innerHeight * .08);
-  const visibilityBottom = window.innerHeight * .72;
+function setChapterIndexProgress(progress) {
+  if (!realmIndex || !mobileChapterIndex.matches) return;
+  const safeProgress = Math.min(1, Math.max(0, progress));
+  const travelDistance = realmIndex.offsetHeight + 28;
+  const verticalShift = -(1 - safeProgress) * travelDistance;
 
-  return chapterCovers.find((cover) => {
+  realmIndex.style.setProperty('--chapter-index-opacity', safeProgress.toFixed(3));
+  realmIndex.style.setProperty('--chapter-index-shift', `${verticalShift.toFixed(2)}px`);
+  realmIndex.classList.toggle('is-chapter-visible', safeProgress > .01);
+}
+
+function getChapterIndexState() {
+  const viewportHeight = Math.max(window.innerHeight, 1);
+  const entranceStart = viewportHeight * .82;
+  const entranceEnd = viewportHeight * .58;
+  const exitStart = viewportHeight * .72;
+  const exitEnd = Math.max(64, viewportHeight * .08);
+  const entranceDistance = Math.max(1, entranceStart - entranceEnd);
+  const exitDistance = Math.max(1, exitStart - exitEnd);
+
+  return chapterCovers.reduce((currentState, cover) => {
     const bounds = cover.getBoundingClientRect();
-    return bounds.bottom > visibilityTop && bounds.top < visibilityBottom;
-  });
+    if (bounds.bottom <= exitEnd || bounds.top >= entranceStart) return currentState;
+
+    const entranceProgress = Math.min(1, Math.max(0, (entranceStart - bounds.top) / entranceDistance));
+    const exitProgress = Math.min(1, Math.max(0, (bounds.bottom - exitEnd) / exitDistance));
+    const progress = Math.min(entranceProgress, exitProgress);
+
+    if (currentState && currentState.progress >= progress) return currentState;
+    return { cover, progress };
+  }, null);
 }
 
 function syncChapterIndex() {
   chapterIndexFrame = 0;
   if (!mobileChapterIndex.matches || !document.body.classList.contains('intro-complete')) return;
 
-  const visibleCover = getVisibleChapterCover();
-  const visibleChapterId = visibleCover?.closest('[id]')?.id;
+  const chapterState = getChapterIndexState();
+  const visibleChapterId = chapterState?.cover.closest('[id]')?.id;
 
   if (visibleChapterId) {
-    revealChapterIndex(visibleChapterId);
+    setActiveChapter(visibleChapterId);
+    setChapterIndexProgress(chapterState.progress);
   } else {
     hideChapterIndex();
   }
@@ -127,6 +151,8 @@ function queueChapterIndexSync() {
 function handleChapterIndexViewportChange() {
   if (!realmIndex) return;
   realmIndex.classList.remove('is-chapter-visible');
+  realmIndex.style.removeProperty('--chapter-index-opacity');
+  realmIndex.style.removeProperty('--chapter-index-shift');
   if (mobileChapterIndex.matches && document.body.classList.contains('intro-complete')) {
     queueChapterIndexSync();
   }
