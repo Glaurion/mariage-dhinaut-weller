@@ -115,6 +115,8 @@ const musicTimeKey = 'dhinaut-weller-music-time';
 const musicHandoffKey = 'dhinaut-weller-music-handoff';
 const realmTheme = new Audio('assets/realm-theme.mp3');
 const castleDoorSound = new Audio('assets/castle-door-opening.mp3');
+const castleDoorOpeningDuration = 1950;
+const castleDoorSoundDuration = 1900;
 realmTheme.preload = 'metadata';
 realmTheme.loop = true;
 realmTheme.volume = 0;
@@ -378,7 +380,7 @@ function playCastleDoorSound() {
   castleDoorSound.pause();
   castleDoorSound.currentTime = 0.35;
   castleDoorSound.play().catch(() => {});
-  castleDoorSoundTimer = window.setTimeout(() => castleDoorSound.pause(), 4300);
+  castleDoorSoundTimer = window.setTimeout(() => castleDoorSound.pause(), castleDoorSoundDuration);
 }
 
 function playWaxSealBreak() {
@@ -457,7 +459,7 @@ function openKingdom() {
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
-  queueIntro(completeIntro, reducedMotion ? 120 : 3900);
+  queueIntro(completeIntro, reducedMotion ? 120 : castleDoorOpeningDuration);
 }
 
 function normalizeInvitationCode(value) {
