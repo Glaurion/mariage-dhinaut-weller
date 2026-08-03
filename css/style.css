@@ -3861,7 +3861,17 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   transform: scale(.95);
 }
 
+.treasure-popup.is-seal-broken .seal-intact {
+  opacity: 0;
+  transform: scale(.92);
+}
+
 .treasure-popup.is-breaking .seal-cracks {
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+
+.treasure-popup.is-seal-broken .seal-cracks {
   opacity: 0;
   transition: opacity .12s ease;
 }
@@ -3870,11 +3880,23 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   animation: royalSealBreakLeft .65s cubic-bezier(.22, .76, .24, 1) both;
 }
 
+.treasure-popup.is-seal-broken .royal-envelope .seal-fragment-left {
+  animation: royalSealBreakLeft .65s cubic-bezier(.22, .76, .24, 1) both;
+}
+
 .treasure-popup.is-breaking .royal-envelope .seal-fragment-center {
   animation: royalSealBreakCenter .67s cubic-bezier(.22, .76, .24, 1) both;
 }
 
+.treasure-popup.is-seal-broken .royal-envelope .seal-fragment-center {
+  animation: royalSealBreakCenter .67s cubic-bezier(.22, .76, .24, 1) both;
+}
+
 .treasure-popup.is-breaking .royal-envelope .seal-fragment-right {
+  animation: royalSealBreakRight .64s cubic-bezier(.22, .76, .24, 1) both;
+}
+
+.treasure-popup.is-seal-broken .royal-envelope .seal-fragment-right {
   animation: royalSealBreakRight .64s cubic-bezier(.22, .76, .24, 1) both;
 }
 
@@ -3906,6 +3928,10 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
   animation: royalWaxCrumb .72s cubic-bezier(.22, .65, .25, 1) forwards;
 }
 
+.treasure-popup.is-seal-broken .royal-envelope .seal-crumbs i {
+  animation: royalWaxCrumb .72s cubic-bezier(.22, .65, .25, 1) forwards;
+}
+
 .seal-crumbs i:nth-child(1) { --crumb-x: -48px; --crumb-y: 52px; --crumb-r: -170deg; --crumb-size: 8px; }
 .seal-crumbs i:nth-child(2) { --crumb-x: 42px; --crumb-y: 58px; --crumb-r: 190deg; --crumb-size: 10px; animation-delay: .03s !important; }
 .seal-crumbs i:nth-child(3) { --crumb-x: -25px; --crumb-y: 74px; --crumb-r: -240deg; --crumb-size: 6px; animation-delay: .08s !important; }
@@ -3928,6 +3954,10 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
 }
 
 .treasure-popup.is-breaking .wax-dust i {
+  animation: royalWaxDust .85s ease-out forwards;
+}
+
+.treasure-popup.is-seal-broken .wax-dust i {
   animation: royalWaxDust .85s ease-out forwards;
 }
 
@@ -4654,8 +4684,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
 .treasure-popup.is-envelope-ready .royal-envelope .envelope-lining,
 .treasure-popup.is-envelope-ready .royal-envelope .envelope-pocket,
 .treasure-popup.is-envelope-ready .royal-envelope .envelope-side-flap,
-.treasure-popup.is-envelope-ready .royal-envelope .envelope-flap,
-.treasure-popup.is-envelope-ready .royal-envelope .seal-intact {
+.treasure-popup.is-envelope-ready .royal-envelope .envelope-flap {
   visibility: hidden;
   opacity: 0 !important;
   pointer-events: none;
@@ -4663,6 +4692,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
 
 .treasure-popup.is-envelope-ready .royal-envelope .seal-open-button {
   top: 61%;
+  left: 54%;
   width: clamp(76px, 12vw, 94px);
 }
 

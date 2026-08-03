@@ -500,6 +500,7 @@ function resetInvitationPopup() {
     'mistake-raven',
     'is-envelope-ready',
     'is-seal-cracking',
+    'is-seal-broken',
     'is-breaking',
     'is-envelope-opening',
     'is-letter-rising',
@@ -731,8 +732,13 @@ function openInvitation() {
   setEnvelopeStatus('Le sceau de cire se brise. Votre invitation va s’ouvrir.');
   playWaxSealBreak();
 
-  const transitionDelay = reducedMotion ? 40 : 420;
-  const navigationDelay = reducedMotion ? 120 : 680;
+  const sealBreakDelay = reducedMotion ? 20 : 260;
+  const transitionDelay = reducedMotion ? 40 : 620;
+  const navigationDelay = reducedMotion ? 120 : 1050;
+
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-seal-broken');
+  }, sealBreakDelay);
 
   queueInvitationAnimation(() => {
     try {
