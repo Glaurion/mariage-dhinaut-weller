@@ -4314,7 +4314,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
 
   .realm-index-links {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: .22rem;
     min-height: 0;
     padding: 0;
@@ -4329,7 +4329,7 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     border: 1px solid transparent;
     border-radius: 9px;
     color: rgba(233,223,201,.58);
-    font-size: clamp(.46rem, 2vw, .54rem);
+    font-size: clamp(.42rem, 1.7vw, .5rem);
     line-height: 1;
     letter-spacing: .06em;
     text-align: center;
@@ -4427,6 +4427,14 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     background:
       radial-gradient(circle at 50% 44%, rgba(154,111,49,.16), transparent 38%),
       repeating-linear-gradient(135deg, transparent 0 32px, rgba(244,230,203,.012) 32px 33px),
+      #090b10;
+  }
+
+  .chapter-cover-familiars {
+    background:
+      radial-gradient(circle at 30% 45%, rgba(127,31,36,.2), transparent 40%),
+      radial-gradient(circle at 70% 45%, rgba(78,108,133,.2), transparent 40%),
+      repeating-linear-gradient(45deg, transparent 0 36px, rgba(244,230,203,.01) 36px 37px),
       #090b10;
   }
 

@@ -27,7 +27,7 @@ const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
 const realmIndex = document.querySelector('.realm-index');
 const realmIndexLinks = [...document.querySelectorAll('.realm-index-links a[href^="#"]')];
-const chapterSections = [...document.querySelectorAll('#maisons, #chronique, #royaume, #lettre-secrete')];
+const chapterSections = [...document.querySelectorAll('#maisons, #familiers, #chronique, #royaume, #lettre-secrete')];
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
