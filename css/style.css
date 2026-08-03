@@ -741,7 +741,7 @@ body.gates-opening .hero-content-door-copy-right {
 
 .houses-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: 2rem;
   width: min(100%, 1180px);
@@ -833,52 +833,6 @@ body.gates-opening .hero-content-door-copy-right {
   border-top: 1px solid var(--border);
   color: var(--paper-soft);
   font-size: 1.15rem;
-}
-
-.house-colors {
-  display: flex;
-  justify-content: center;
-  gap: .55rem;
-}
-
-.house-colors span {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 50%;
-}
-
-.house-north .house-colors span:nth-child(1) { background: #080a0e; }
-.house-north .house-colors span:nth-child(2) { background: #b9c3cc; }
-.house-north .house-colors span:nth-child(3) { background: #536f88; }
-.house-flame .house-colors span:nth-child(1) { background: #761d23; }
-.house-flame .house-colors span:nth-child(2) { background: #c49a52; }
-.house-flame .house-colors span:nth-child(3) { background: #080a0e; }
-
-.union-mark {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--gold);
-}
-
-.union-mark span {
-  width: 1px;
-  height: 90px;
-  background: linear-gradient(transparent, var(--gold), transparent);
-}
-
-.union-mark b {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  margin: .8rem 0;
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  font-family: var(--font-body);
-  font-size: 1.8rem;
-  font-weight: 400;
 }
 
 .chronicle {
@@ -1884,19 +1838,6 @@ body.gates-opening .hero-content-door-copy-right {
   .houses-grid {
     grid-template-columns: 1fr;
     max-width: 620px;
-  }
-
-  .union-mark {
-    flex-direction: row;
-  }
-
-  .union-mark span {
-    width: 75px;
-    height: 1px;
-  }
-
-  .union-mark b {
-    margin: 0 .8rem;
   }
 
   .kingdom-panel {
