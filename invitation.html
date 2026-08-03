@@ -22,7 +22,7 @@
   <link rel="preload" as="image" href="assets/realm-beyond-gates.webp">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260803-1">
-  <link rel="stylesheet" href="css/invitation.css?v=20260803-4">
+  <link rel="stylesheet" href="css/invitation.css?v=20260803-5">
   <script src="js/supabase-config.js"></script>
   <script src="js/invitation.js?v=20260803-6" type="module" defer></script>
 </head>
@@ -37,7 +37,14 @@
 
     <section class="sealed-letter" id="sealed-letter" aria-labelledby="invitation-title">
       <div class="letter-border" aria-hidden="true"></div>
-      <img class="wax-seal large" src="assets/wax-seal-dragon-wolf.webp" alt="" aria-hidden="true">
+      <div class="opened-letter-fold opened-letter-fold-top" aria-hidden="true">
+        <span class="opened-wax-fragment opened-wax-fragment-top-left"><img src="assets/wax-seal-dragon-wolf.webp" alt=""></span>
+        <span class="opened-wax-fragment opened-wax-fragment-top-right"><img src="assets/wax-seal-dragon-wolf.webp" alt=""></span>
+      </div>
+      <div class="opened-letter-fold opened-letter-fold-bottom" aria-hidden="true">
+        <span class="opened-wax-fragment opened-wax-fragment-bottom-left"><img src="assets/wax-seal-dragon-wolf.webp" alt=""></span>
+        <span class="opened-wax-fragment opened-wax-fragment-bottom-right"><img src="assets/wax-seal-dragon-wolf.webp" alt=""></span>
+      </div>
 
       <p class="eyebrow">Message porté par les corneilles</p>
       <h1 id="invitation-title">Une Maison est appelée</h1>
