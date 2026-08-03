@@ -28,25 +28,16 @@ const chapterSections = realmIndexLinks
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
-const invitationTrigger = document.querySelector('#invitation');
-const beginVaultJourneyButton = document.querySelector('#begin-vault-journey');
-const vaultCinematicStage = document.querySelector('#vault-cinematic-stage');
-const vaultCinematicVideo = document.querySelector('#vault-cinematic-video');
-const vaultCinematicBackdrop = document.querySelector('#vault-cinematic-backdrop');
+const summonRavenButton = document.querySelector('#summon-raven');
 const invitationPopup = document.querySelector('#invitation-popup');
-const treasureStage = document.querySelector('#treasure-stage');
-const unlockCinematicStage = document.querySelector('#unlock-cinematic-stage');
-const unlockCinematicVideo = document.querySelector('#unlock-cinematic-video');
-const unlockCinematicBackdrop = document.querySelector('#unlock-cinematic-backdrop');
-const cinematicMainVideos = document.querySelectorAll('.cinematic-video-main');
-const cinematicSkipButtons = document.querySelectorAll('[data-cinematic-skip]');
+const ravenDeliveryStage = document.querySelector('#raven-delivery-stage');
 const openInvitationButton = document.querySelector('#open-invitation');
 const closeInvitationButton = document.querySelector('.invitation-popup-close');
 const invitationCodeForm = document.querySelector('#invitation-code-form');
 const invitationCodeInput = document.querySelector('#invitation-code');
 const invitationCodeError = document.querySelector('#invitation-code-error');
-const dragonWarning = document.querySelector('#dragon-warning');
-const dragonWarningText = dragonWarning?.querySelector('p');
+const ravenWarning = document.querySelector('#raven-warning');
+const ravenWarningText = ravenWarning?.querySelector('p');
 const validatedHousehold = document.querySelector('#validated-household');
 const envelopeStatus = document.querySelector('#envelope-status');
 
@@ -152,9 +143,8 @@ let realmThemeVolumeBeforeInactivity = 0.11;
 let introRunning = false;
 let introFinished = false;
 let introTimers = [];
-let activeCinematic = null;
-let vaultJourneyRunning = false;
-let unlockCinematicRunning = false;
+let ravenDeliveryRunning = false;
+let letterExchangeRunning = false;
 let invitationWasShown = false;
 let supabaseClient = null;
 let validatedInvitationCode = '';
@@ -178,14 +168,7 @@ function updateSoundToggle() {
   }
 }
 
-function syncCinematicSound() {
-  cinematicMainVideos.forEach((video) => {
-    video.muted = !soundEnabled || !pageAudioActive;
-  });
-}
-
 updateSoundToggle();
-syncCinematicSound();
 document.body.classList.add('sound-ready');
 
 function queueIntro(callback, delay) {
@@ -248,7 +231,6 @@ function setPageAudioActive(isActive) {
   const nextState = Boolean(isActive && !document.hidden);
   if (nextState === pageAudioActive) return;
   pageAudioActive = nextState;
-  syncCinematicSound();
 
   if (!pageAudioActive) {
     realmThemePausedByInactivity = !realmTheme.paused;
@@ -293,7 +275,6 @@ function toggleSound() {
   }
 
   updateSoundToggle();
-  syncCinematicSound();
 
   if (soundEnabled) {
     startRealmTheme();
@@ -437,128 +418,6 @@ function playWaxSealBreak() {
   });
 }
 
-function waitForCinematic(delay) {
-  return new Promise((resolve) => window.setTimeout(resolve, delay));
-}
-
-function preloadCinematic(video, backdrop) {
-  const mediaToPreload = [video];
-  if (backdrop && window.matchMedia('(min-width: 761px)').matches && !performanceLite) {
-    mediaToPreload.push(backdrop);
-  }
-
-  mediaToPreload.forEach((media) => {
-    if (!media) return;
-    if (media.preload !== 'auto') media.preload = 'auto';
-    if (media.readyState === 0) media.load();
-  });
-}
-
-function resetCinematicStage(stage) {
-  if (!stage) return;
-  stage.classList.remove('is-active', 'is-bridging', 'is-leaving');
-  stage.setAttribute('aria-hidden', 'true');
-  stage.querySelectorAll('video').forEach((video) => {
-    video.pause();
-    try {
-      video.currentTime = 0;
-    } catch {
-      video.load();
-    }
-  });
-}
-
-function playCinematic({ stage, video, backdrop, bodyClass, maxDuration, volume, playbackRate = 1 }) {
-  if (!stage || !video || reducedMotion) return Promise.resolve('reduced');
-  if (activeCinematic) return Promise.resolve('busy');
-  const activeBackdrop = backdrop && window.matchMedia('(min-width: 761px)').matches && !performanceLite
-    ? backdrop
-    : null;
-
-  preloadCinematic(video, activeBackdrop);
-  stage.classList.remove('is-leaving', 'is-bridging');
-  stage.setAttribute('aria-hidden', 'false');
-  void stage.offsetWidth;
-  stage.classList.add('is-active');
-  document.body.classList.add('cinematic-modal-open');
-  if (bodyClass) document.body.classList.add(bodyClass);
-
-  [video, activeBackdrop].forEach((media) => {
-    if (!media) return;
-    media.pause();
-    try {
-      media.currentTime = 0;
-    } catch {
-      media.load();
-    }
-  });
-
-  video.muted = !soundEnabled || !pageAudioActive;
-  video.volume = volume;
-  video.playbackRate = playbackRate;
-  if (activeBackdrop) {
-    activeBackdrop.muted = true;
-    activeBackdrop.volume = 0;
-    activeBackdrop.playbackRate = playbackRate;
-  }
-
-  return new Promise((resolve) => {
-    let finished = false;
-    let timeout = 0;
-
-    const syncBackdrop = () => {
-      if (!activeBackdrop || activeBackdrop.readyState < 2 || activeBackdrop.seeking) return;
-      if (Math.abs(activeBackdrop.currentTime - video.currentTime) < 0.24) return;
-      try {
-        activeBackdrop.currentTime = video.currentTime;
-      } catch {
-        activeBackdrop.pause();
-      }
-    };
-
-    const finish = (reason = 'ended') => {
-      if (finished) return;
-      finished = true;
-      window.clearTimeout(timeout);
-      video.removeEventListener('ended', handleEnded);
-      video.removeEventListener('error', handleError);
-      video.removeEventListener('timeupdate', syncBackdrop);
-      video.pause();
-      activeBackdrop?.pause();
-      if (activeCinematic?.stage === stage) activeCinematic = null;
-      resolve(reason);
-    };
-
-    const handleEnded = () => finish('ended');
-    const handleError = () => finish('error');
-
-    activeCinematic = { stage, finish };
-    video.addEventListener('ended', handleEnded);
-    video.addEventListener('error', handleError);
-    video.addEventListener('timeupdate', syncBackdrop);
-    timeout = window.setTimeout(() => finish('timeout'), maxDuration);
-
-    activeBackdrop?.play().catch(() => {});
-    video.play().catch(() => {
-      video.muted = true;
-      video.play().catch(() => finish('error'));
-    });
-  });
-}
-
-async function fadeOutCinematic(stage, bodyClass, duration = 900) {
-  if (!stage) return;
-  stage.classList.add('is-bridging');
-  await waitForCinematic(duration);
-  stage.classList.add('is-leaving');
-  await waitForCinematic(220);
-  resetCinematicStage(stage);
-  if (bodyClass) document.body.classList.remove(bodyClass);
-  if (!activeCinematic && !document.querySelector('.cinematic-video-stage.is-active')) {
-    document.body.classList.remove('cinematic-modal-open');
-  }
-}
-
 function createOpeningTextPanels() {
   const heroContent = introScreen?.querySelector('.hero-content');
   if (!heroContent || introScreen.querySelector('.hero-content-door-copy')) return;
@@ -583,7 +442,6 @@ function completeIntro() {
   setActiveChapter('maisons');
   scrollToPageTop();
   queueChapterIndexSync();
-  preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
   window.setTimeout(() => {
     introScreen?.remove();
     document.body.classList.remove('gates-opening');
@@ -626,53 +484,40 @@ function setEnvelopeStatus(message = '') {
 }
 
 function resetInvitationPopup() {
-  if (activeCinematic?.stage === vaultCinematicStage || activeCinematic?.stage === unlockCinematicStage) {
-    activeCinematic.finish('cancelled');
-  }
   invitationWasShown = false;
-  vaultJourneyRunning = false;
-  unlockCinematicRunning = false;
+  ravenDeliveryRunning = false;
+  letterExchangeRunning = false;
   window.clearTimeout(warningTimer);
   clearInvitationAnimationTimers();
-  resetCinematicStage(vaultCinematicStage);
-  resetCinematicStage(unlockCinematicStage);
   invitationPopup?.classList.remove(
     'is-visible',
+    'is-raven-arriving',
+    'is-raven-landed',
+    'is-raven-departing',
     'is-validating',
-    'mistake-smoke',
-    'mistake-stare',
-    'is-unlocking',
-    'is-chest-open',
+    'mistake-raven',
     'is-envelope-ready',
     'is-seal-cracking',
     'is-breaking',
     'is-envelope-opening',
     'is-letter-rising',
     'is-letter-unfolding',
-    'is-page-transition',
-    'is-cinematic-arrival',
-    'is-cinematic-revealed',
-    'is-unlocking-video',
-    'is-envelope-video-match'
+    'is-page-transition'
   );
   invitationPopup?.setAttribute('aria-hidden', 'true');
-  treasureStage?.removeAttribute('aria-busy');
+  ravenDeliveryStage?.removeAttribute('aria-busy');
   openInvitationButton?.setAttribute('disabled', '');
   closeInvitationButton?.removeAttribute('disabled');
-  openInvitationButton?.closest('.chest-envelope')?.setAttribute('aria-hidden', 'true');
+  openInvitationButton?.closest('.delivered-envelope')?.setAttribute('aria-hidden', 'true');
   invitationCodeInput?.removeAttribute('disabled');
   const submitButton = invitationCodeForm?.querySelector('button[type="submit"]');
   submitButton?.removeAttribute('disabled');
-  beginVaultJourneyButton?.removeAttribute('disabled');
-  if (submitButton) submitButton.textContent = 'Défier le dragon';
+  summonRavenButton?.removeAttribute('disabled');
+  if (submitButton) submitButton.textContent = 'Présenter le code';
   if (invitationCodeError) invitationCodeError.textContent = '';
+  ravenWarning?.setAttribute('aria-hidden', 'true');
   setEnvelopeStatus('');
-  document.body.classList.remove(
-    'invitation-modal-open',
-    'vault-cinematic-playing',
-    'unlock-cinematic-playing',
-    'cinematic-modal-open'
-  );
+  document.body.classList.remove('invitation-modal-open');
   validatedInvitationCode = '';
   validatedInvitationRoute = '';
 }
@@ -686,56 +531,29 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-function showInvitationPopup({ focusCode = true, cinematicArrival = false } = {}) {
+function showInvitationPopup() {
   if (!invitationPopup || invitationWasShown) return;
   invitationWasShown = true;
-  if (cinematicArrival) invitationPopup.classList.add('is-cinematic-arrival');
   invitationPopup.setAttribute('aria-hidden', 'false');
-  invitationPopup.classList.add('is-visible');
+  invitationPopup.classList.add('is-visible', 'is-raven-arriving');
   document.body.classList.add('invitation-modal-open');
-  preloadCinematic(unlockCinematicVideo, unlockCinematicBackdrop);
 
-  if (cinematicArrival) {
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => invitationPopup.classList.add('is-cinematic-revealed'));
-    });
-  }
-
-  if (focusCode) {
-    window.setTimeout(() => invitationCodeInput?.focus({ preventScroll: true }), reducedMotion ? 0 : 520);
-  }
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.remove('is-raven-arriving');
+    invitationPopup.classList.add('is-raven-landed');
+    ravenDeliveryRunning = false;
+    summonRavenButton?.removeAttribute('disabled');
+    invitationCodeInput?.focus({ preventScroll: true });
+  }, reducedMotion ? 80 : 1900);
 }
 
-async function beginVaultJourney() {
-  if (vaultJourneyRunning || invitationPopup?.classList.contains('is-visible')) return;
-  vaultJourneyRunning = true;
-  beginVaultJourneyButton?.setAttribute('disabled', '');
+function summonRaven() {
+  if (ravenDeliveryRunning || invitationPopup?.classList.contains('is-visible')) return;
+  ravenDeliveryRunning = true;
+  summonRavenButton?.setAttribute('disabled', '');
   ensureAudioContext();
   startRealmTheme();
-  if (soundEnabled) fadeThemeTo(0.035, 650);
-
-  const result = await playCinematic({
-    stage: vaultCinematicStage,
-    video: vaultCinematicVideo,
-    backdrop: vaultCinematicBackdrop,
-    bodyClass: 'vault-cinematic-playing',
-    maxDuration: 9000,
-    volume: 0.58
-  });
-
-  if (result === 'busy' || result === 'cancelled') {
-    vaultJourneyRunning = false;
-    beginVaultJourneyButton?.removeAttribute('disabled');
-    return;
-  }
-
-  showInvitationPopup({ focusCode: false, cinematicArrival: !reducedMotion });
-  await fadeOutCinematic(vaultCinematicStage, 'vault-cinematic-playing', reducedMotion ? 0 : 880);
-  invitationPopup?.classList.remove('is-cinematic-arrival', 'is-cinematic-revealed');
-  vaultJourneyRunning = false;
-  beginVaultJourneyButton?.removeAttribute('disabled');
-  if (soundEnabled) fadeThemeTo(0.11, 1400);
-  window.setTimeout(() => invitationCodeInput?.focus({ preventScroll: true }), reducedMotion ? 0 : 260);
+  showInvitationPopup();
 }
 
 async function initialiseSupabase() {
@@ -798,74 +616,55 @@ function restoreCodeForm(delay) {
   const submitButton = invitationCodeForm?.querySelector('button[type="submit"]');
   window.setTimeout(() => {
     invitationPopup?.classList.remove('is-validating');
-    treasureStage?.removeAttribute('aria-busy');
+    ravenDeliveryStage?.removeAttribute('aria-busy');
     invitationCodeInput?.removeAttribute('disabled');
     submitButton?.removeAttribute('disabled');
-    if (submitButton) submitButton.textContent = 'Défier le dragon';
+    if (submitButton) submitButton.textContent = 'Présenter le code';
     invitationCodeInput?.focus({ preventScroll: true });
   }, delay);
 }
 
 function showWrongCode(message, delay) {
   if (!invitationPopup) return;
-  const animationClass = wrongCodeAttempts % 2 === 0 ? 'mistake-stare' : 'mistake-smoke';
-  invitationPopup.classList.remove('mistake-smoke', 'mistake-stare');
+  invitationPopup.classList.remove('mistake-raven');
   void invitationPopup.offsetWidth;
-  invitationPopup.classList.add(animationClass);
-  if (dragonWarningText) dragonWarningText.textContent = message;
-  dragonWarning?.setAttribute('aria-hidden', 'false');
+  invitationPopup.classList.add('mistake-raven');
+  if (ravenWarningText) ravenWarningText.textContent = message;
+  ravenWarning?.setAttribute('aria-hidden', 'false');
   if (invitationCodeError) invitationCodeError.textContent = `${message} Nouvelle tentative dans ${Math.ceil(delay / 1000)} s.`;
 
   window.clearTimeout(warningTimer);
   warningTimer = window.setTimeout(() => {
-    invitationPopup.classList.remove(animationClass);
-    dragonWarning?.setAttribute('aria-hidden', 'true');
+    invitationPopup.classList.remove('mistake-raven');
+    ravenWarning?.setAttribute('aria-hidden', 'true');
   }, 1900);
 
   restoreCodeForm(delay);
 }
 
-async function unlockTreasure(result, code) {
-  if (!invitationPopup || unlockCinematicRunning) return;
-  unlockCinematicRunning = true;
+function exchangeCodeForLetter(result, code) {
+  if (!invitationPopup || letterExchangeRunning) return;
+  letterExchangeRunning = true;
   clearInvitationAnimationTimers();
   validatedInvitationCode = code;
   validatedInvitationRoute = result.route;
   if (validatedHousehold) validatedHousehold.textContent = result.household_name;
-  if (invitationCodeError) invitationCodeError.textContent = 'Le dragon reconnaît votre Maison.';
+  if (invitationCodeError) invitationCodeError.textContent = 'Le corbeau reconnaît votre Maison.';
   invitationPopup.classList.remove('is-validating');
-  invitationPopup.classList.add('is-unlocking-video');
-  treasureStage?.setAttribute('aria-busy', 'true');
+  invitationPopup.classList.add('is-raven-departing');
+  ravenDeliveryStage?.setAttribute('aria-busy', 'true');
   closeInvitationButton?.setAttribute('disabled', '');
-  if (soundEnabled) fadeThemeTo(0.025, 600);
 
-  const cinematicResult = await playCinematic({
-    stage: unlockCinematicStage,
-    video: unlockCinematicVideo,
-    backdrop: unlockCinematicBackdrop,
-    bodyClass: 'unlock-cinematic-playing',
-    maxDuration: 11000,
-    volume: 0.62,
-    playbackRate: 1.05
-  });
-
-  if (cinematicResult === 'busy' || cinematicResult === 'cancelled') {
-    unlockCinematicRunning = false;
-    return;
-  }
-
-  invitationPopup.classList.add('is-unlocking', 'is-chest-open', 'is-envelope-ready', 'is-envelope-video-match');
-  openInvitationButton?.removeAttribute('disabled');
-  openInvitationButton?.closest('.chest-envelope')?.setAttribute('aria-hidden', 'false');
-  setEnvelopeStatus('L’enveloppe royale est devant vous. Brisez son sceau pour poursuivre.');
-
-  await fadeOutCinematic(unlockCinematicStage, 'unlock-cinematic-playing', reducedMotion ? 0 : 920);
-  invitationPopup.classList.remove('is-unlocking-video', 'is-envelope-video-match');
-  treasureStage?.removeAttribute('aria-busy');
-  closeInvitationButton?.removeAttribute('disabled');
-  unlockCinematicRunning = false;
-  if (soundEnabled) fadeThemeTo(0.11, 1500);
-  window.setTimeout(() => openInvitationButton?.focus({ preventScroll: true }), reducedMotion ? 0 : 300);
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-envelope-ready');
+    openInvitationButton?.removeAttribute('disabled');
+    openInvitationButton?.closest('.delivered-envelope')?.setAttribute('aria-hidden', 'false');
+    setEnvelopeStatus('Le corbeau vous remet l’enveloppe royale. Touchez le sceau pour poursuivre.');
+    ravenDeliveryStage?.removeAttribute('aria-busy');
+    closeInvitationButton?.removeAttribute('disabled');
+    letterExchangeRunning = false;
+    openInvitationButton?.focus({ preventScroll: true });
+  }, reducedMotion ? 80 : 780);
 }
 
 async function openPersonalInvitation(event) {
@@ -875,7 +674,7 @@ async function openPersonalInvitation(event) {
   const now = Date.now();
   if (now < nextCodeAttemptAt) {
     const remaining = Math.max(1, Math.ceil((nextCodeAttemptAt - now) / 1000));
-    if (invitationCodeError) invitationCodeError.textContent = `Le dragon garde le silence encore ${remaining} s.`;
+    if (invitationCodeError) invitationCodeError.textContent = `Le corbeau attend encore ${remaining} s.`;
     return;
   }
 
@@ -884,16 +683,16 @@ async function openPersonalInvitation(event) {
     wrongCodeAttempts += 1;
     const delay = Math.min(7000, 900 + (wrongCodeAttempts * 700));
     nextCodeAttemptAt = Date.now() + delay;
-    showWrongCode('Le dragon soupire des cendres : ce code ne ressemble à aucun serment connu.', delay);
+    showWrongCode('Le corbeau refuse ce code : il ne correspond à aucun serment connu.', delay);
     return;
   }
 
   const submitButton = invitationCodeForm?.querySelector('button[type="submit"]');
   invitationPopup.classList.add('is-validating');
-  treasureStage?.setAttribute('aria-busy', 'true');
+  ravenDeliveryStage?.setAttribute('aria-busy', 'true');
   invitationCodeInput.setAttribute('disabled', '');
   submitButton?.setAttribute('disabled', '');
-  if (submitButton) submitButton.textContent = 'Le dragon écoute…';
+  if (submitButton) submitButton.textContent = 'Le corbeau vérifie…';
   if (invitationCodeError) invitationCodeError.textContent = '';
 
   try {
@@ -903,15 +702,15 @@ async function openPersonalInvitation(event) {
       const delay = Math.min(8000, 1100 + (wrongCodeAttempts * 850));
       nextCodeAttemptAt = Date.now() + delay;
       const message = wrongCodeAttempts % 2 === 0
-        ? 'Le dragon vous regarde fixement. Il ne reconnaît pas cette Maison.'
-        : 'Une fumée noire s’échappe de ses narines : le code est incorrect.';
+        ? 'Le troisième œil reste fermé : cette Maison lui est inconnue.'
+        : 'Le corbeau ne reconnaît pas cette Maison.';
       showWrongCode(message, delay);
       return;
     }
 
     wrongCodeAttempts = 0;
     nextCodeAttemptAt = 0;
-    unlockTreasure(result, code);
+    exchangeCodeForLetter(result, code);
   } catch (error) {
     console.error('Impossible de vérifier le code :', error);
     if (invitationCodeError) {
@@ -953,7 +752,7 @@ function openInvitation() {
 
 function closeInvitation() {
   if (!invitationPopup) return;
-  if (invitationPopup.classList.contains('is-seal-cracking') || unlockCinematicRunning) return;
+  if (invitationPopup.classList.contains('is-seal-cracking') || letterExchangeRunning) return;
   invitationPopup.classList.remove('is-visible');
   invitationPopup.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('invitation-modal-open');
@@ -962,13 +761,10 @@ function closeInvitation() {
 
 openKingdomButton?.addEventListener('click', openKingdom);
 soundToggle?.addEventListener('click', toggleSound);
-beginVaultJourneyButton?.addEventListener('click', beginVaultJourney);
+summonRavenButton?.addEventListener('click', summonRaven);
 openInvitationButton?.addEventListener('click', openInvitation);
 closeInvitationButton?.addEventListener('click', closeInvitation);
 invitationCodeForm?.addEventListener('submit', openPersonalInvitation);
-cinematicSkipButtons.forEach((button) => {
-  button.addEventListener('click', () => activeCinematic?.finish('skipped'));
-});
 
 invitationPopup?.addEventListener('click', (event) => {
   if (event.target === invitationPopup) closeInvitation();
@@ -993,24 +789,6 @@ if ('IntersectionObserver' in window) {
   );
 
   revealElements.forEach((element) => revealObserver.observe(element));
-
-  if (invitationTrigger) {
-    const invitationObserver = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
-        invitationObserver.disconnect();
-      },
-      { threshold: 0.5 }
-    );
-
-    window.requestAnimationFrame(() => invitationObserver.observe(invitationTrigger));
-  }
 } else {
   revealElements.forEach((element) => element.classList.add('is-visible'));
-  window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
-      preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
-    }
-  }, { passive: true });
 }

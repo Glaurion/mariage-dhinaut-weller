@@ -13,10 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
-  <link rel="stylesheet" href="css/style.css?v=20260803-17">
+  <link rel="stylesheet" href="css/style.css?v=20260803-18">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/app.js?v=20260803-13" defer></script>
+  <script src="js/app.js?v=20260803-14" defer></script>
 </head>
 <body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
@@ -249,72 +249,31 @@
         <p>Maison Dhinaut-Weller</p>
         <h2>The Wedding Is Coming</h2>
         <span>Annaël &amp; Benjamin · 2028</span>
-        <button class="button button-primary adventure-start-button" id="begin-vault-journey" type="button">
-          <span>Commencer votre aventure</span>
-          <small>Suivre le gardien jusqu’au coffre</small>
+        <button class="button button-primary adventure-start-button" id="summon-raven" type="button">
+          <span>Appeler le corbeau</span>
+          <small>Recevoir la missive royale</small>
         </button>
       </div>
     </section>
 
-    <div class="invitation-trigger" id="invitation" aria-hidden="true"></div>
-
   </main>
 
-  <section class="cinematic-video-stage vault-cinematic-stage" id="vault-cinematic-stage" aria-label="Voyage vers le coffre du dragon" aria-hidden="true">
-    <video class="cinematic-video-backdrop" id="vault-cinematic-backdrop" preload="metadata" playsinline muted tabindex="-1">
-      <source src="assets/cinematics/journey-to-vault.mp4" type="video/mp4">
-    </video>
-    <video class="cinematic-video-main" id="vault-cinematic-video" preload="metadata" playsinline tabindex="-1">
-      <source src="assets/cinematics/journey-to-vault.mp4" type="video/mp4">
-    </video>
-    <div class="cinematic-frame" aria-hidden="true"></div>
-    <div class="cinematic-smoke-bridge" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  </section>
+  <section class="invitation-popup treasure-popup raven-popup" id="invitation-popup" role="dialog" aria-modal="true" aria-labelledby="invitation-popup-title" aria-hidden="true">
+    <div class="invitation-popup-panel treasure-popup-panel raven-popup-panel">
+      <button class="invitation-popup-close" type="button" aria-label="Fermer la missive">×</button>
 
-  <section class="invitation-popup treasure-popup" id="invitation-popup" role="dialog" aria-modal="true" aria-labelledby="invitation-popup-title" aria-hidden="true">
-    <div class="cinematic-video-stage unlock-cinematic-stage" id="unlock-cinematic-stage" aria-hidden="true">
-      <video class="cinematic-video-backdrop" id="unlock-cinematic-backdrop" preload="metadata" playsinline muted tabindex="-1">
-        <source src="assets/cinematics/unlock-chest.mp4" type="video/mp4">
-      </video>
-      <video class="cinematic-video-main" id="unlock-cinematic-video" preload="metadata" playsinline tabindex="-1">
-        <source src="assets/cinematics/unlock-chest.mp4" type="video/mp4">
-      </video>
-      <div class="cinematic-frame" aria-hidden="true"></div>
-      <div class="cinematic-golden-bridge" aria-hidden="true"></div>
-    </div>
-    <div class="invitation-popup-panel treasure-popup-panel">
-      <button class="invitation-popup-close" type="button" aria-label="Fermer le coffre">×</button>
-
-      <div class="letter-introduction vault-introduction">
-        <p class="eyebrow">Au plus profond du royaume</p>
-        <h2 id="invitation-popup-title">Le trésor du dragon</h2>
-        <p>Le gardien ne remettra la lettre qu’à la Maison capable de prononcer son code.</p>
-      </div>
-
-      <div class="treasure-stage" id="treasure-stage">
-        <img class="treasure-scene-image" src="assets/treasure-code-scene.webp" alt="" decoding="async">
-        <div class="guardian-dragon" aria-hidden="true">
-          <img src="assets/dragon-cinematic.webp" alt="">
-          <span class="guardian-eye guardian-eye-left"></span>
-          <span class="guardian-eye guardian-eye-right"></span>
-        </div>
-        <div class="treasure-aura" aria-hidden="true"></div>
-
-        <div class="treasure-chest" aria-hidden="true">
-          <div class="chest-lid">
-            <span class="chest-lid-band"></span>
-            <span class="chest-lid-rivets"></span>
-          </div>
-          <div class="chest-body">
-            <span class="chest-panel"></span>
-            <span class="chest-lock"><i></i></span>
-          </div>
-          <span class="chest-chain chest-chain-left"></span>
-          <span class="chest-chain chest-chain-right"></span>
-          <span class="chest-dust"></span>
+      <div class="raven-delivery-stage" id="raven-delivery-stage">
+        <div class="raven-messenger-visual" aria-hidden="true">
+          <img src="assets/three-eyed-raven-messenger.webp" alt="">
         </div>
 
-        <form class="treasure-code-form" id="invitation-code-form">
+        <div class="letter-introduction raven-introduction">
+          <p class="eyebrow">Message porté par les corbeaux</p>
+          <h2 id="invitation-popup-title">Le corbeau à trois yeux</h2>
+          <p>Le messager remettra la lettre à la Maison capable de lui confier son code.</p>
+        </div>
+
+        <form class="treasure-code-form raven-code-form" id="invitation-code-form">
           <label for="invitation-code">Code de votre Maison</label>
           <div class="treasure-code-control">
             <input
@@ -331,18 +290,18 @@
               aria-describedby="invitation-code-help invitation-code-error"
               required
             >
-            <button class="button button-primary" type="submit">Défier le dragon</button>
+            <button class="button button-primary" type="submit">Présenter le code</button>
           </div>
           <p class="invitation-code-help" id="invitation-code-help">Trois lettres du prénom, puis trois lettres du nom. Accents, espaces et tirets sont ignorés.</p>
           <p class="invitation-code-error" id="invitation-code-error" aria-live="polite"></p>
         </form>
 
-        <div class="dragon-warning" id="dragon-warning" aria-hidden="true">
-          <span class="dragon-warning-smoke"></span>
-          <p>Le dragon vous observe.</p>
+        <div class="raven-warning" id="raven-warning" aria-hidden="true">
+          <span aria-hidden="true">✦</span>
+          <p>Le messager attend.</p>
         </div>
 
-        <div class="chest-envelope" aria-hidden="true">
+        <div class="chest-envelope delivered-envelope" aria-hidden="true">
           <div class="envelope-focus-light" aria-hidden="true"></div>
 
           <div class="royal-envelope-ritual">
