@@ -12,12 +12,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="preload" as="video" href="assets/cinematics/intro-realm.mp4" type="video/mp4">
   <link rel="preload" as="image" href="assets/dragon-cinematic.webp">
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
-  <link rel="stylesheet" href="css/style.css?v=20260802-1">
+  <link rel="stylesheet" href="css/style.css?v=20260803-2">
   <link rel="stylesheet" href="css/pets.css?v=20260729-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/app.js?v=20260802-1" defer></script>
+  <script src="js/app.js?v=20260803-2" defer></script>
 </head>
 <body class="intro-active">
   <div class="embers" aria-hidden="true"></div>
@@ -34,6 +35,16 @@
         <div class="kingdom-gate kingdom-gate-wolf">
           <img src="assets/wolf-emblem.webp" alt="">
         </div>
+      </div>
+      <div class="cinematic-video-stage intro-cinematic-stage" id="intro-cinematic-stage" aria-hidden="true">
+        <video class="cinematic-video-backdrop" id="intro-cinematic-backdrop" preload="metadata" playsinline muted tabindex="-1">
+          <source src="assets/cinematics/intro-realm.mp4" type="video/mp4">
+        </video>
+        <video class="cinematic-video-main" id="intro-cinematic-video" preload="auto" playsinline tabindex="-1">
+          <source src="assets/cinematics/intro-realm.mp4" type="video/mp4">
+        </video>
+        <div class="cinematic-frame" aria-hidden="true"></div>
+        <div class="cinematic-smoke-bridge" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       </div>
       <div class="hero-vignette" aria-hidden="true"></div>
       <div class="cinematic-dragon" aria-hidden="true">
@@ -282,6 +293,10 @@
         <p>Maison Dhinaut-Weller</p>
         <h2>The Wedding Is Coming</h2>
         <span>Annaël &amp; Benjamin · 2028</span>
+        <button class="button button-primary adventure-start-button" id="begin-vault-journey" type="button">
+          <span>Commencer votre aventure</span>
+          <small>Suivre le gardien jusqu’au coffre</small>
+        </button>
       </div>
     </section>
 
@@ -289,7 +304,32 @@
 
   </main>
 
+  <section class="cinematic-video-stage vault-cinematic-stage" id="vault-cinematic-stage" aria-label="Voyage vers le coffre du dragon" aria-hidden="true">
+    <video class="cinematic-video-backdrop" id="vault-cinematic-backdrop" preload="metadata" playsinline muted tabindex="-1">
+      <source src="assets/cinematics/journey-to-vault.mp4" type="video/mp4">
+    </video>
+    <video class="cinematic-video-main" id="vault-cinematic-video" preload="metadata" playsinline tabindex="-1">
+      <source src="assets/cinematics/journey-to-vault.mp4" type="video/mp4">
+    </video>
+    <div class="cinematic-frame" aria-hidden="true"></div>
+    <div class="cinematic-smoke-bridge" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <p class="cinematic-stage-caption" role="status">Le gardien vous conduit vers la crypte.</p>
+    <button class="cinematic-stage-skip" type="button" data-cinematic-skip>Passer la cinématique</button>
+  </section>
+
   <section class="invitation-popup treasure-popup" id="invitation-popup" role="dialog" aria-modal="true" aria-labelledby="invitation-popup-title" aria-hidden="true">
+    <div class="cinematic-video-stage unlock-cinematic-stage" id="unlock-cinematic-stage" aria-hidden="true">
+      <video class="cinematic-video-backdrop" id="unlock-cinematic-backdrop" preload="metadata" playsinline muted tabindex="-1">
+        <source src="assets/cinematics/unlock-chest.mp4" type="video/mp4">
+      </video>
+      <video class="cinematic-video-main" id="unlock-cinematic-video" preload="metadata" playsinline tabindex="-1">
+        <source src="assets/cinematics/unlock-chest.mp4" type="video/mp4">
+      </video>
+      <div class="cinematic-frame" aria-hidden="true"></div>
+      <div class="cinematic-golden-bridge" aria-hidden="true"></div>
+      <p class="cinematic-stage-caption" role="status">Les chaînes cèdent. Le trésor de votre Maison s’éveille.</p>
+      <button class="cinematic-stage-skip" type="button" data-cinematic-skip>Passer la cinématique</button>
+    </div>
     <div class="invitation-popup-panel treasure-popup-panel">
       <button class="invitation-popup-close" type="button" aria-label="Fermer le coffre">×</button>
 
@@ -350,36 +390,76 @@
         </div>
 
         <div class="chest-envelope" aria-hidden="true">
-          <div class="sealed-envelope">
-            <div class="envelope-back" aria-hidden="true"></div>
+          <div class="envelope-focus-light" aria-hidden="true"></div>
 
-            <article class="letter-sheet">
-              <div class="letter-crest" aria-hidden="true">A <span>&amp;</span> B</div>
-              <p class="eyebrow">La lettre vous reconnaît</p>
-              <h2>Bienvenue, <span id="validated-household">Maison invitée</span></h2>
-              <p>Votre invitation personnelle est prête à être déployée.</p>
-              <button class="button button-primary invitation-enter-button" id="enter-invitation" type="button">Lire mon invitation</button>
-            </article>
+          <div class="royal-envelope-ritual">
+            <div class="sealed-envelope royal-envelope" id="royal-envelope">
+              <div class="envelope-back" aria-hidden="true">
+                <span class="envelope-weathering"></span>
+              </div>
+              <div class="envelope-lining" aria-hidden="true"></div>
 
-            <div class="envelope-pocket" aria-hidden="true"></div>
-            <div class="envelope-flap" aria-hidden="true"></div>
+              <article class="letter-sheet royal-letter-preview" aria-hidden="true">
+                <span class="letter-fold-mark letter-fold-mark-top"></span>
+                <span class="letter-fold-mark letter-fold-mark-bottom"></span>
+                <img class="letter-watermark" src="assets/wax-seal-dragon-wolf.webp" alt="">
+                <p class="eyebrow">La missive vous reconnaît</p>
+                <h2>À la Maison <span id="validated-household">invitée</span></h2>
+                <p>Le royaume vous appelle à découvrir votre invitation personnelle.</p>
+              </article>
 
-            <button class="seal-open-button" id="open-invitation" type="button" aria-label="Briser le sceau et ouvrir l'invitation" disabled>
-              <span class="seal-fragment seal-fragment-left">
-                <img src="assets/wax-seal-dragon-wolf.webp" alt="">
-              </span>
-              <span class="seal-fragment seal-fragment-right">
-                <img src="assets/wax-seal-dragon-wolf.webp" alt="">
-              </span>
-              <span class="seal-instruction">Briser le sceau</span>
-            </button>
+              <div class="envelope-pocket" aria-hidden="true"></div>
+              <div class="envelope-side-flap envelope-side-flap-left" aria-hidden="true"></div>
+              <div class="envelope-side-flap envelope-side-flap-right" aria-hidden="true"></div>
+              <div class="envelope-flap" aria-hidden="true"></div>
 
-            <div class="seal-crumbs" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i>
+              <button
+                class="seal-open-button"
+                id="open-invitation"
+                data-testid="wax-seal"
+                type="button"
+                aria-describedby="envelope-instruction"
+                aria-label="Briser le sceau de cire et ouvrir l'invitation"
+                disabled
+              >
+                <span class="seal-intact">
+                  <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+                </span>
+                <span class="seal-fragment seal-fragment-left">
+                  <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+                </span>
+                <span class="seal-fragment seal-fragment-center">
+                  <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+                </span>
+                <span class="seal-fragment seal-fragment-right">
+                  <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+                </span>
+                <span class="seal-cracks" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span class="seal-reflection" aria-hidden="true"></span>
+              </button>
+
+              <div class="seal-crumbs" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="wax-dust" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
             </div>
+
+            <p class="envelope-ritual-copy" id="envelope-instruction">
+              Brisez le sceau afin de découvrir votre invitation.
+            </p>
           </div>
+
+          <p class="sr-only" id="envelope-status" aria-live="polite"></p>
         </div>
       </div>
+    </div>
+
+    <div class="parchment-page-transition" aria-hidden="true">
+      <span class="parchment-transition-border"></span>
+      <img src="assets/wax-seal-dragon-wolf.webp" alt="">
+      <p>Votre invitation personnelle</p>
     </div>
   </section>
 </body>

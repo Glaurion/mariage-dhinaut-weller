@@ -1470,3 +1470,76 @@ body.dispatch-open {
     scroll-behavior: auto;
   }
 }
+
+.invitation-arrival-parchment {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  place-items: center;
+  visibility: hidden;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(91, 45, 19, .13), transparent 24%),
+    radial-gradient(ellipse at 88% 78%, rgba(75, 38, 17, .12), transparent 28%),
+    linear-gradient(90deg, rgba(91, 54, 23, .13), transparent 8%, transparent 92%, rgba(91, 54, 23, .14)),
+    repeating-linear-gradient(4deg, transparent 0 8px, rgba(91, 56, 24, .03) 8px 9px),
+    #dec28b;
+  pointer-events: none;
+}
+
+.invitation-arrival-border {
+  position: absolute;
+  inset: clamp(13px, 2.2vw, 28px);
+  border: 1px solid rgba(78, 47, 21, .34);
+  box-shadow: inset 0 0 0 4px rgba(124, 82, 38, .07);
+}
+
+.invitation-arrival-parchment img {
+  width: clamp(110px, 15vw, 190px);
+  opacity: .08;
+  filter: sepia(1) saturate(.55) contrast(1.45);
+}
+
+.envelope-transition-arrival .invitation-arrival-parchment {
+  display: grid;
+  visibility: visible;
+  animation: invitationParchmentArrival 1.05s cubic-bezier(.45, 0, .2, 1) both;
+}
+
+.envelope-transition-arrival .invitation-shell {
+  animation: invitationShellArrival 1.05s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes invitationParchmentArrival {
+  0%, 18% {
+    visibility: visible;
+    opacity: 1;
+    clip-path: inset(0);
+    transform: scale(1);
+  }
+  72% {
+    visibility: visible;
+    opacity: .82;
+    clip-path: inset(clamp(.7rem, 2.5vw, 1.8rem));
+    transform: scale(.992);
+  }
+  100% {
+    visibility: hidden;
+    opacity: 0;
+    clip-path: inset(clamp(.7rem, 2.5vw, 1.8rem));
+    transform: scale(.988);
+  }
+}
+
+@keyframes invitationShellArrival {
+  0%, 20% { opacity: 0; transform: translateY(8px) scale(.994); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-transition-arrival .invitation-arrival-parchment,
+  .envelope-transition-arrival .invitation-shell {
+    animation-duration: .14s;
+  }
+}

@@ -20,14 +20,26 @@ const introScreen = document.querySelector('#intro-screen');
 const openKingdomButton = document.querySelector('#open-kingdom');
 const skipIntroButton = document.querySelector('#intro-skip');
 const cinematicCaption = document.querySelector('#cinematic-caption');
+const introCinematicStage = document.querySelector('#intro-cinematic-stage');
+const introCinematicVideo = document.querySelector('#intro-cinematic-video');
+const introCinematicBackdrop = document.querySelector('#intro-cinematic-backdrop');
 const soundToggle = document.querySelector('#sound-toggle');
 const soundToggleLabel = soundToggle?.querySelector('.sound-toggle-label');
 const revealElements = document.querySelectorAll('.reveal');
 const companionsGrid = document.querySelector('.companions-grid');
 const yumeCard = document.querySelector('.companion-card-flame');
 const invitationTrigger = document.querySelector('#invitation');
+const beginVaultJourneyButton = document.querySelector('#begin-vault-journey');
+const vaultCinematicStage = document.querySelector('#vault-cinematic-stage');
+const vaultCinematicVideo = document.querySelector('#vault-cinematic-video');
+const vaultCinematicBackdrop = document.querySelector('#vault-cinematic-backdrop');
 const invitationPopup = document.querySelector('#invitation-popup');
 const treasureStage = document.querySelector('#treasure-stage');
+const unlockCinematicStage = document.querySelector('#unlock-cinematic-stage');
+const unlockCinematicVideo = document.querySelector('#unlock-cinematic-video');
+const unlockCinematicBackdrop = document.querySelector('#unlock-cinematic-backdrop');
+const cinematicMainVideos = document.querySelectorAll('.cinematic-video-main');
+const cinematicSkipButtons = document.querySelectorAll('[data-cinematic-skip]');
 const openInvitationButton = document.querySelector('#open-invitation');
 const closeInvitationButton = document.querySelector('.invitation-popup-close');
 const invitationCodeForm = document.querySelector('#invitation-code-form');
@@ -36,7 +48,7 @@ const invitationCodeError = document.querySelector('#invitation-code-error');
 const dragonWarning = document.querySelector('#dragon-warning');
 const dragonWarningText = dragonWarning?.querySelector('p');
 const validatedHousehold = document.querySelector('#validated-household');
-const enterInvitationButton = document.querySelector('#enter-invitation');
+const envelopeStatus = document.querySelector('#envelope-status');
 
 if (companionsGrid && yumeCard) {
   companionsGrid.prepend(yumeCard);
@@ -88,6 +100,9 @@ let audioContext = null;
 let introRunning = false;
 let introFinished = false;
 let introTimers = [];
+let activeCinematic = null;
+let vaultJourneyRunning = false;
+let unlockCinematicRunning = false;
 let invitationWasShown = false;
 let supabaseClient = null;
 let validatedInvitationCode = '';
@@ -95,6 +110,7 @@ let validatedInvitationRoute = '';
 let wrongCodeAttempts = 0;
 let nextCodeAttemptAt = 0;
 let warningTimer = null;
+let invitationAnimationTimers = [];
 
 try {
   soundEnabled = localStorage.getItem(soundPreferenceKey) !== 'off';
@@ -110,7 +126,14 @@ function updateSoundToggle() {
   }
 }
 
+function syncCinematicSound() {
+  cinematicMainVideos.forEach((video) => {
+    video.muted = !soundEnabled;
+  });
+}
+
 updateSoundToggle();
+syncCinematicSound();
 document.body.classList.add('sound-ready');
 
 function setCinematicCaption(message = '') {
@@ -179,6 +202,7 @@ function toggleSound() {
   }
 
   updateSoundToggle();
+  syncCinematicSound();
 
   if (soundEnabled) {
     startRealmTheme();
@@ -285,6 +309,216 @@ function playCastleDoorSound() {
   castleDoorSoundTimer = window.setTimeout(() => castleDoorSound.pause(), 4300);
 }
 
+function playWaxSealBreak() {
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const startedAt = context.currentTime;
+  [0, .13, .29].forEach((offset, index) => {
+    const crack = context.createBufferSource();
+    const crackFilter = context.createBiquadFilter();
+    const crackGain = context.createGain();
+    const impact = context.createOscillator();
+    const impactGain = context.createGain();
+    const start = startedAt + offset;
+    const duration = .075 + (index * .018);
+
+    crack.buffer = createNoiseBuffer(context, duration);
+    crackFilter.type = 'highpass';
+    crackFilter.frequency.setValueAtTime(780 + (index * 260), start);
+    crackGain.gain.setValueAtTime(.0001, start);
+    crackGain.gain.exponentialRampToValueAtTime(.028 - (index * .004), start + .008);
+    crackGain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+
+    impact.type = index === 0 ? 'triangle' : 'sine';
+    impact.frequency.setValueAtTime(210 - (index * 38), start);
+    impact.frequency.exponentialRampToValueAtTime(92, start + .13);
+    impactGain.gain.setValueAtTime(.0001, start);
+    impactGain.gain.exponentialRampToValueAtTime(.018 - (index * .003), start + .012);
+    impactGain.gain.exponentialRampToValueAtTime(.0001, start + .14);
+
+    crack.connect(crackFilter).connect(crackGain).connect(context.destination);
+    impact.connect(impactGain).connect(context.destination);
+    crack.start(start);
+    crack.stop(start + duration);
+    impact.start(start);
+    impact.stop(start + .15);
+  });
+}
+
+function playPaperUnfold() {
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const startedAt = context.currentTime;
+  [0, .46, .94].forEach((offset, index) => {
+    const paper = context.createBufferSource();
+    const paperFilter = context.createBiquadFilter();
+    const paperGain = context.createGain();
+    const start = startedAt + offset;
+    const duration = .62;
+
+    paper.buffer = createNoiseBuffer(context, duration);
+    paperFilter.type = 'bandpass';
+    paperFilter.Q.value = .75;
+    paperFilter.frequency.setValueAtTime(560 + (index * 120), start);
+    paperFilter.frequency.exponentialRampToValueAtTime(1700 - (index * 120), start + .32);
+    paperFilter.frequency.exponentialRampToValueAtTime(760, start + duration);
+    paperGain.gain.setValueAtTime(.0001, start);
+    paperGain.gain.exponentialRampToValueAtTime(.012, start + .08);
+    paperGain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+
+    paper.connect(paperFilter).connect(paperGain).connect(context.destination);
+    paper.start(start);
+    paper.stop(start + duration);
+  });
+}
+
+function playParchmentBreath() {
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const startedAt = context.currentTime;
+  const breath = context.createBufferSource();
+  const breathFilter = context.createBiquadFilter();
+  const breathGain = context.createGain();
+
+  breath.buffer = createNoiseBuffer(context, 1.8);
+  breathFilter.type = 'lowpass';
+  breathFilter.frequency.setValueAtTime(260, startedAt);
+  breathFilter.frequency.exponentialRampToValueAtTime(520, startedAt + .9);
+  breathFilter.frequency.exponentialRampToValueAtTime(210, startedAt + 1.8);
+  breathGain.gain.setValueAtTime(.0001, startedAt);
+  breathGain.gain.exponentialRampToValueAtTime(.007, startedAt + .45);
+  breathGain.gain.exponentialRampToValueAtTime(.0001, startedAt + 1.8);
+
+  breath.connect(breathFilter).connect(breathGain).connect(context.destination);
+  breath.start(startedAt);
+  breath.stop(startedAt + 1.8);
+}
+
+function waitForCinematic(delay) {
+  return new Promise((resolve) => window.setTimeout(resolve, delay));
+}
+
+function preloadCinematic(video, backdrop) {
+  const mediaToPreload = [video];
+  if (backdrop && window.matchMedia('(min-width: 761px)').matches && !performanceLite) {
+    mediaToPreload.push(backdrop);
+  }
+
+  mediaToPreload.forEach((media) => {
+    if (!media) return;
+    if (media.preload !== 'auto') media.preload = 'auto';
+    if (media.readyState === 0) media.load();
+  });
+}
+
+function resetCinematicStage(stage) {
+  if (!stage) return;
+  stage.classList.remove('is-active', 'is-bridging', 'is-leaving');
+  stage.setAttribute('aria-hidden', 'true');
+  stage.querySelectorAll('video').forEach((video) => {
+    video.pause();
+    try {
+      video.currentTime = 0;
+    } catch {
+      video.load();
+    }
+  });
+}
+
+function playCinematic({ stage, video, backdrop, bodyClass, maxDuration, volume, playbackRate = 1 }) {
+  if (!stage || !video || reducedMotion) return Promise.resolve('reduced');
+  if (activeCinematic) return Promise.resolve('busy');
+  const activeBackdrop = backdrop && window.matchMedia('(min-width: 761px)').matches && !performanceLite
+    ? backdrop
+    : null;
+
+  preloadCinematic(video, activeBackdrop);
+  stage.classList.remove('is-leaving', 'is-bridging');
+  stage.setAttribute('aria-hidden', 'false');
+  void stage.offsetWidth;
+  stage.classList.add('is-active');
+  document.body.classList.add('cinematic-modal-open');
+  if (bodyClass) document.body.classList.add(bodyClass);
+
+  [video, activeBackdrop].forEach((media) => {
+    if (!media) return;
+    media.pause();
+    try {
+      media.currentTime = 0;
+    } catch {
+      media.load();
+    }
+  });
+
+  video.muted = !soundEnabled;
+  video.volume = volume;
+  video.playbackRate = playbackRate;
+  if (activeBackdrop) {
+    activeBackdrop.muted = true;
+    activeBackdrop.volume = 0;
+    activeBackdrop.playbackRate = playbackRate;
+  }
+
+  return new Promise((resolve) => {
+    let finished = false;
+    let timeout = 0;
+
+    const syncBackdrop = () => {
+      if (!activeBackdrop || activeBackdrop.readyState < 2 || activeBackdrop.seeking) return;
+      if (Math.abs(activeBackdrop.currentTime - video.currentTime) < 0.24) return;
+      try {
+        activeBackdrop.currentTime = video.currentTime;
+      } catch {
+        activeBackdrop.pause();
+      }
+    };
+
+    const finish = (reason = 'ended') => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(timeout);
+      video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('error', handleError);
+      video.removeEventListener('timeupdate', syncBackdrop);
+      video.pause();
+      activeBackdrop?.pause();
+      if (activeCinematic?.stage === stage) activeCinematic = null;
+      resolve(reason);
+    };
+
+    const handleEnded = () => finish('ended');
+    const handleError = () => finish('error');
+
+    activeCinematic = { stage, finish };
+    video.addEventListener('ended', handleEnded);
+    video.addEventListener('error', handleError);
+    video.addEventListener('timeupdate', syncBackdrop);
+    timeout = window.setTimeout(() => finish('timeout'), maxDuration);
+
+    activeBackdrop?.play().catch(() => {});
+    video.play().catch(() => {
+      video.muted = true;
+      video.play().catch(() => finish('error'));
+    });
+  });
+}
+
+async function fadeOutCinematic(stage, bodyClass, duration = 900) {
+  if (!stage) return;
+  stage.classList.add('is-bridging');
+  await waitForCinematic(duration);
+  stage.classList.add('is-leaving');
+  await waitForCinematic(220);
+  resetCinematicStage(stage);
+  if (bodyClass) document.body.classList.remove(bodyClass);
+  if (!activeCinematic && !document.querySelector('.cinematic-video-stage.is-active')) {
+    document.body.classList.remove('cinematic-modal-open');
+  }
+}
+
 function createOpeningTextPanels() {
   const heroContent = introScreen?.querySelector('.hero-content');
   if (!heroContent || introScreen.querySelector('.hero-content-door-copy')) return;
@@ -303,26 +537,37 @@ function completeIntro() {
   if (introFinished) return;
   introFinished = true;
   clearIntroTimers();
-  document.body.classList.remove('intro-active', 'gates-opening', 'dragon-approach', 'dragon-fire', 'intro-revealing');
+  resetCinematicStage(introCinematicStage);
+  document.body.classList.remove(
+    'intro-active',
+    'gates-opening',
+    'dragon-approach',
+    'dragon-fire',
+    'intro-revealing',
+    'intro-video-playing',
+    'cinematic-modal-open'
+  );
   document.body.classList.add('intro-complete');
   setCinematicCaption('');
+  preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
   window.setTimeout(() => introScreen?.remove(), 260);
 }
 
 function revealSite() {
   if (introFinished) return;
+  startRealmTheme();
+  introCinematicStage?.classList.add('is-bridging');
   document.body.classList.add('intro-revealing');
   setCinematicCaption('La fumée se dissipe et révèle le royaume.');
-  queueIntro(completeIntro, reducedMotion ? 220 : 1650);
+  queueIntro(completeIntro, reducedMotion ? 220 : 1400);
 }
 
-function openKingdom() {
+async function openKingdom() {
   if (introRunning || introFinished) return;
   introRunning = true;
   createOpeningTextPanels();
   introScreen?.getBoundingClientRect();
   ensureAudioContext();
-  startRealmTheme();
   playCastleDoorSound();
   document.body.classList.add('gates-opening');
   openKingdomButton?.setAttribute('disabled', '');
@@ -333,33 +578,32 @@ function openKingdom() {
     return;
   }
 
-  queueIntro(() => {
-    document.body.classList.add('dragon-approach');
-    setCinematicCaption('Un dragon surgit au-dessus des remparts.');
-  }, 980);
+  queueIntro(() => setCinematicCaption('Le gardien ailé surgit derrière le château.'), 3100);
+  queueIntro(() => setCinematicCaption('Le souffle du dragon embrase le passage.'), 6300);
 
-  queueIntro(() => {
-    playDragonRoar();
-    setCinematicCaption('Le rugissement du gardien traverse le royaume.');
-  }, 1920);
+  const result = await playCinematic({
+    stage: introCinematicStage,
+    video: introCinematicVideo,
+    backdrop: introCinematicBackdrop,
+    bodyClass: 'intro-video-playing',
+    maxDuration: 10500,
+    volume: 0.55,
+    playbackRate: 1.15
+  });
 
-  queueIntro(() => {
-    document.body.classList.add('dragon-fire');
-    playFireWhoosh();
-    setCinematicCaption('Le dragon embrase les anciennes portes.');
-  }, 2870);
-
-  queueIntro(revealSite, 3520);
+  if (result !== 'busy' && !introFinished) revealSite();
 }
 
 function skipIntro() {
   if (introFinished) return;
   introRunning = true;
   clearIntroTimers();
-  startRealmTheme();
-  document.body.classList.add('intro-revealing');
+  if (activeCinematic?.stage === introCinematicStage) {
+    activeCinematic.finish('skipped');
+    return;
+  }
   setCinematicCaption('Le royaume vous ouvre ses portes.');
-  queueIntro(completeIntro, reducedMotion ? 80 : 360);
+  revealSite();
 }
 
 function normalizeInvitationCode(value) {
@@ -370,9 +614,32 @@ function normalizeInvitationCode(value) {
     .replace(/[\s-]+/g, '');
 }
 
+function queueInvitationAnimation(callback, delay) {
+  const timer = window.setTimeout(callback, delay);
+  invitationAnimationTimers.push(timer);
+  return timer;
+}
+
+function clearInvitationAnimationTimers() {
+  invitationAnimationTimers.forEach((timer) => window.clearTimeout(timer));
+  invitationAnimationTimers = [];
+}
+
+function setEnvelopeStatus(message = '') {
+  if (envelopeStatus) envelopeStatus.textContent = message;
+}
+
 function resetInvitationPopup() {
+  if (activeCinematic?.stage === vaultCinematicStage || activeCinematic?.stage === unlockCinematicStage) {
+    activeCinematic.finish('cancelled');
+  }
   invitationWasShown = false;
+  vaultJourneyRunning = false;
+  unlockCinematicRunning = false;
   window.clearTimeout(warningTimer);
+  clearInvitationAnimationTimers();
+  resetCinematicStage(vaultCinematicStage);
+  resetCinematicStage(unlockCinematicStage);
   invitationPopup?.classList.remove(
     'is-visible',
     'is-validating',
@@ -381,20 +648,35 @@ function resetInvitationPopup() {
     'is-unlocking',
     'is-chest-open',
     'is-envelope-ready',
+    'is-seal-cracking',
     'is-breaking',
-    'is-open',
-    'is-letter-visible'
+    'is-envelope-opening',
+    'is-letter-rising',
+    'is-letter-unfolding',
+    'is-page-transition',
+    'is-cinematic-arrival',
+    'is-cinematic-revealed',
+    'is-unlocking-video',
+    'is-envelope-video-match'
   );
   invitationPopup?.setAttribute('aria-hidden', 'true');
   treasureStage?.removeAttribute('aria-busy');
   openInvitationButton?.setAttribute('disabled', '');
+  closeInvitationButton?.removeAttribute('disabled');
   openInvitationButton?.closest('.chest-envelope')?.setAttribute('aria-hidden', 'true');
   invitationCodeInput?.removeAttribute('disabled');
   const submitButton = invitationCodeForm?.querySelector('button[type="submit"]');
   submitButton?.removeAttribute('disabled');
+  beginVaultJourneyButton?.removeAttribute('disabled');
   if (submitButton) submitButton.textContent = 'Défier le dragon';
   if (invitationCodeError) invitationCodeError.textContent = '';
-  document.body.classList.remove('invitation-modal-open');
+  setEnvelopeStatus('');
+  document.body.classList.remove(
+    'invitation-modal-open',
+    'vault-cinematic-playing',
+    'unlock-cinematic-playing',
+    'cinematic-modal-open'
+  );
   validatedInvitationCode = '';
   validatedInvitationRoute = '';
 }
@@ -408,13 +690,56 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-function showInvitationPopup() {
+function showInvitationPopup({ focusCode = true, cinematicArrival = false } = {}) {
   if (!invitationPopup || invitationWasShown) return;
   invitationWasShown = true;
+  if (cinematicArrival) invitationPopup.classList.add('is-cinematic-arrival');
   invitationPopup.setAttribute('aria-hidden', 'false');
   invitationPopup.classList.add('is-visible');
   document.body.classList.add('invitation-modal-open');
-  window.setTimeout(() => invitationCodeInput?.focus({ preventScroll: true }), reducedMotion ? 0 : 520);
+  preloadCinematic(unlockCinematicVideo, unlockCinematicBackdrop);
+
+  if (cinematicArrival) {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => invitationPopup.classList.add('is-cinematic-revealed'));
+    });
+  }
+
+  if (focusCode) {
+    window.setTimeout(() => invitationCodeInput?.focus({ preventScroll: true }), reducedMotion ? 0 : 520);
+  }
+}
+
+async function beginVaultJourney() {
+  if (vaultJourneyRunning || invitationPopup?.classList.contains('is-visible')) return;
+  vaultJourneyRunning = true;
+  beginVaultJourneyButton?.setAttribute('disabled', '');
+  ensureAudioContext();
+  startRealmTheme();
+  if (soundEnabled) fadeThemeTo(0.035, 650);
+
+  const result = await playCinematic({
+    stage: vaultCinematicStage,
+    video: vaultCinematicVideo,
+    backdrop: vaultCinematicBackdrop,
+    bodyClass: 'vault-cinematic-playing',
+    maxDuration: 9000,
+    volume: 0.58
+  });
+
+  if (result === 'busy' || result === 'cancelled') {
+    vaultJourneyRunning = false;
+    beginVaultJourneyButton?.removeAttribute('disabled');
+    return;
+  }
+
+  showInvitationPopup({ focusCode: false, cinematicArrival: !reducedMotion });
+  await fadeOutCinematic(vaultCinematicStage, 'vault-cinematic-playing', reducedMotion ? 0 : 880);
+  invitationPopup?.classList.remove('is-cinematic-arrival', 'is-cinematic-revealed');
+  vaultJourneyRunning = false;
+  beginVaultJourneyButton?.removeAttribute('disabled');
+  if (soundEnabled) fadeThemeTo(0.11, 1400);
+  window.setTimeout(() => invitationCodeInput?.focus({ preventScroll: true }), reducedMotion ? 0 : 260);
 }
 
 async function initialiseSupabase() {
@@ -504,23 +829,47 @@ function showWrongCode(message, delay) {
   restoreCodeForm(delay);
 }
 
-function unlockTreasure(result, code) {
-  if (!invitationPopup) return;
+async function unlockTreasure(result, code) {
+  if (!invitationPopup || unlockCinematicRunning) return;
+  unlockCinematicRunning = true;
+  clearInvitationAnimationTimers();
   validatedInvitationCode = code;
   validatedInvitationRoute = result.route;
   if (validatedHousehold) validatedHousehold.textContent = result.household_name;
   if (invitationCodeError) invitationCodeError.textContent = 'Le dragon reconnaît votre Maison.';
   invitationPopup.classList.remove('is-validating');
-  invitationPopup.classList.add('is-unlocking');
-  treasureStage?.removeAttribute('aria-busy');
+  invitationPopup.classList.add('is-unlocking-video');
+  treasureStage?.setAttribute('aria-busy', 'true');
+  closeInvitationButton?.setAttribute('disabled', '');
+  if (soundEnabled) fadeThemeTo(0.025, 600);
 
-  window.setTimeout(() => invitationPopup.classList.add('is-chest-open'), reducedMotion ? 0 : 820);
-  window.setTimeout(() => {
-    invitationPopup.classList.add('is-envelope-ready');
-    openInvitationButton?.removeAttribute('disabled');
-    openInvitationButton?.closest('.chest-envelope')?.setAttribute('aria-hidden', 'false');
-    window.setTimeout(() => openInvitationButton?.focus({ preventScroll: true }), reducedMotion ? 0 : 1050);
-  }, reducedMotion ? 20 : 1780);
+  const cinematicResult = await playCinematic({
+    stage: unlockCinematicStage,
+    video: unlockCinematicVideo,
+    backdrop: unlockCinematicBackdrop,
+    bodyClass: 'unlock-cinematic-playing',
+    maxDuration: 11000,
+    volume: 0.62,
+    playbackRate: 1.05
+  });
+
+  if (cinematicResult === 'busy' || cinematicResult === 'cancelled') {
+    unlockCinematicRunning = false;
+    return;
+  }
+
+  invitationPopup.classList.add('is-unlocking', 'is-chest-open', 'is-envelope-ready', 'is-envelope-video-match');
+  openInvitationButton?.removeAttribute('disabled');
+  openInvitationButton?.closest('.chest-envelope')?.setAttribute('aria-hidden', 'false');
+  setEnvelopeStatus('L’enveloppe royale est devant vous. Brisez son sceau pour poursuivre.');
+
+  await fadeOutCinematic(unlockCinematicStage, 'unlock-cinematic-playing', reducedMotion ? 0 : 920);
+  invitationPopup.classList.remove('is-unlocking-video', 'is-envelope-video-match');
+  treasureStage?.removeAttribute('aria-busy');
+  closeInvitationButton?.removeAttribute('disabled');
+  unlockCinematicRunning = false;
+  if (soundEnabled) fadeThemeTo(0.11, 1500);
+  window.setTimeout(() => openInvitationButton?.focus({ preventScroll: true }), reducedMotion ? 0 : 300);
 }
 
 async function openPersonalInvitation(event) {
@@ -577,23 +926,55 @@ async function openPersonalInvitation(event) {
 }
 
 function openInvitation() {
-  if (!invitationPopup?.classList.contains('is-envelope-ready') || invitationPopup.classList.contains('is-breaking')) return;
-  invitationPopup.classList.add('is-breaking');
-  openInvitationButton?.setAttribute('disabled', '');
-  window.setTimeout(() => invitationPopup.classList.add('is-open'), reducedMotion ? 0 : 620);
-  window.setTimeout(() => invitationPopup.classList.add('is-letter-visible'), reducedMotion ? 10 : 1780);
-  if (finePointer) {
-    window.setTimeout(() => enterInvitationButton?.focus({ preventScroll: true }), reducedMotion ? 20 : 3800);
-  }
-}
+  if (!invitationPopup?.classList.contains('is-envelope-ready') || invitationPopup.classList.contains('is-seal-cracking')) return;
 
-function enterInvitation() {
-  if (!validatedInvitationCode || !validatedInvitationRoute) return;
-  window.location.href = validatedInvitationRoute;
+  invitationPopup.classList.add('is-seal-cracking');
+  openInvitationButton?.setAttribute('disabled', '');
+  closeInvitationButton?.setAttribute('disabled', '');
+  setEnvelopeStatus('Le sceau de cire se fissure.');
+  playWaxSealBreak();
+
+  const timing = reducedMotion
+    ? { break: 30, open: 80, rise: 150, unfold: 240, transition: 360, navigate: 560 }
+    : { break: 260, open: 790, rise: 2250, unfold: 3520, transition: 4920, navigate: 5880 };
+
+  queueInvitationAnimation(() => invitationPopup.classList.add('is-breaking'), timing.break);
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-envelope-opening');
+    setEnvelopeStatus('Les rabats de l’enveloppe s’ouvrent.');
+    playPaperUnfold();
+  }, timing.open);
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-letter-rising');
+    setEnvelopeStatus('La lettre ancienne sort de l’enveloppe.');
+  }, timing.rise);
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-letter-unfolding');
+    setEnvelopeStatus('Le parchemin se déplie devant vous.');
+    playParchmentBreath();
+  }, timing.unfold);
+  queueInvitationAnimation(() => {
+    invitationPopup.classList.add('is-page-transition');
+    setEnvelopeStatus('Le parchemin devient votre invitation.');
+    try {
+      if (validatedInvitationRoute.includes('invitation.html')) {
+        sessionStorage.setItem('dhinaut-weller-envelope-transition', '1');
+      } else {
+        sessionStorage.removeItem('dhinaut-weller-envelope-transition');
+      }
+      sessionStorage.setItem(musicTimeKey, String(realmTheme.currentTime));
+    } catch {}
+  }, timing.transition);
+  queueInvitationAnimation(() => {
+    if (validatedInvitationCode && validatedInvitationRoute) {
+      window.location.assign(validatedInvitationRoute);
+    }
+  }, timing.navigate);
 }
 
 function closeInvitation() {
   if (!invitationPopup) return;
+  if (invitationPopup.classList.contains('is-seal-cracking') || unlockCinematicRunning) return;
   invitationPopup.classList.remove('is-visible');
   invitationPopup.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('invitation-modal-open');
@@ -603,10 +984,15 @@ function closeInvitation() {
 openKingdomButton?.addEventListener('click', openKingdom);
 skipIntroButton?.addEventListener('click', skipIntro);
 soundToggle?.addEventListener('click', toggleSound);
+beginVaultJourneyButton?.addEventListener('click', beginVaultJourney);
 openInvitationButton?.addEventListener('click', openInvitation);
-enterInvitationButton?.addEventListener('click', enterInvitation);
 closeInvitationButton?.addEventListener('click', closeInvitation);
 invitationCodeForm?.addEventListener('submit', openPersonalInvitation);
+cinematicSkipButtons.forEach((button) => {
+  button.addEventListener('click', () => activeCinematic?.finish('skipped'));
+});
+
+preloadCinematic(introCinematicVideo, introCinematicBackdrop);
 
 invitationPopup?.addEventListener('click', (event) => {
   if (event.target === invitationPopup) closeInvitation();
@@ -636,7 +1022,7 @@ if ('IntersectionObserver' in window) {
     const invitationObserver = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
-        showInvitationPopup();
+        preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
         invitationObserver.disconnect();
       },
       { threshold: 0.5 }
@@ -648,7 +1034,7 @@ if ('IntersectionObserver' in window) {
   revealElements.forEach((element) => element.classList.add('is-visible'));
   window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
-      showInvitationPopup();
+      preloadCinematic(vaultCinematicVideo, vaultCinematicBackdrop);
     }
   }, { passive: true });
 }
