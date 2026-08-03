@@ -446,57 +446,6 @@ function playWaxSealBreak() {
   });
 }
 
-function playPaperUnfold() {
-  const context = ensureAudioContext();
-  if (!context) return;
-
-  const startedAt = context.currentTime;
-  [0, .46, .94].forEach((offset, index) => {
-    const paper = context.createBufferSource();
-    const paperFilter = context.createBiquadFilter();
-    const paperGain = context.createGain();
-    const start = startedAt + offset;
-    const duration = .62;
-
-    paper.buffer = createNoiseBuffer(context, duration);
-    paperFilter.type = 'bandpass';
-    paperFilter.Q.value = .75;
-    paperFilter.frequency.setValueAtTime(560 + (index * 120), start);
-    paperFilter.frequency.exponentialRampToValueAtTime(1700 - (index * 120), start + .32);
-    paperFilter.frequency.exponentialRampToValueAtTime(760, start + duration);
-    paperGain.gain.setValueAtTime(.0001, start);
-    paperGain.gain.exponentialRampToValueAtTime(.012, start + .08);
-    paperGain.gain.exponentialRampToValueAtTime(.0001, start + duration);
-
-    paper.connect(paperFilter).connect(paperGain).connect(context.destination);
-    paper.start(start);
-    paper.stop(start + duration);
-  });
-}
-
-function playParchmentBreath() {
-  const context = ensureAudioContext();
-  if (!context) return;
-
-  const startedAt = context.currentTime;
-  const breath = context.createBufferSource();
-  const breathFilter = context.createBiquadFilter();
-  const breathGain = context.createGain();
-
-  breath.buffer = createNoiseBuffer(context, 1.8);
-  breathFilter.type = 'lowpass';
-  breathFilter.frequency.setValueAtTime(260, startedAt);
-  breathFilter.frequency.exponentialRampToValueAtTime(520, startedAt + .9);
-  breathFilter.frequency.exponentialRampToValueAtTime(210, startedAt + 1.8);
-  breathGain.gain.setValueAtTime(.0001, startedAt);
-  breathGain.gain.exponentialRampToValueAtTime(.007, startedAt + .45);
-  breathGain.gain.exponentialRampToValueAtTime(.0001, startedAt + 1.8);
-
-  breath.connect(breathFilter).connect(breathGain).connect(context.destination);
-  breath.start(startedAt);
-  breath.stop(startedAt + 1.8);
-}
-
 function waitForCinematic(delay) {
   return new Promise((resolve) => window.setTimeout(resolve, delay));
 }
@@ -1032,31 +981,13 @@ function openInvitation() {
   invitationPopup.classList.add('is-seal-cracking');
   openInvitationButton?.setAttribute('disabled', '');
   closeInvitationButton?.setAttribute('disabled', '');
-  setEnvelopeStatus('Le sceau de cire se fissure.');
+  setEnvelopeStatus('Le sceau de cire se brise. Votre invitation va s’ouvrir.');
   playWaxSealBreak();
 
-  const timing = reducedMotion
-    ? { break: 30, open: 60, rise: 100, unfold: 180, transition: 300, navigate: 460 }
-    : { break: 440, open: 620, rise: 920, unfold: 2200, transition: 3600, navigate: 4550 };
+  const transitionDelay = reducedMotion ? 40 : 420;
+  const navigationDelay = reducedMotion ? 120 : 680;
 
-  queueInvitationAnimation(() => invitationPopup.classList.add('is-breaking'), timing.break);
   queueInvitationAnimation(() => {
-    invitationPopup.classList.add('is-envelope-opening');
-    setEnvelopeStatus('Le sceau cède et la missive se libère.');
-    playPaperUnfold();
-  }, timing.open);
-  queueInvitationAnimation(() => {
-    invitationPopup.classList.add('is-letter-rising');
-    setEnvelopeStatus('La lettre ancienne sort de l’enveloppe.');
-  }, timing.rise);
-  queueInvitationAnimation(() => {
-    invitationPopup.classList.add('is-letter-unfolding');
-    setEnvelopeStatus('Le parchemin se déplie devant vous.');
-    playParchmentBreath();
-  }, timing.unfold);
-  queueInvitationAnimation(() => {
-    invitationPopup.classList.add('is-page-transition');
-    setEnvelopeStatus('Le parchemin devient votre invitation.');
     try {
       if (validatedInvitationRoute.includes('invitation.html')) {
         sessionStorage.setItem('dhinaut-weller-envelope-transition', '1');
@@ -1066,12 +997,12 @@ function openInvitation() {
       sessionStorage.setItem(musicTimeKey, String(realmTheme.currentTime));
       sessionStorage.setItem(musicHandoffKey, '1');
     } catch {}
-  }, timing.transition);
+  }, transitionDelay);
   queueInvitationAnimation(() => {
     if (validatedInvitationCode && validatedInvitationRoute) {
       window.location.assign(validatedInvitationRoute);
     }
-  }, timing.navigate);
+  }, navigationDelay);
 }
 
 function closeInvitation() {
