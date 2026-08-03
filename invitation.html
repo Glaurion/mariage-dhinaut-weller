@@ -23,9 +23,9 @@
   <link rel="preload" as="audio" href="assets/realm-theme.mp3">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260803-1">
-  <link rel="stylesheet" href="css/invitation.css?v=20260803-1">
+  <link rel="stylesheet" href="css/invitation.css?v=20260803-2">
   <script src="js/supabase-config.js"></script>
-  <script src="js/invitation.js?v=20260803-3" type="module" defer></script>
+  <script src="js/invitation.js?v=20260803-4" type="module" defer></script>
 </head>
 <body class="invitation-page">
   <div class="invitation-arrival-parchment" aria-hidden="true">
@@ -149,95 +149,52 @@
           <button class="button button-primary" type="submit">Relire puis sceller notre réponse</button>
           <p class="form-feedback" id="form-feedback" aria-live="polite"></p>
         </form>
+
+        <section
+          class="rsvp-confirmation"
+          id="rsvp-confirmation"
+          aria-labelledby="rsvp-confirmation-title"
+          aria-live="polite"
+          hidden
+        >
+          <div class="rsvp-confirmation-parchment">
+            <div class="royal-seal-wrapper" id="royal-seal-wrapper" aria-hidden="true">
+              <span class="royal-seal-impact-halo"></span>
+              <img class="royal-confirmation-seal" src="assets/wax-seal-dragon-wolf.webp" alt="">
+              <span class="royal-seal-dust">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+              </span>
+            </div>
+
+            <h2 id="rsvp-confirmation-title">Votre réponse a été scellée.</h2>
+            <p class="rsvp-confirmation-message">Les Corbeaux Royaux ont reçu votre missive.</p>
+            <p class="rsvp-confirmation-archive">Votre présence sera consignée dans les archives du Royaume.</p>
+
+            <svg class="falling-feather" viewBox="0 0 72 176" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="raven-feather-shine" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#05070b"></stop>
+                  <stop offset=".48" stop-color="#243044"></stop>
+                  <stop offset="1" stop-color="#050609"></stop>
+                </linearGradient>
+              </defs>
+              <path class="feather-body" fill="url(#raven-feather-shine)" d="M55 4C31 13 14 36 11 67c-3 30 11 52 18 70 4 10 3 24 3 34 0 3 2 5 4 5s4-2 4-5c0-14 2-26 9-39 15-29 20-93 6-128Z"></path>
+              <path class="feather-shaft" d="M52 12C43 49 35 92 35 169"></path>
+              <path class="feather-barbs" d="M44 37 19 54m21-1L13 73m25-3L12 91m25-4-21 21m20-4-15 22m22-77 17-17M40 87l20-20M38 104l18-17m-19 34 13-12"></path>
+            </svg>
+
+            <button class="button button-ghost return-to-kingdom" id="return-to-kingdom" type="button">
+              Retourner au Royaume
+            </button>
+          </div>
+        </section>
       </div>
     </section>
   </main>
 
-  <section
-    class="raven-dispatch"
-    id="raven-dispatch"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="dispatch-confirmation-title"
-    aria-hidden="true"
-    hidden
-  >
-    <div class="dispatch-castle" aria-hidden="true"></div>
-    <div class="dispatch-sky-glow" aria-hidden="true"></div>
-    <button class="dispatch-skip" id="dispatch-skip" type="button">Passer l’animation</button>
-
-    <div class="dispatch-mail-stage" aria-hidden="true">
-      <div class="dispatch-letter">
-        <div class="dispatch-paper-panel dispatch-paper-top">
-          <span class="dispatch-paper-ornament">✦</span>
-          <span class="dispatch-paper-title">Réponse au Royaume</span>
-          <span class="dispatch-paper-line dispatch-paper-line-long"></span>
-        </div>
-        <div class="dispatch-paper-panel dispatch-paper-middle">
-          <span class="dispatch-paper-line"></span>
-          <strong id="dispatch-letter-house">Maison invitée</strong>
-          <span class="dispatch-paper-line dispatch-paper-line-short"></span>
-        </div>
-        <div class="dispatch-paper-panel dispatch-paper-bottom">
-          <span class="dispatch-paper-line dispatch-paper-line-long"></span>
-          <span class="dispatch-paper-line"></span>
-          <span class="dispatch-paper-signature">A &amp; B · 2028</span>
-        </div>
-      </div>
-
-      <div class="dispatch-envelope">
-        <div class="dispatch-envelope-back"></div>
-        <div class="dispatch-envelope-lining"></div>
-        <div class="dispatch-envelope-flap"></div>
-        <div class="dispatch-envelope-pocket"></div>
-        <img class="dispatch-envelope-seal" src="assets/wax-seal-dragon-wolf.webp" alt="">
-      </div>
-    </div>
-
-    <div class="dispatch-raven-flight" aria-hidden="true">
-      <svg class="dispatch-raven" viewBox="0 0 320 190" focusable="false">
-        <g class="dispatch-raven-wing dispatch-raven-wing-left">
-          <path d="M147 93C119 59 77 27 15 20c27 24 46 48 59 71-22-12-43-18-64-16 31 29 66 49 109 55z"></path>
-          <path d="M128 87C104 65 74 49 39 43c21 18 37 36 48 55z" class="dispatch-raven-feather"></path>
-        </g>
-        <g class="dispatch-raven-wing dispatch-raven-wing-right">
-          <path d="M172 92c31-35 73-65 134-70-28 23-48 46-62 69 23-11 44-16 65-13-33 28-69 46-112 50z"></path>
-          <path d="M191 86c25-21 56-36 91-41-22 17-39 35-50 53z" class="dispatch-raven-feather"></path>
-        </g>
-        <path class="dispatch-raven-tail" d="M151 126l-28 49 38-22 14 29 13-31 40 20-31-47z"></path>
-        <path class="dispatch-raven-body" d="M125 95c5-31 22-50 48-53 21-3 42 9 49 28l34 10-31 14c-2 29-20 55-54 61-33-3-49-25-46-60z"></path>
-        <path class="dispatch-raven-beak" d="M220 69l59 13-55 14c7-10 6-18-4-27z"></path>
-        <path class="dispatch-raven-neck" d="M135 78c-13 10-20 27-18 48l19-10 11 17 8-21 20 5-9-22 17-12-24-2-5-22z"></path>
-        <circle class="dispatch-raven-eye" cx="207" cy="67" r="4"></circle>
-        <path class="dispatch-raven-leg" d="M153 147l-7 19m37-19 8 18m-45 0-11 7m11-7 8 8m37-8-9 8m9-8 12 6"></path>
-      </svg>
-      <div class="dispatch-cargo">
-        <span class="dispatch-cargo-cord"></span>
-        <span class="dispatch-cargo-envelope">
-          <img src="assets/wax-seal-dragon-wolf.webp" alt="">
-        </span>
-      </div>
-    </div>
-
-    <div class="dispatch-confirmation">
-      <img class="dispatch-confirmation-seal" src="assets/wax-seal-dragon-wolf.webp" alt="" aria-hidden="true">
-      <p class="eyebrow">Le corbeau a pris son envol</p>
-      <h2 id="dispatch-confirmation-title">Votre réponse est en route</h2>
-      <p id="dispatch-confirmation-message">
-        Votre lettre a été scellée et confiée aux corbeaux. Elle vole désormais vers le château d’Annaël et Benjamin.
-      </p>
-      <div class="dispatch-confirmation-actions">
-        <button class="button button-primary" id="dispatch-close" type="button">Revoir mon invitation</button>
-        <a class="button button-ghost" href="royaume.html">Découvrir le rassemblement</a>
-      </div>
-    </div>
-
-    <p class="sr-only" id="dispatch-live-status" aria-live="assertive"></p>
-  </section>
-
   <dialog class="rsvp-summary" id="rsvp-summary" aria-labelledby="rsvp-summary-title">
     <form method="dialog" class="summary-parchment">
-      <p class="eyebrow">Avant d’envoyer le corbeau</p>
+      <p class="eyebrow">Avant de sceller la missive</p>
       <h2 id="rsvp-summary-title" tabindex="-1">Relisez votre réponse</h2>
       <div class="summary-list" id="summary-list"></div>
       <p class="summary-warning">La réponse pourra être modifiée plus tard avec le même code personnel.</p>

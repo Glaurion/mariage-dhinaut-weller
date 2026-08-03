@@ -34,18 +34,16 @@ const memberChoiceList = document.querySelector('#member-choice-list');
 const attendingMembersFieldset = document.querySelector('#attending-members-fieldset');
 const roleGrid = document.querySelector('#role-grid');
 const rsvpForm = document.querySelector('#rsvp-form');
+const rsvpSubmitButton = rsvpForm?.querySelector('button[type="submit"]');
 const feedbackElement = document.querySelector('#form-feedback');
-const invitationShell = document.querySelector('.invitation-shell');
 const summaryDialog = document.querySelector('#rsvp-summary');
+const summaryForm = summaryDialog?.querySelector('.summary-parchment');
 const summaryList = document.querySelector('#summary-list');
 const confirmRsvpButton = document.querySelector('#confirm-rsvp');
-const ravenDispatch = document.querySelector('#raven-dispatch');
-const dispatchSkipButton = document.querySelector('#dispatch-skip');
-const dispatchCloseButton = document.querySelector('#dispatch-close');
-const dispatchLetterHouse = document.querySelector('#dispatch-letter-house');
-const dispatchConfirmationMessage = document.querySelector('#dispatch-confirmation-message');
-const dispatchLiveStatus = document.querySelector('#dispatch-live-status');
-const realmGatheringLink = document.querySelector('.dispatch-confirmation-actions a[href^="royaume.html"]');
+const rsvpConfirmation = document.querySelector('#rsvp-confirmation');
+const confirmationSealHalo = document.querySelector('.royal-seal-impact-halo');
+const fallingFeather = document.querySelector('.falling-feather');
+const returnToKingdomButton = document.querySelector('#return-to-kingdom');
 const realmTheme = document.querySelector('#realm-theme');
 const soundToggle = document.querySelector('#sound-toggle');
 
@@ -56,11 +54,11 @@ const supabaseConfig = window.SUPABASE_CONFIG ?? null;
 let supabaseClient = null;
 let currentInvitation = null;
 let pendingPayload = null;
-let dispatchConfirmationTimer = null;
 let soundEnabled = localStorage.getItem(SOUND_PREFERENCE_KEY) !== 'off';
 let shouldResumeMusic = false;
 let pageAudioActive = document.visibilityState !== 'hidden';
 let musicPausedByInactivity = false;
+let sealImpactAudioContext = null;
 
 try {
   shouldResumeMusic = sessionStorage.getItem(MUSIC_HANDOFF_KEY) === '1';
@@ -72,7 +70,6 @@ try {
 
 if (invitationCode) {
   sessionStorage.setItem('dhinaut-weller-invitation-code', invitationCode);
-  if (realmGatheringLink) realmGatheringLink.href = `royaume.html?code=${encodeURIComponent(invitationCode)}`;
 }
 
 function scrollToPageTop() {
@@ -120,6 +117,62 @@ async function startRealmMusic() {
   }
 }
 
+function ensureSealImpactAudioContext() {
+  if (!soundEnabled || !pageAudioActive) return null;
+  const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  sealImpactAudioContext ??= new AudioContextClass();
+  if (sealImpactAudioContext.state === 'suspended') {
+    sealImpactAudioContext.resume().catch(() => {});
+  }
+  return sealImpactAudioContext;
+}
+
+function playRoyalSealImpact() {
+  const context = ensureSealImpactAudioContext();
+  if (!context || !soundEnabled || !pageAudioActive) return;
+
+  const startedAt = context.currentTime;
+  const impact = context.createOscillator();
+  const impactFilter = context.createBiquadFilter();
+  const impactGain = context.createGain();
+  const wax = context.createBufferSource();
+  const waxFilter = context.createBiquadFilter();
+  const waxGain = context.createGain();
+  const waxDuration = .16;
+  const waxBuffer = context.createBuffer(1, Math.ceil(context.sampleRate * waxDuration), context.sampleRate);
+  const waxData = waxBuffer.getChannelData(0);
+
+  for (let index = 0; index < waxData.length; index += 1) {
+    const fade = 1 - (index / waxData.length);
+    waxData[index] = (Math.random() * 2 - 1) * fade;
+  }
+
+  impact.type = 'triangle';
+  impact.frequency.setValueAtTime(118, startedAt);
+  impact.frequency.exponentialRampToValueAtTime(64, startedAt + .2);
+  impactFilter.type = 'lowpass';
+  impactFilter.frequency.value = 430;
+  impactGain.gain.setValueAtTime(.0001, startedAt);
+  impactGain.gain.exponentialRampToValueAtTime(.022, startedAt + .014);
+  impactGain.gain.exponentialRampToValueAtTime(.0001, startedAt + .24);
+
+  wax.buffer = waxBuffer;
+  waxFilter.type = 'bandpass';
+  waxFilter.frequency.value = 720;
+  waxFilter.Q.value = .8;
+  waxGain.gain.setValueAtTime(.0001, startedAt);
+  waxGain.gain.exponentialRampToValueAtTime(.006, startedAt + .012);
+  waxGain.gain.exponentialRampToValueAtTime(.0001, startedAt + waxDuration);
+
+  impact.connect(impactFilter).connect(impactGain).connect(context.destination);
+  wax.connect(waxFilter).connect(waxGain).connect(context.destination);
+  impact.start(startedAt);
+  impact.stop(startedAt + .25);
+  wax.start(startedAt);
+  wax.stop(startedAt + waxDuration);
+}
+
 function setPageAudioActive(isActive) {
   const nextState = Boolean(isActive && !document.hidden);
   if (nextState === pageAudioActive) return;
@@ -160,10 +213,6 @@ soundToggle?.addEventListener('click', async () => {
 
 window.addEventListener('pagehide', saveMusicPosition);
 window.setInterval(saveMusicPosition, 4000);
-realmGatheringLink?.addEventListener('click', () => {
-  saveMusicPosition();
-  sessionStorage.setItem(MUSIC_HANDOFF_KEY, '1');
-});
 updateSoundButton();
 startRealmMusic();
 
@@ -273,7 +322,7 @@ function renderInvitation(invitation) {
     rsvpForm.querySelectorAll('input[name="roles"]').forEach((input) => {
       input.checked = savedRoles.has(input.value);
     });
-    feedbackElement.textContent = 'Votre réponse précédente a été retrouvée. Vous pouvez la modifier sans créer de doublon.';
+    feedbackElement.textContent = 'Votre réponse est déjà consignée dans les archives royales. Vous pouvez la modifier sans créer de doublon.';
   } else {
     setFieldValue('email', invitation.email);
     setFieldValue('phone', invitation.phone);
@@ -446,109 +495,149 @@ rsvpForm?.addEventListener('submit', (event) => {
   }
 });
 
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function waitForTransition(element, propertyName, fallbackDelay) {
+  if (!element || prefersReducedMotion()) return Promise.resolve();
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      element.removeEventListener('transitionend', handleTransitionEnd);
+      window.clearTimeout(fallbackTimer);
+      resolve();
+    };
+    const handleTransitionEnd = (event) => {
+      if (event.target === element && event.propertyName === propertyName) finish();
+    };
+    const fallbackTimer = window.setTimeout(finish, fallbackDelay);
+    element.addEventListener('transitionend', handleTransitionEnd);
+  });
+}
+
+function waitForAnimation(element, animationName, fallbackDelay) {
+  if (!element || prefersReducedMotion()) return Promise.resolve();
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      element.removeEventListener('animationend', handleAnimationEnd);
+      window.clearTimeout(fallbackTimer);
+      resolve();
+    };
+    const handleAnimationEnd = (event) => {
+      if (event.target === element && event.animationName === animationName) finish();
+    };
+    const fallbackTimer = window.setTimeout(finish, fallbackDelay);
+    element.addEventListener('animationend', handleAnimationEnd);
+  });
+}
+
+function setSubmittingState(isSubmitting, responseSaved = false) {
+  confirmRsvpButton.disabled = isSubmitting;
+  confirmRsvpButton.classList.toggle('is-submitting', isSubmitting);
+  confirmRsvpButton.setAttribute('aria-busy', String(isSubmitting));
+  confirmRsvpButton.textContent = isSubmitting ? 'Transmission de la missive…' : 'Sceller définitivement';
+  summaryForm?.classList.toggle('is-submitting', isSubmitting);
+  summaryForm?.setAttribute('aria-busy', String(isSubmitting));
+  if (rsvpSubmitButton) rsvpSubmitButton.disabled = isSubmitting || responseSaved;
+}
+
+async function playRoyalSealConfirmation() {
+  if (!rsvpForm || !rsvpConfirmation) return;
+
+  rsvpForm.classList.add('is-submit-success');
+  await waitForTransition(rsvpForm, 'opacity', 720);
+  rsvpForm.hidden = true;
+  rsvpForm.classList.remove('is-submit-success');
+
+  rsvpConfirmation.hidden = false;
+  rsvpConfirmation.classList.remove('is-confirmation-visible', 'is-seal-impact', 'is-animation-complete');
+  void rsvpConfirmation.offsetWidth;
+
+  let impactPlayed = false;
+  const triggerImpact = () => {
+    if (impactPlayed) return;
+    impactPlayed = true;
+    rsvpConfirmation.classList.add('is-seal-impact');
+    playRoyalSealImpact();
+  };
+
+  if (prefersReducedMotion()) {
+    triggerImpact();
+  } else {
+    const impactFallback = window.setTimeout(triggerImpact, 650);
+    confirmationSealHalo?.addEventListener('animationstart', () => {
+      window.clearTimeout(impactFallback);
+      triggerImpact();
+    }, { once: true });
+  }
+
+  rsvpConfirmation.classList.add('is-confirmation-visible');
+  rsvpConfirmation.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
+
+  await waitForAnimation(fallingFeather, 'royalFeatherFall', 3800);
+  rsvpConfirmation.classList.add('is-animation-complete');
+}
+
 async function submitRsvp() {
-  if (!pendingPayload) return;
-  const submitButton = rsvpForm.querySelector('button[type="submit"]');
-  confirmRsvpButton.disabled = true;
-  confirmRsvpButton.textContent = 'Le sceau est apposé…';
+  if (!pendingPayload || confirmRsvpButton.disabled) return;
+  const submittedPayload = pendingPayload;
+  ensureSealImpactAudioContext();
+  setSubmittingState(true);
 
   try {
     if (currentInvitation?.is_demo) {
-      currentInvitation.response = pendingPayload;
-      feedbackElement.textContent = 'Aperçu validé : lancement du messager royal.';
-      summaryDialog.close();
-      playRavenDispatch(true);
-      return;
-    }
-
-    let result = await supabaseClient.rpc('submit_rsvp', {
-      p_code: invitationCode,
-      p_payload: pendingPayload
-    });
-    if (result.error?.code === 'PGRST202' || result.error?.message?.includes('p_payload')) {
-      result = await supabaseClient.rpc('submit_rsvp', {
+      currentInvitation.response = submittedPayload;
+    } else {
+      let result = await supabaseClient.rpc('submit_rsvp', {
         p_code: invitationCode,
-        p_status: pendingPayload.status === 'uncertain' ? 'absent' : pendingPayload.status,
-        p_dietary_notes: [pendingPayload.dietary_preferences, pendingPayload.allergies].filter(Boolean).join(' · '),
-        p_message: pendingPayload.message
+        p_payload: submittedPayload
       });
+      if (result.error?.code === 'PGRST202' || result.error?.message?.includes('p_payload')) {
+        result = await supabaseClient.rpc('submit_rsvp', {
+          p_code: invitationCode,
+          p_status: submittedPayload.status === 'uncertain' ? 'absent' : submittedPayload.status,
+          p_dietary_notes: [submittedPayload.dietary_preferences, submittedPayload.allergies].filter(Boolean).join(' · '),
+          p_message: submittedPayload.message
+        });
+      }
+      if (result.error) throw result.error;
+      currentInvitation.response = { ...submittedPayload, ...(result.data?.response ?? {}) };
     }
-    if (result.error) throw result.error;
-    currentInvitation.response = { ...pendingPayload, ...(result.data?.response ?? {}) };
-    feedbackElement.textContent = 'Votre réponse a bien été transmise au Conseil Restreint.';
-    summaryDialog.close();
-    playRavenDispatch();
   } catch (error) {
-    console.error('Impossible d’enregistrer la réponse :', error);
-    summaryDialog.close();
-    feedbackElement.textContent = 'Le corbeau n’a pas pu partir. Réessayez dans quelques instants.';
-  } finally {
+    console.error('Impossible d’enregistrer la réponse RSVP :', error);
     pendingPayload = null;
-    confirmRsvpButton.disabled = false;
-    confirmRsvpButton.textContent = 'Sceller définitivement';
-    submitButton.disabled = false;
+    summaryDialog.close();
+    setSubmittingState(false);
+    feedbackElement.textContent = 'La missive n’a pas pu être transmise. Veuillez tenter de nouveau.';
+    feedbackElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
+
+  pendingPayload = null;
+  summaryDialog.close();
+  setSubmittingState(false, true);
+  feedbackElement.textContent = '';
+  await playRoyalSealConfirmation();
 }
 
 confirmRsvpButton?.addEventListener('click', submitRsvp);
+summaryDialog?.addEventListener('cancel', (event) => {
+  if (confirmRsvpButton?.disabled) event.preventDefault();
+});
 summaryDialog?.addEventListener('close', () => {
   if (summaryDialog.returnValue === 'cancel') pendingPayload = null;
 });
 
-function revealDispatchConfirmation() {
-  if (!ravenDispatch || ravenDispatch.classList.contains('is-confirmed')) return;
-  window.clearTimeout(dispatchConfirmationTimer);
-  ravenDispatch.classList.add('is-confirmed');
-  dispatchSkipButton?.setAttribute('disabled', '');
-  if (dispatchLiveStatus) dispatchLiveStatus.textContent = 'Votre réponse a été scellée. Le corbeau est arrivé au château.';
-  window.setTimeout(() => dispatchCloseButton?.focus({ preventScroll: true }), 850);
-}
-
-function playRavenDispatch(isDemo = false) {
-  if (!ravenDispatch) return;
-  const householdName = currentInvitation?.household_name ?? 'Votre Maison';
-  if (dispatchLetterHouse) dispatchLetterHouse.textContent = householdName;
-  if (dispatchConfirmationMessage) {
-    dispatchConfirmationMessage.textContent = isDemo
-      ? `L’aperçu de la réponse de ${householdName} est terminé. En conditions réelles, le message serait enregistré au château.`
-      : `La réponse de ${householdName} a bien été scellée et confiée aux corbeaux. Elle est arrivée au château d’Annaël et Benjamin.`;
-  }
-
-  window.clearTimeout(dispatchConfirmationTimer);
-  ravenDispatch.classList.remove('is-running', 'is-confirmed', 'is-closing');
-  ravenDispatch.hidden = false;
-  ravenDispatch.setAttribute('aria-hidden', 'false');
-  dispatchSkipButton?.removeAttribute('disabled');
-  if (dispatchLiveStatus) dispatchLiveStatus.textContent = '';
-  document.body.classList.add('dispatch-open');
-  if (invitationShell) invitationShell.inert = true;
-  void ravenDispatch.offsetWidth;
-  ravenDispatch.classList.add('is-running');
-  dispatchSkipButton?.focus({ preventScroll: true });
-  dispatchConfirmationTimer = window.setTimeout(revealDispatchConfirmation, 8200);
-}
-
-function closeRavenDispatch() {
-  if (!ravenDispatch || ravenDispatch.hidden) return;
-  window.clearTimeout(dispatchConfirmationTimer);
-  ravenDispatch.classList.add('is-closing');
-  window.setTimeout(() => {
-    ravenDispatch.classList.remove('is-running', 'is-confirmed', 'is-closing');
-    ravenDispatch.setAttribute('aria-hidden', 'true');
-    ravenDispatch.hidden = true;
-    document.body.classList.remove('dispatch-open');
-    if (invitationShell) invitationShell.inert = false;
-    rsvpForm?.querySelector('button[type="submit"]')?.focus({ preventScroll: true });
-  }, 360);
-}
-
-dispatchSkipButton?.addEventListener('click', revealDispatchConfirmation);
-dispatchCloseButton?.addEventListener('click', closeRavenDispatch);
-
-window.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || ravenDispatch?.hidden) return;
-  if (ravenDispatch.classList.contains('is-confirmed')) closeRavenDispatch();
-  else revealDispatchConfirmation();
+returnToKingdomButton?.addEventListener('click', () => {
+  saveMusicPosition();
+  sessionStorage.setItem(MUSIC_HANDOFF_KEY, '1');
+  window.location.assign('index.html');
 });
 
 renderRoleOptions();
