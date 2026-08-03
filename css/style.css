@@ -4481,9 +4481,15 @@ body.performance-lite .cinematic-dragon img { width: min(82vw, 1000px); }
     text-wrap: balance;
   }
 
-  .chapter-cover-familiars h2 {
+  .chapter-cover-familiars h2,
+  .chapter-cover-kingdom h2 {
     width: min(100%, 330px);
     max-width: none;
+  }
+
+  .chapter-cover-kingdom h2 {
+    font-size: clamp(2rem, 9vw, 3.1rem);
+    letter-spacing: .035em;
   }
 
   .chapter-cover-subtitle {
